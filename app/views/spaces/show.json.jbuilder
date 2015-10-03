@@ -1,1 +1,1 @@
-json.extract! @space, :id, :name, :description, :created_at, :updated_at
+json.extract! @space, :id, :name, :description, :created_at, :updated_at, :graph
