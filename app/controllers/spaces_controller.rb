@@ -34,7 +34,7 @@ class SpacesController < ApplicationController
   # PATCH/PUT /spaces/1.json
   def update
     if @space.update(space_params)
-      render :show, status: :ok, location: @space
+      render json: @space, status: :ok
     else
       render json: @space.errors, status: :unprocessable_entity
     end
@@ -55,6 +55,7 @@ class SpacesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def space_params
-      params.require(:space).permit(:name, :description, graph: [metrics: [:id, :spaceId, :name, location:[:row, :column]], guesstimates:[:metricId, :input]])
+      puts params.inspect
+      params.require(:space).permit(:name, :description, graph: [metrics: [:id, :space, :readableId, :name, location:[:row, :column]], guesstimates:[:metric, :input]])
     end
 end
