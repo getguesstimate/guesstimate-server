@@ -1,6 +1,6 @@
 Knock.setup do |config|
 
-  config.current_user_from_token = -> (claims) {puts claims; puts claims['sub'];  User.find claims['sub'] }
+  config.current_user_from_token = -> (claims) {puts claims; puts claims['sub'];  User.where(auth0_id: claims['sub']).first }
 
   ## User handle attribute
   ## ---------------------
