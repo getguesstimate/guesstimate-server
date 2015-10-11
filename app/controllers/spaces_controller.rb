@@ -1,4 +1,5 @@
 class SpacesController < ApplicationController
+  before_action :authenticate
   before_action :set_space, only: [:show, :edit, :update, :destroy]
 
   # GET /spaces
@@ -56,6 +57,6 @@ class SpacesController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def space_params
       puts params.inspect
-      params.require(:space).permit(:name, :description, graph: [metrics: [:id, :space, :readableId, :name, location:[:row, :column]], guesstimates:[:metric, :input]])
+      params.require(:space).permit(:name, :description, :user_id, graph: [metrics: [:id, :space, :readableId, :name, location:[:row, :column]], guesstimates:[:metric, :input]])
     end
 end
