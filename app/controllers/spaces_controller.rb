@@ -57,6 +57,6 @@ class SpacesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def space_params
-      params.require(:space).permit(:name, :description, :user_id, graph: [metrics: [:id, :space, :readableId, :name, location:[:row, :column]], guesstimates:[:metric, :input]])
+      params.require(:space).permit(:name, :description, :user_id, graph: [metrics: [:id, :space, :readableId, :name, location:[:row, :column]], guesstimates:[:metric, :input], simulations:[:metric, stats: [:mean, :stdev, :length]]])
     end
 end
