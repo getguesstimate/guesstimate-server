@@ -55,8 +55,19 @@ class SpacesController < ApplicationController
       @space = Space.find(params[:id])
     end
 
+    def graph_structure
+      [
+        metrics: [
+          :id, :space, :readableId, :name, location:[:row, :column]
+        ],
+        guesstimates: [
+          :metric, :input, :guesstimateType
+        ]
+      ]
+    end
+
     # Never trust parameters from the scary internet, only allow the white list through.
     def space_params
-      params.require(:space).permit(:name, :description, :user_id, graph: [metrics: [:id, :space, :readableId, :name, location:[:row, :column]], guesstimates:[:metric, :input], simulations:[:metric, stats: [:mean, :stdev, :length]]])
+      params.require(:space).permit(:name, :description, :user_id, graph: graph_structure)
     end
 end
