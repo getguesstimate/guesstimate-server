@@ -8,7 +8,11 @@ class Space < ActiveRecord::Base
   end
 
   def models
-    return graph['metrics'].map{|m| m.slice('id', 'space', 'readableId', 'name')}
+    if graph
+      graph['metrics'].map{|m| m.slice('id', 'space', 'readableId', 'name')}
+    else
+      []
+    end
   end
 
   def user_info
