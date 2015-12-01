@@ -8,7 +8,7 @@ class Space < ActiveRecord::Base
   end
 
   def models
-    if graph
+    if graph and graph['metrics'].kind_of?(Array)
       graph['metrics'].map{|m| m.slice('id', 'space', 'readableId', 'name')}
     else
       []
