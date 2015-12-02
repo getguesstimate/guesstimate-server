@@ -61,7 +61,7 @@ class SpacesController < ApplicationController
           :id, :space, :readableId, :name, location:[:row, :column]
         ],
         guesstimates: [
-          :metric, :input, :guesstimateType, :reasoning
+          :metric, :input, :guesstimateType, :description
         ]
       ]
     end
