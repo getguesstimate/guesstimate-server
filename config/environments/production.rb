@@ -52,7 +52,7 @@ Rails.application.configure do
   # config.log_tags = [ :subdomain, :uuid ]
 
   # Use a logentries logger for distributed setups.
-  confg.logger = Le.new('b3f94a58-f3f0-32d2-86b4-59656185a2df', :debug => true, :local => true)
+  config.logger = Le.new('b3f94a58-f3f0-32d2-86b4-59656185a2df', :debug => true, :local => true)
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
