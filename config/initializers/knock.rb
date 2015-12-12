@@ -1,6 +1,6 @@
 Knock.setup do |config|
 
-  config.current_user_from_token = -> (claims) {puts claims['sub'];  User.where(auth0_id: claims['sub']).first }
+  config.current_user_from_token = -> (claims) {puts "Authenticating with claims info #{claims}"; User.where(auth0_id: claims['sub']).first }
 
   ## User handle attribute
   ## ---------------------
