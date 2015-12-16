@@ -1,5 +1,4 @@
 require "auth0"
-require 'pry'
 
 class Authentor
   def initialize
