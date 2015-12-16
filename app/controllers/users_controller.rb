@@ -18,6 +18,14 @@ class UsersController < ApplicationController
   def index
     if params[:auth0_id]
       @users = User.where(auth0_id: params[:auth0_id])
+
+      Rails.logger.error "Requested user not found.  Syncing with authentication provider."
+      if @users.empty?
+        Authentor.new().run
+        @users = User.where(auth0_id: params[:auth0_id])
+      end
+
+      @users
     else
       @users = User.all
     end
