@@ -3,8 +3,16 @@ class Space < ActiveRecord::Base
   belongs_to :user
 
   algoliasearch per_environment: true do
-    attribute :id, :name, :description, :user_id
+    attribute :id, :name, :description, :user_id, :created_at, :updated_at
     add_attribute :models, :user_info
+
+    attribute :updated_at_i do
+      updated_at.to_i
+    end
+
+    attribute :created_at_i do
+      created_at.to_i
+    end
   end
 
   def models
