@@ -18,10 +18,9 @@ class Authentor
     new_users = new_auth0_users
     new_users.each do |auth0_user|
       attributes = {
-          name: auth0_user['name'],
+          name: auth0_user['nickname'],
           picture: auth0_user['picture'],
           auth0_id: auth0_user['user_id'],
-          username: auth0_user['nickname']
       }
       User.create(attributes)
       puts "Created user with attributes #{attributes}"
