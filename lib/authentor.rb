@@ -8,7 +8,7 @@ class Authentor
       :domain => Rails.application.secrets.auth0_api_domain
     )
 
-    @auth0_users = @auth0.get_users({per_page: 100, page: 4})
+    @auth0_users = @auth0.get_users({per_page: 100, page: 5})
     if !@auth0_users || @auth0_users.empty?
       Rails.logger.error "Auth0 did not return users when attempting to Sync!"
     end
