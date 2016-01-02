@@ -1,5 +1,4 @@
 require "auth0"
-require 'pry'
 
 class Authentor
   attr_accessor :auth0, :auth0_users
