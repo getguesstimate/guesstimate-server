@@ -1,6 +1,9 @@
 require "auth0"
+require 'pry'
 
 class Authentor
+  attr_accessor :auth0, :auth0_users
+
   def initialize
     @auth0 = Auth0Client.new(
       :api_version => 2,
@@ -8,7 +11,13 @@ class Authentor
       :domain => Rails.application.secrets.auth0_api_domain
     )
 
-    @auth0_users = @auth0.get_users({per_page: 100, page: 12})
+    find_user_count = @auth0.get_users({per_page: 0, page: 0, include_totals: true})
+    total = find_user_count["total"]
+    go_to_page = total / 100
+
+    @auth0_users = @auth0.get_users({per_page: 100, page: go_to_page})
+
+
     if !@auth0_users || @auth0_users.empty?
       Rails.logger.error "Auth0 did not return users when attempting to Sync!"
     end
