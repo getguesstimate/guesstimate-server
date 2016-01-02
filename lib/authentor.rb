@@ -17,6 +17,7 @@ class Authentor
 
     @auth0_users = @auth0.get_users({per_page: 100, page: go_to_page})
 
+    puts "GOING TO PAGE #{total}, found users with count #{@auth0_users.count}"
 
     if !@auth0_users || @auth0_users.empty?
       Rails.logger.error "Auth0 did not return users when attempting to Sync!"
