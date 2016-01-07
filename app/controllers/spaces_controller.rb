@@ -6,7 +6,7 @@ class SpacesController < ApplicationController
   # GET /spaces.json
   def index
     @spaces = Space.all
-    render json: @spaces
+    render json: @spaces.as_json(only: [:id, :name, :description, :updated_at])
     #respond_to do |format|
       #puts format.inspect
         #format.html { render :index}
