@@ -13,11 +13,15 @@ class Space < ActiveRecord::Base
     attribute :created_at_i do
       created_at.to_i
     end
+
+    attribute :model_length do
+      models.length.to_i
+    end
   end
 
   def models
     if graph and graph['metrics'].kind_of?(Array)
-      graph['metrics'].map{|m| m.slice('id', 'space', 'readableId', 'name')}
+      graph['metrics'].map{|m| m.slice('name')}
     else
       []
     end
