@@ -4,15 +4,15 @@ class SpacesController < ApplicationController
 
   # GET /spaces
   # GET /spaces.json
-  def index
-    @spaces = Space.all
-    render json: @spaces.as_json(only: [:id, :name, :description, :updated_at, :user_id])
-    #respond_to do |format|
-      #puts format.inspect
-        #format.html { render :index}
-        #format.json { render json: @spaces }
-      #end
-  end
+  #def index
+    #@spaces = Space.all
+    #render json: @spaces.as_json(only: [:id, :name, :description, :updated_at, :user_id])
+    ##respond_to do |format|
+      ##puts format.inspect
+        ##format.html { render :index}
+        ##format.json { render json: @spaces }
+      ##end
+  #end
 
   # GET /spaces/1
   # GET /spaces/1.json

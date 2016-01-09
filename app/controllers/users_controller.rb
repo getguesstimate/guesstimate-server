@@ -27,7 +27,7 @@ class UsersController < ApplicationController
 
       @users
     else
-      @users = User.all
+      @users = User.last(10)
     end
     render json: @users
   end
