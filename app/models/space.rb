@@ -1,6 +1,7 @@
 class Space < ActiveRecord::Base
   include AlgoliaSearch
   belongs_to :user
+  validates :user_id, presence: true
 
   algoliasearch per_environment: true do
     attribute :id, :name, :description, :user_id, :created_at, :updated_at
@@ -16,10 +17,6 @@ class Space < ActiveRecord::Base
 
     attribute :metric_count do
       metrics.length.to_i
-    end
-
-    attribute :metrics do
-      named_metrics
     end
   end
 
