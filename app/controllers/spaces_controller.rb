@@ -1,6 +1,7 @@
 class SpacesController < ApplicationController
   before_action :authenticate, only: [:create, :update, :destroy]
   before_action :set_space, only: [:show, :update, :destroy]
+  before_action :check_authorization, only: [:update, :destroy]
 
   # GET /spaces
   # GET /spaces.json
@@ -47,6 +48,12 @@ class SpacesController < ApplicationController
   def destroy
     @space.destroy
     head :no_content
+  end
+
+  def check_authorization
+    if @space.user_id != current_user.id
+      head :unauthorized
+    end
   end
 
   private
