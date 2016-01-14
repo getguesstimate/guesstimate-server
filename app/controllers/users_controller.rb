@@ -1,6 +1,4 @@
 class UsersController < ApplicationController
-  before_action :authenticate, except: [:index, :show, :create]
-
   def show
     @user = User.find(params[:id])
     render json: @user
@@ -19,8 +17,8 @@ class UsersController < ApplicationController
     if params[:auth0_id]
       @users = User.where(auth0_id: params[:auth0_id])
 
-      Rails.logger.error "Requested user not found.  Syncing with authentication provider."
       if @users.empty?
+        Rails.logger.error "Requested user not found.  Syncing with authentication provider."
         Authentor.new().run
         @users = User.where(auth0_id: params[:auth0_id])
       end

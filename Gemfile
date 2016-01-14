@@ -26,7 +26,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'rack-cors', require: 'rack/cors'
 
 gem 'auth0'
-gem 'knock', '~> 1.2'
+gem 'knock', '~> 1.4'
 gem 'algoliasearch-rails'
 
 # Use ActiveModel has_secure_password

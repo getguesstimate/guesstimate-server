@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  mount Knock::Engine => '/knock'
+
   resources :spaces
   resources :users
   # The priority is based upon order of creation: first created -> highest priority.

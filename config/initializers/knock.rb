@@ -54,10 +54,6 @@ Knock.setup do |config|
   config.token_audience = -> { Rails.application.secrets.auth0_client_id }
 
 
-  ## If using Auth0, uncomment the line below
-  # config.token_audience = -> { Rails.application.secrets.auth0_client_id }
-
-
   ## Signature key
   ## -------------
   ##
@@ -66,8 +62,5 @@ Knock.setup do |config|
   ## Default:
    #config.token_secret_signature_key = -> { Rails.application.secrets.secret_key_base }
    config.token_secret_signature_key = -> { JWT.base64url_decode Rails.application.secrets.auth0_client_secret }
-
-  ## If using Auth0, uncomment the line below
-  # config.token_secret_signature_key = -> { JWT.base64url_decode Rails.application.secrets.auth0_client_secret }
 
 end
