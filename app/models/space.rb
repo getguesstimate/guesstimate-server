@@ -2,9 +2,10 @@ class Space < ActiveRecord::Base
   include AlgoliaSearch
   belongs_to :user
   validates :user_id, presence: true
+  after_initialize :init
 
   algoliasearch per_environment: true do
-    attribute :id, :name, :description, :user_id, :created_at, :updated_at
+    attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private
     add_attribute :user_info
 
     attribute :updated_at_i do
@@ -34,5 +35,9 @@ class Space < ActiveRecord::Base
 
   def user_info
     user ? user.as_json : {}
+  end
+
+  def init
+    self.is_private ||= false
   end
 end
