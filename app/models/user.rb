@@ -3,4 +3,8 @@ class User < ActiveRecord::Base
   validates_uniqueness_of :username, allow_blank: true
   validates :auth0_id, presence: true, uniqueness: true
   after_initialize :init
+
+  def init
+    self.private_access_count ||= 3
+  end
 end
