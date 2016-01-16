@@ -18,7 +18,11 @@ class SpacesController < ApplicationController
   # GET /spaces/1
   # GET /spaces/1.json
   def show
-    render json: @space
+    if @space.is_private && !belongs_to_user
+      head :unauthorized
+    else
+      render json: @space
+    end
   end
 
   # POST /spaces
@@ -50,8 +54,12 @@ class SpacesController < ApplicationController
     head :no_content
   end
 
+  def belongs_to_user
+    !current_user.nil? && (@space.user_id == current_user.id)
+  end
+
   def check_authorization
-    if @space.user_id != current_user.id
+    if !belongs_to_user
       head :unauthorized
     end
   end
@@ -75,6 +83,6 @@ class SpacesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def space_params
-      params.require(:space).permit(:name, :description, :user_id, graph: graph_structure)
+      params.require(:space).permit(:name, :description, :user_id, :is_private, graph: graph_structure)
     end
 end
