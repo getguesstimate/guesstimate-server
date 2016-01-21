@@ -3,6 +3,7 @@ class Space < ActiveRecord::Base
   belongs_to :user
   validates :user_id, presence: true
   after_initialize :init
+  scope :is_private, -> { where(is_private: true) }
 
   algoliasearch per_environment: true do
     attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private
