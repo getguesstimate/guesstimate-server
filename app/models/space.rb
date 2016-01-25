@@ -4,6 +4,7 @@ class Space < ActiveRecord::Base
   validates :user_id, presence: true
   after_initialize :init
   scope :is_private, -> { where(is_private: true) }
+  after_create :ensure_metric_space_ids
 
   algoliasearch per_environment: true do
     attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private
@@ -40,5 +41,16 @@ class Space < ActiveRecord::Base
 
   def init
     self.is_private ||= false
+  end
+
+  def ensure_metric_space_ids
+    if graph
+      graph['metrics'].each do |metric|
+        if !metric.has_key?('space')
+          metric['space'] = self.id
+        end
+      end
+      self.save
+    end
   end
 end
