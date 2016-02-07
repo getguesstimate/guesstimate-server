@@ -29,6 +29,10 @@ gem 'auth0'
 gem 'knock', '~> 1.4'
 gem 'algoliasearch-rails'
 
+
+gem 'responders'
+gem 'roar-rails'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
@@ -42,6 +46,7 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
   gem 'pry'
+  gem 'pry-byebug'
   gem 'pry-rails'
 end
 

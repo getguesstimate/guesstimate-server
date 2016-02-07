@@ -1,13 +1,14 @@
 class UsersController < ApplicationController
+
   def show
     @user = User.find(params[:id])
-    render json: @user
+    render json: UserRepresenter.new(@user).to_json
   end
 
   def create
     @user = User.new(user_params)
     if @user.save
-      render json: @user
+      respond_with @user
     else
       render json: @user.errors, status: :unprocessable_entity
     end
@@ -27,7 +28,8 @@ class UsersController < ApplicationController
     else
       @users = User.last(10)
     end
-    render json: @users
+
+    render json: UsersRepresenter.new(@users).to_json
   end
 
   def user_params
