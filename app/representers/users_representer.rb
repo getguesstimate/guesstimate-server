@@ -8,5 +8,8 @@ class UsersRepresenter < Roar::Decorator
     property :id
     property :name
     property :picture
+    property :has_private_access
+    property :private_model_count
+    property :available_private_model_count
   end
 end

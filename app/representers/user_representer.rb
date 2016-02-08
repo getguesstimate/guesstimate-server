@@ -9,6 +9,6 @@ class UserRepresenter < Roar::Decorator
   property :picture
   property :has_private_access
   property :created_at
-  property :satisfied_private_model_count
-
+  property :private_model_count
+  property :available_private_model_count
 end

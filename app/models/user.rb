@@ -11,4 +11,12 @@ class User < ActiveRecord::Base
   def satisfied_private_model_count
     (self.private_access_count <= self.spaces.is_private.count)
   end
+
+  def private_model_count
+    self.spaces.is_private.count
+  end
+
+  def available_private_model_count
+    self.private_access_count || 0
+  end
 end
