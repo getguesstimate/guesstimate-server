@@ -3,9 +3,14 @@ class Space < ActiveRecord::Base
 
   belongs_to :user
   validates :user_id, presence: true
+  validate :can_create_private_models
   after_initialize :init
   scope :is_private, -> { where(is_private: true) }
   after_create :ensure_metric_space_ids
+
+  def init
+    self.is_private ||= false
+  end
 
   algoliasearch per_environment: true, disable_indexing: Rails.env.test? do
     attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private
@@ -40,10 +45,6 @@ class Space < ActiveRecord::Base
     user ? user.as_json : {}
   end
 
-  def init
-    self.is_private ||= false
-  end
-
   def ensure_metric_space_ids
     if graph
       graph['metrics'].each do |metric|
@@ -52,6 +53,12 @@ class Space < ActiveRecord::Base
         end
       end
       self.save
+    end
+  end
+
+  def can_create_private_models
+    if is_private && !user.try(:can_create_private_models)
+      errors.add(:user_id, 'can not make more private models with current plan')
     end
   end
 end

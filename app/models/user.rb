@@ -22,4 +22,8 @@ class User < ActiveRecord::Base
   def available_private_model_count
     self.private_access_count || 0
   end
+
+  def can_create_private_models
+    self.private_access_count > self.spaces.is_private.count
+  end
 end
