@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      respond_with @user
+      render json: UserRepresenter.new(@user).to_json
     else
       render json: @user.errors, status: :unprocessable_entity
     end
@@ -23,8 +23,6 @@ class UsersController < ApplicationController
         Authentor.new().run
         @users = User.where(auth0_id: params[:auth0_id])
       end
-
-      @users
     else
       @users = User.last(10)
     end
@@ -32,6 +30,7 @@ class UsersController < ApplicationController
     render json: UsersRepresenter.new(@users).to_json
   end
 
+  private
   def user_params
     params.require(:user).permit(:name, :picture, :auth0_id)
   end
