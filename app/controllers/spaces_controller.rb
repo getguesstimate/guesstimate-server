@@ -3,17 +3,18 @@ class SpacesController < ApplicationController
   before_action :set_space, only: [:show, :update, :destroy]
   before_action :check_authorization, only: [:update, :destroy]
 
-  # GET /spaces
-  # GET /spaces.json
-  #def index
-    #@spaces = Space.all
+  #GET /spaces
+  #GET /spaces.json
+  def index
+    if params['user_id']
+      @user = User.find(params['user_id'])
+      @spaces = @user.spaces
+    else
+      @spaces = Space.all.first(10)
+    end
     #render json: @spaces.as_json(only: [:id, :name, :description, :updated_at, :user_id])
-    ##respond_to do |format|
-      ##puts format.inspect
-        ##format.html { render :index}
-        ##format.json { render json: @spaces }
-      ##end
-  #end
+    render json: SpacesRepresenter.new(@spaces).to_json
+  end
 
   # GET /spaces/1
   # GET /spaces/1.json
