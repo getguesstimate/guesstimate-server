@@ -6,13 +6,14 @@ class Space < ActiveRecord::Base
   validate :can_create_private_models
   after_initialize :init
   scope :is_private, -> { where(is_private: true) }
+  scope :visible_by, -> (user) { where 'is_private IS false OR user_id = ?', user.try(:id) }
   after_create :ensure_metric_space_ids
 
   def init
     self.is_private ||= false
   end
 
-  algoliasearch per_environment: true, disable_indexing: Rails.env.test? do
+  algoliasearch if: :is_public?, per_environment: true, disable_indexing: Rails.env.test? do
     attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private
     add_attribute :user_info
 
@@ -37,8 +38,8 @@ class Space < ActiveRecord::Base
     end
   end
 
-  def named_metrics
-      metrics.select{|m| m.keys.length > 0}
+  def is_public?
+    !self.is_private
   end
 
   def user_info

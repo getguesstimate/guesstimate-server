@@ -8,9 +8,9 @@ class SpacesController < ApplicationController
   def index
     if params['user_id']
       @user = User.find(params['user_id'])
-      @spaces = @user.spaces
+      @spaces = @user.spaces.visible_by(current_user)
     else
-      @spaces = Space.all.first(10)
+      @spaces = Space.visible_by(current_user).first(10)
     end
     #render json: @spaces.as_json(only: [:id, :name, :description, :updated_at, :user_id])
     render json: SpacesRepresenter.new(@spaces).to_json
@@ -55,6 +55,8 @@ class SpacesController < ApplicationController
     head :no_content
   end
 
+  private
+
   def belongs_to_user
     !current_user.nil? && (@space.user_id == current_user.id)
   end
@@ -65,25 +67,24 @@ class SpacesController < ApplicationController
     end
   end
 
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_space
-      @space = Space.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_space
+    @space = Space.find(params[:id])
+  end
 
-    def graph_structure
-      [
-        metrics: [
-          :id, :space, :readableId, :name, location:[:row, :column]
-        ],
-        guesstimates: [
-          :metric, :input, :guesstimateType, :description, data: []
-        ]
+  def graph_structure
+    [
+      metrics: [
+        :id, :space, :readableId, :name, location:[:row, :column]
+      ],
+      guesstimates: [
+        :metric, :input, :guesstimateType, :description, data: []
       ]
-    end
+    ]
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def space_params
-      params.require(:space).permit(:name, :description, :user_id, :is_private, graph: graph_structure)
-    end
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def space_params
+    params.require(:space).permit(:name, :description, :user_id, :is_private, graph: graph_structure)
+  end
 end
