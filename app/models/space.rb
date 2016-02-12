@@ -53,4 +53,25 @@ class Space < ActiveRecord::Base
       self.save
     end
   end
+
+  def clean_graph!
+    update_attributes(graph: cleaned_graph)
+  end
+
+  def cleaned_graph
+    {"metrics" => Array.wrap(cleaned_metrics), "guesstimates" => Array.wrap(cleaned_guesstimates)}
+  end
+
+  private
+  def clean_items(key, uniqKey)
+    graph && graph[key] && graph[key].reverse.uniq{|m| m[uniqKey]}.reverse
+  end
+
+  def cleaned_metrics
+    clean_items('metrics', 'id')
+  end
+
+  def cleaned_guesstimates
+    clean_items('guesstimates', 'metric')
+  end
 end

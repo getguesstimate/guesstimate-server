@@ -21,7 +21,9 @@ class SpacesController < ApplicationController
     if @space.is_private && !belongs_to_user
       head :unauthorized
     else
-      render json: @space
+      newSpace = @space
+      newSpace.graph = @space.cleaned_graph
+      render json: newSpace
     end
   end
 
