@@ -24,6 +24,7 @@ gem 'algoliasearch-rails'
 
 gem 'responders'
 gem 'roar-rails'
+gem 'uglifier'
 
 # This is needed to load on heroku, should be fixed later.
 gem 'sass-rails'
