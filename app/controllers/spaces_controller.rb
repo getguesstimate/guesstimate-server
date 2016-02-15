@@ -3,17 +3,18 @@ class SpacesController < ApplicationController
   before_action :set_space, only: [:show, :update, :destroy]
   before_action :check_authorization, only: [:update, :destroy]
 
-  # GET /spaces
-  # GET /spaces.json
-  #def index
-    #@spaces = Space.all
+  #GET /spaces
+  #GET /spaces.json
+  def index
+    if params['user_id']
+      @user = User.find(params['user_id'])
+      @spaces = @user.spaces.visible_by(current_user)
+    else
+      @spaces = Space.visible_by(current_user).first(10)
+    end
     #render json: @spaces.as_json(only: [:id, :name, :description, :updated_at, :user_id])
-    ##respond_to do |format|
-      ##puts format.inspect
-        ##format.html { render :index}
-        ##format.json { render json: @spaces }
-      ##end
-  #end
+    render json: SpacesRepresenter.new(@spaces).to_json
+  end
 
   # GET /spaces/1
   # GET /spaces/1.json
@@ -23,7 +24,7 @@ class SpacesController < ApplicationController
     else
       newSpace = @space
       newSpace.graph = @space.cleaned_graph
-      render json: newSpace
+      render json: SpaceRepresenter.new(newSpace).to_json
     end
   end
 
@@ -56,6 +57,8 @@ class SpacesController < ApplicationController
     head :no_content
   end
 
+  private
+
   def belongs_to_user
     !current_user.nil? && (@space.user_id == current_user.id)
   end
@@ -66,25 +69,24 @@ class SpacesController < ApplicationController
     end
   end
 
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_space
-      @space = Space.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_space
+    @space = Space.find(params[:id])
+  end
 
-    def graph_structure
-      [
-        metrics: [
-          :id, :space, :readableId, :name, location:[:row, :column]
-        ],
-        guesstimates: [
-          :metric, :input, :guesstimateType, :description, data: []
-        ]
+  def graph_structure
+    [
+      metrics: [
+        :id, :space, :readableId, :name, location:[:row, :column]
+      ],
+      guesstimates: [
+        :metric, :input, :guesstimateType, :description, data: []
       ]
-    end
+    ]
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def space_params
-      params.require(:space).permit(:name, :description, :user_id, :is_private, graph: graph_structure)
-    end
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def space_params
+    params.require(:space).permit(:name, :description, :user_id, :is_private, graph: graph_structure)
+  end
 end

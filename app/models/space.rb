@@ -1,12 +1,20 @@
 class Space < ActiveRecord::Base
   include AlgoliaSearch
+
   belongs_to :user
   validates :user_id, presence: true
+  validate :can_create_private_models
   after_initialize :init
   scope :is_private, -> { where(is_private: true) }
+  scope :is_public, -> { where(is_private: false) }
+  scope :visible_by, -> (user) { where 'is_private IS false OR user_id = ?', user.try(:id) }
   after_create :ensure_metric_space_ids
 
-  algoliasearch per_environment: true do
+  def init
+    self.is_private ||= false
+  end
+
+  algoliasearch if: :is_public?, per_environment: true, disable_indexing: Rails.env.test? do
     attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private
     add_attribute :user_info
 
@@ -31,16 +39,12 @@ class Space < ActiveRecord::Base
     end
   end
 
-  def named_metrics
-      metrics.select{|m| m.keys.length > 0}
+  def is_public?
+    !self.is_private
   end
 
   def user_info
     user ? user.as_json : {}
-  end
-
-  def init
-    self.is_private ||= false
   end
 
   def ensure_metric_space_ids
@@ -51,6 +55,12 @@ class Space < ActiveRecord::Base
         end
       end
       self.save
+    end
+  end
+
+  def can_create_private_models
+    if is_private && !user.try(:can_create_private_models)
+      errors.add(:user_id, 'can not make more private models with current plan')
     end
   end
 

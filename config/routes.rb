@@ -1,8 +1,11 @@
 Rails.application.routes.draw do
   mount Knock::Engine => '/knock'
 
-  resources :spaces
-  resources :users
+  resources :spaces, only: [:show, :create, :update, :destroy]
+
+  resources :users do
+    resources :spaces, only: [:index]
+  end
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
