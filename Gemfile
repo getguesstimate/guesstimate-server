@@ -25,6 +25,8 @@ gem 'algoliasearch-rails'
 gem 'responders'
 gem 'roar-rails'
 
+# This is needed to load on heroku, should be fixed later.
+gem 'sass-rails'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
