@@ -15,10 +15,14 @@
     "id": 39,
     "name": "ozzieagooen",
     "picture": "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg",
-    "has_private_access": true,
+    "updated_at": "2016-01-14T23:17:20.048Z",
     "created_at": "2016-01-14T23:17:20.048Z",
+    “public_model_count”: 0
     "private_model_count": 0,
-    "available_private_model_count": 10
+    “plan”: {
+      “private_model_count”: 20
+    },
+    "has_private_access": true
   }
 ```
 
@@ -95,13 +99,11 @@
       ]
     },
     "is_private": false,
-    "user_id": 32,
     "_embedded": {
       "user": {
         "id": 32,
         "name": "Ozzie Gooen",
-        "picture": "https://avatars.githubusercontent.com/u/377065?v=3",
-        "has_private_access": true
+        "picture": "https://avatars.githubusercontent.com/u/377065?v=3"
       }
     }
   }

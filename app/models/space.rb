@@ -6,6 +6,7 @@ class Space < ActiveRecord::Base
   validate :can_create_private_models
   after_initialize :init
   scope :is_private, -> { where(is_private: true) }
+  scope :is_public, -> { where(is_private: false) }
   scope :visible_by, -> (user) { where 'is_private IS false OR user_id = ?', user.try(:id) }
   after_create :ensure_metric_space_ids
 

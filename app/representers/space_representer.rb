@@ -17,6 +17,5 @@ class SpaceRepresenter < Roar::Decorator
     property :id
     property :name
     property :picture
-    property :has_private_access
   end
 end

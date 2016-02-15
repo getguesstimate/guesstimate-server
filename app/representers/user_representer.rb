@@ -7,8 +7,13 @@ class UserRepresenter < Roar::Decorator
   property :id
   property :name
   property :picture
-  property :has_private_access
   property :created_at
+  property :updated_at
+  property :public_model_count
   property :private_model_count
-  property :available_private_model_count
+  property :has_private_access
+
+  nested :plan do
+    property :private_model_limit
+  end
 end

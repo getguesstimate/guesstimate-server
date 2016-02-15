@@ -1,4 +1,3 @@
-
 require 'roar/decorator'
 
 class SpacesRepresenter < Roar::Decorator
