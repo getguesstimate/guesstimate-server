@@ -22,7 +22,9 @@ class SpacesController < ApplicationController
     if @space.is_private && !belongs_to_user
       head :unauthorized
     else
-      render json: SpaceRepresenter.new(@space).to_json
+      newSpace = @space
+      newSpace.graph = @space.cleaned_graph
+      render json: SpaceRepresenter.new(newSpace).to_json
     end
   end
 
