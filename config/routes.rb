@@ -6,6 +6,10 @@ Rails.application.routes.draw do
   resources :users do
     resources :spaces, only: [:index]
   end
+
+  get '/subscriptions/new.iframe', to: 'payments#new'
+  get '/subscriptions/portal', to: 'payments#edit'
+  post '/subscriptions/synchronization', to: 'payments#synchronization'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
