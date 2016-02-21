@@ -24,7 +24,7 @@
     },
     "has_private_access": true,
     "account": {
-      "payment_account_exists": true,
+      "has_payment_account": true,
       _links: {
         "payment_portal": {"href": "foobar.com", "website_name": "google.com"},
         "new_payment_iframe":  {"href": "foobar.com"}

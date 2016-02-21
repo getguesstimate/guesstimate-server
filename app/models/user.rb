@@ -1,11 +1,12 @@
 class User < ActiveRecord::Base
   has_many :spaces
+  has_one :account, dependent: :destroy
+  after_initialize :init
+  after_create :create_account
+
   validates_uniqueness_of :username, allow_blank: true
   validates :auth0_id, presence: true, uniqueness: true
-
   validates :private_access_count, numericality: {greater_than_or_equal_to: 0}
-
-  after_initialize :init
 
   def init
     self.private_access_count ||= 3
