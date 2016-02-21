@@ -22,10 +22,35 @@
     “plan”: {
       “private_model_count”: 20
     },
-    "has_private_access": true
+    "has_private_access": true,
+    "account": {
+      "payment_account_exists": true,
+      _links: {
+        "payment_portal": {"href": "foobar.com", "website_name": "google.com"},
+        "new_payment_iframe":  {"href": "foobar.com"}
+      }
+    }
+    }
   }
 ```
 
+# Accounts
+
+## Begin a synchonization of the user account with the subscription manager (Chargebee)
+
+```bash
+  POST /users/:id/account/synchronization
+```
+
+### Response
+
+```javascript
+  {
+    "user_id": 39,
+  }
+```
+
+## Get a user account
 
 # Spaces
 
