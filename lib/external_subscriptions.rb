@@ -1,0 +1,2 @@
+module ExternalSubscriptions
+end
