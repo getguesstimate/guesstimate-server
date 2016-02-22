@@ -2,13 +2,13 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
-    render json: UserRepresenter.new(@user).to_json
+    render json: user_representation(@user)
   end
 
   def create
     @user = User.new(user_params)
     if @user.save
-      render json: UserRepresenter.new(@user).to_json
+      render json: user_representation(@user)
     else
       render json: @user.errors, status: :unprocessable_entity
     end
@@ -34,5 +34,13 @@ class UsersController < ApplicationController
   def user_params
     params.require(:user).permit(:name, :picture, :auth0_id)
   end
-end
 
+  def user_representation(user)
+    UserRepresenter.new(user).to_json(user_options: {can_access_account: can_access_account?(user)})
+  end
+
+  def can_access_account?(user)
+    current_user.present? && (current_user.id == user.id)
+    return true
+  end
+end
