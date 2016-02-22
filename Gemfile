@@ -5,8 +5,6 @@ ruby '2.2.2'
 gem 'rails', '4.2.4'
 # Use postgresql as the database for Active Record
 gem 'pg'
-# See https://github.com/rails/execjs#readme for more supported runtimes
-# gem 'therubyracer', platforms: :ruby
 
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks'
@@ -21,7 +19,6 @@ gem 'auth0'
 gem 'knock', '~> 1.4'
 gem 'algoliasearch-rails'
 
-
 gem 'responders'
 gem 'roar-rails'
 gem 'uglifier'
@@ -29,14 +26,6 @@ gem 'chargebee'
 
 # This is needed to load on heroku, should be fixed later.
 gem 'sass-rails'
-# Use ActiveModel has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
-
-# Use Unicorn as the app server
-# gem 'unicorn'
-
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -46,7 +35,8 @@ group :development, :test do
   gem 'pry-rails'
 
   gem 'rspec-rails'
-  gem 'factory_girl_rails'
+  gem 'database_cleaner'
+  gem 'factory_girl_rails', '~> 4.6'
 end
 
 group :test do
@@ -60,7 +50,6 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
 end
-
 
 group :production do
   gem 'skylight'
