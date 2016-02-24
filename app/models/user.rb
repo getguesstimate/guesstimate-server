@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
   end
 
   def private_model_limit
-    plan_details['private_model_limit'] || 0
+    plan_details.private_model_limit || 0
   end
 
   def can_create_private_models
