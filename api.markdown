@@ -20,7 +20,9 @@
     “public_model_count”: 0
     "private_model_count": 0,
     “plan”: {
-      “private_model_count”: 20
+      “name”: "Small",
+      “id”: "personal_small",
+      “private_model_limit”: 20
     },
     "has_private_access": true,
     "account": {

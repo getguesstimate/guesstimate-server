@@ -41,6 +41,5 @@ class UsersController < ApplicationController
 
   def can_access_account?(user)
     current_user.present? && (current_user.id == user.id)
-    return true
   end
 end
