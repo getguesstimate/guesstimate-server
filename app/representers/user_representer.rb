@@ -16,7 +16,8 @@ class UserRepresenter < Roar::Decorator
   property :plan_details,
     decorator: PlanRepresenter,
     class: Plan,
-    as: 'plan'
+    as: 'plan',
+    if: ->(user_options:, **) { user_options[:can_access_account] }
 
   property :account,
     decorator: AccountRepresenter,
