@@ -44,9 +44,8 @@
 ### Response
 ```javascript
 {
-  _links: {
-    "new_payment_iframe":  {"href": "foobar.com", "website_name": "google.com"}
-  }
+  "href": "foobar.com",
+  "website_name": "google.com"
 }
 ```
 
@@ -61,7 +60,6 @@
 
 ```javascript
   {
-    "user_id": 39,
   }
 ```
 
