@@ -10,4 +10,9 @@ FactoryGirl.define do
     has_private_access true
     plan :personal_small
   end
+
+  trait :large_plan do
+    has_private_access true
+    plan :personal_large
+  end
 end
