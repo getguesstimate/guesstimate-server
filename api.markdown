@@ -20,12 +20,52 @@
     “public_model_count”: 0
     "private_model_count": 0,
     “plan”: {
-      “private_model_count”: 20
+      “name”: "Small",
+      “id”: "personal_small",
+      “private_model_limit”: 20
     },
-    "has_private_access": true
+    "has_private_access": true,
+    "account": {
+      "has_payment_account": true,
+      _links: {
+        "payment_portal": {"href": "foobar.com"}
+      }
+    }
   }
 ```
 
+# Accounts
+
+## Begin a synchonization of the user account with the subscription manager (Chargebee)
+```bash
+  GET /users/:id/account/new_subscription_iframe?plan_id=small
+```
+
+### Response
+```javascript
+{
+  _links: {
+    "new_payment_iframe":  {"href": "foobar.com", "website_name": "google.com"}
+  }
+}
+```
+
+
+## Begin a synchonization of the user account with the subscription manager (Chargebee)
+
+```bash
+  POST /users/:id/account/synchronization
+```
+
+### Response
+
+```javascript
+  {
+    "user_id": 39,
+  }
+```
+
+## Get a user account
 
 # Spaces
 

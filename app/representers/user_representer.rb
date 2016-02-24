@@ -13,7 +13,14 @@ class UserRepresenter < Roar::Decorator
   property :private_model_count
   property :has_private_access
 
-  nested :plan do
-    property :private_model_limit
-  end
+  property :plan_details,
+    decorator: PlanRepresenter,
+    class: Plan,
+    as: 'plan',
+    if: ->(user_options:, **) { user_options[:can_access_account] }
+
+  property :account,
+    decorator: AccountRepresenter,
+    class: Account,
+    if: ->(user_options:, **) { user_options[:can_access_account] }
 end
