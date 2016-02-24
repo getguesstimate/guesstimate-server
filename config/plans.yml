@@ -1,0 +1,31 @@
+plans:
+  -
+    name: 'Tiny'
+    id: 'personal-tiny'
+    enum_id: 1
+    monthly_cost: 5000
+    private_model_limit: 5
+  -
+    name: 'Small'
+    id: 'personal-small'
+    enum_id: 2
+    monthly_cost: 15000
+    private_model_limit: 15
+  -
+    name: 'Medium'
+    id: 'personal-medium'
+    enum_id: 3
+    monthly_cost: 30000
+    private_model_limit: 30
+  -
+    name: 'Large'
+    id: 'personal-large'
+    enum_id: 4
+    monthly_cost: 60000
+    private_model_limit: 60
+  -
+    name: 'Infinite'
+    id: 'personal-infinite'
+    enum_id: 5
+    monthly_cost: 0
+    private_model_limit: 1000
