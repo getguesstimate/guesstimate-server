@@ -7,8 +7,10 @@ class AccountsController < ApplicationController
     render json: new_subscription_iframe.to_json
   end
 
-  def synchronize
+  #POST /synchronization
+  def synchronization
     user = User.find(params['user_id'])
     user.account.synchronize!
+    render json: {}
   end
 end

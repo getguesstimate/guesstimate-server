@@ -5,8 +5,8 @@ Rails.application.routes.draw do
 
   resources :users do
     resources :spaces, only: [:index]
-    post '/accounts/synchronization', to: 'accounts#synchronization'
-    get '/accounts/new_subscription_iframe', to: 'accounts#new_subscription_iframe'
+    post '/account/synchronization', to: 'accounts#synchronization'
+    get '/account/new_subscription_iframe', to: 'accounts#new_subscription_iframe'
   end
 
   # The priority is based upon order of creation: first created -> highest priority.

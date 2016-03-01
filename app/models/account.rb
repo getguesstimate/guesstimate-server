@@ -16,12 +16,16 @@ class Account < ActiveRecord::Base
     synchronize_subscription!
   end
 
+  private
+
   def synchronize_has_payment_account!
     self.update_attribute(:has_payment_account, external_has_account)
   end
 
+  ## TODO: Add error if the external_subscription does not match something in the database
   def synchronize_subscription!
     return false unless has_payment_account
+    user.update_attribute(:plan, external_subscription)
   end
 
   def external_has_account
