@@ -30,7 +30,7 @@ module FakeNames
   end
 
   def has_real_name?
-    !FakeNames.is_fake(name)
+    FakeNames.is_real(name)
   end
 
   def has_fake_name?
