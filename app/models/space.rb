@@ -1,5 +1,6 @@
 class Space < ActiveRecord::Base
   include AlgoliaSearch
+  include FakeNames
 
   belongs_to :user
   validates :user_id, presence: true
@@ -14,7 +15,7 @@ class Space < ActiveRecord::Base
     self.is_private ||= false
   end
 
-  algoliasearch if: :is_public?, per_environment: true, disable_indexing: Rails.env.test? do
+  algoliasearch if: :is_searchable?, per_environment: true, disable_indexing: Rails.env.test? do
     attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private
     add_attribute :user_info
 
@@ -39,8 +40,22 @@ class Space < ActiveRecord::Base
     end
   end
 
+  def guesstimates_of_type(types)
+    return [] if graph.nil?
+
+    return graph['guesstimates'].select {|guesstimate| types.include? guesstimate["guesstimateType"]}
+  end
+
   def is_public?
     !self.is_private
+  end
+
+  def is_searchable?
+    is_public? and
+    has_real_name? and
+    guesstimates_of_type(["UNIFORM", "NORMAL"]).length > 0 and
+    guesstimates_of_type(["FUNCTION"]).length > 0 and
+    metrics.length > 3
   end
 
   def user_info
