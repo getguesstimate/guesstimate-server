@@ -1,7 +1,7 @@
 DISALLOWED_WORDS = [
   "my", "to", "in", "at", "or", "of", "is", "be", "as", "at", "so", "we", "he", "by", "on", "do", "if", "me", "up",
   "an", "go", "no", "us", "am", "foo", "foobar", "bar", "and", "one", "two", "three", "four", "five", "six", "seven",
-  "eight", "nine", "ten", "ha"
+  "eight", "nine", "ten", "ha", "fake"
 ]
 
 module FakeNames
