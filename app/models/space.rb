@@ -2,21 +2,28 @@ class Space < ActiveRecord::Base
   include AlgoliaSearch
 
   belongs_to :user
+
   validates :user_id, presence: true
   validate :can_create_private_models
+  validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
+
   after_initialize :init
+  after_create :ensure_metric_space_ids
+
   scope :is_private, -> { where(is_private: true) }
   scope :is_public, -> { where(is_private: false) }
   scope :visible_by, -> (user) { where 'is_private IS false OR user_id = ?', user.try(:id) }
-  after_create :ensure_metric_space_ids
 
   def init
     self.is_private ||= false
   end
 
   algoliasearch if: :is_public?, per_environment: true, disable_indexing: Rails.env.test? do
-    attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private
+    attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private, :viewcount
     add_attribute :user_info
+
+    # We want to rank equally relevant results by viewcount.
+    customRanking ['desc(viewcount)']
 
     attribute :updated_at_i do
       updated_at.to_i

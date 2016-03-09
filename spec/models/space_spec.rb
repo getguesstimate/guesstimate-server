@@ -5,12 +5,13 @@ RSpec.describe Space, type: :model do
 
     describe '#create' do
       let (:user) { FactoryGirl.create(:user) }
-      subject (:space) { FactoryGirl.build(:space, user: user, is_private: is_private) }
+      let (:viewcount) { nil } # default context unviewed.
+      let (:is_private) { false } # default context public.
 
-      context 'public' do
-        let (:is_private) { false }
-        it { is_expected.to be_valid }
-      end
+      subject (:space) { FactoryGirl.build(:space, user: user, is_private: is_private, viewcount: viewcount) }
+
+      # A public, unviewed space should be valid.
+      it { is_expected.to be_valid } 
 
       context 'private' do
         let (:is_private) { true }
@@ -25,5 +26,9 @@ RSpec.describe Space, type: :model do
         end
       end
 
+      context 'negative viewcount' do
+        let(:viewcount) {-1}
+        it { is_expected.not_to be_valid}
+      end
     end
 end
