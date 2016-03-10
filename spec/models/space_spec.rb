@@ -31,29 +31,29 @@ RSpec.describe Space, type: :model do
     let(:is_private) { false }
 
     context 'with valid name' do
-      let(:name) {"real model"}
-      it "should have a real name" do
+      let(:name) {'real model'}
+      it 'should have a real name' do
         expect(space.has_real_name?).to be true
       end
 
-      it "should not be searchable with no graph" do
+      it 'should not be searchable with no graph' do
         expect(space.is_searchable?).to be false
       end
 
       context 'searchable graph' do
         let(:graph) {
-          {"metrics"=>
-            [{"name"=>"Point Test"},
-             {"name"=>"Uniform Test"},
-             {"name"=>"Normal Test"},
-             {"name"=>"Function Test"}],
-           "guesstimates"=>
-            [{"guesstimateType"=>"POINT"},
-             {"guesstimateType"=>"UNIFORM"},
-             {"guesstimateType"=>"NORMAL"},
-             {"guesstimateType"=>"FUNCTION"}]}
+          {'metrics'=>
+            [{'name'=>'Point Test'},
+             {'name'=>'Uniform Test'},
+             {'name'=>'Normal Test'},
+             {'name'=>'Function Test'}],
+           'guesstimates'=>
+            [{'guesstimateType'=>'POINT'},
+             {'guesstimateType'=>'UNIFORM'},
+             {'guesstimateType'=>'NORMAL'},
+             {'guesstimateType'=>'FUNCTION'}]}
         }
-        it "should be searchable with a valid graph" do
+        it 'should be searchable with a valid graph' do
           expect(space.is_searchable?).to be true
         end
       end
@@ -61,9 +61,9 @@ RSpec.describe Space, type: :model do
 
     context 'private space' do
       let(:is_private) { true }
-      let(:name) {"real model"}
+      let(:name) {'real model'}
 
-      it "should not be searchable" do
+      it 'should not be searchable' do
         expect(space.is_searchable?).to be false
       end
     end
