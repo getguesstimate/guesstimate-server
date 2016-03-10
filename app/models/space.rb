@@ -2,6 +2,10 @@ class Space < ActiveRecord::Base
   include AlgoliaSearch
 
   belongs_to :user
+
+  belongs_to :forked_from, :class_name => 'Space', foreign_key: 'forked_from_id'
+  has_many :forks, :class_name => 'Space', foreign_key: 'forked_from_id'
+
   validates :user_id, presence: true
   validate :can_create_private_models
   after_initialize :init
@@ -70,6 +74,15 @@ class Space < ActiveRecord::Base
 
   def cleaned_graph
     {"metrics" => Array.wrap(cleaned_metrics), "guesstimates" => Array.wrap(cleaned_guesstimates)}
+  end
+
+  def fork!(user)
+    space = Space.new(self.attributes.slice('name', 'description', 'graph'))
+    space.user = user
+    space.forked_from_id = self.id
+    space.is_private = user.preferred_privacy
+    space.save
+    return space
   end
 
   private

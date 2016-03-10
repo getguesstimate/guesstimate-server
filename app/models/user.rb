@@ -31,4 +31,8 @@ class User < ActiveRecord::Base
   def can_create_private_models
     private_model_limit > private_model_count
   end
+
+  def preferred_privacy
+    can_create_private_models
+  end
 end

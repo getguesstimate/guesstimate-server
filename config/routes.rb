@@ -2,6 +2,9 @@ Rails.application.routes.draw do
   mount Knock::Engine => '/knock'
 
   resources :spaces, only: [:show, :create, :update, :destroy]
+  resources :spaces do
+    resources :forks, only: [:create]
+  end
 
   resources :users do
     resources :spaces, only: [:index]
