@@ -15,3 +15,5 @@
 
 # Ignore all ruby-* backups.
 .ruby-*.??*
+# Ignore debugger files.
+.byebug*
