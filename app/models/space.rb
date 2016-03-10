@@ -1,6 +1,6 @@
 class Space < ActiveRecord::Base
   include AlgoliaSearch
-  include FakeNames
+  include FakeNameDetector
 
   belongs_to :user
   validates :user_id, presence: true
@@ -33,7 +33,7 @@ class Space < ActiveRecord::Base
   end
 
   def metrics
-    if graph and graph['metrics'].kind_of?(Array)
+    if graph && graph['metrics'].kind_of?(Array)
       graph['metrics'].map{|m| m.slice('name')}
     else
       []
@@ -41,7 +41,7 @@ class Space < ActiveRecord::Base
   end
 
   def guesstimates_of_type(types)
-    return [] if graph.nil?
+    return [] if graph.nil? || graph['guesstimates'].nil?
 
     return graph['guesstimates'].select {|guesstimate| types.include? guesstimate["guesstimateType"]}
   end
@@ -51,10 +51,14 @@ class Space < ActiveRecord::Base
   end
 
   def is_searchable?
-    is_public? and
-    has_real_name? and
-    guesstimates_of_type(["UNIFORM", "NORMAL"]).length > 0 and
-    guesstimates_of_type(["FUNCTION"]).length > 0 and
+    is_public? &&
+    has_real_name? &&
+    has_interesting_metrics?
+  end
+
+  def has_interesting_metrics?
+    guesstimates_of_type(["UNIFORM", "NORMAL"]).any? &&
+    guesstimates_of_type(["FUNCTION"]).any? &&
     metrics.length > 3
   end
 
