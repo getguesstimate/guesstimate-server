@@ -24,8 +24,8 @@ RSpec.describe Space, type: :model do
         it { is_expected.not_to be_valid }
       end
 
-      context 'with user on small plan' do
-        let (:user) { FactoryGirl.create(:user, :small_plan) }
+      context 'with user on lite plan' do
+        let (:user) { FactoryGirl.create(:user, :lite_plan) }
         it { is_expected.to be_valid }
       end
     end

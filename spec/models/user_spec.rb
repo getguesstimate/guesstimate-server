@@ -9,14 +9,14 @@ RSpec.describe User, type: :model do
       it { is_expected.to eq(0) }
     end
 
-    context 'a user on a small plan' do
-      let (:user) { FactoryGirl.create(:user, :small_plan) }
-      it { is_expected.to eq(15) }
+    context 'a user on a lite plan' do
+      let (:user) { FactoryGirl.create(:user, :lite_plan) }
+      it { is_expected.to eq(20) }
     end
 
-    context 'a user on a large plan' do
-      let (:user) { FactoryGirl.create(:user, :large_plan) }
-      it { is_expected.to eq(60) }
+    context 'a user on a premium plan' do
+      let (:user) { FactoryGirl.create(:user, :premium_plan) }
+      it { is_expected.to eq(100) }
     end
   end
 end
