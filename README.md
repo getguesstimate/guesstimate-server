@@ -1,4 +1,6 @@
-== README
+# README
+
+[ ![Codeship Status for getguesstimate/guesstimate-server](https://codeship.com/projects/91bb1160-c8b7-0133-8173-1ac51750ca4c/status?branch=master)](https://codeship.com/projects/139418)
 
 This README would normally document whatever steps are necessary to get the
 application up and running.
