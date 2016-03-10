@@ -8,11 +8,11 @@ FactoryGirl.define do
 
   trait :small_plan do
     has_private_access true
-    plan :personal_small
+    plan :personal_lite
   end
 
   trait :large_plan do
     has_private_access true
-    plan :personal_large
+    plan :personal_premium
   end
 end
