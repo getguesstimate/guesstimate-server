@@ -105,6 +105,10 @@ class Space < ActiveRecord::Base
     space.user = user
     space.forked_from_id = self.id
     space.is_private = user.preferred_privacy
+    # Reset the graph
+    unless space.graph.nil? || !space.graph.has_key?("metrics")
+      space.graph["metrics"].each { |metric| metric["space"] = space.id }
+    end
     space.save
     return space
   end
