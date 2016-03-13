@@ -12,3 +12,8 @@
 /public/assets/*
 !/log/.keep
 /tmp
+
+# Ignore all ruby-* backups.
+.ruby-*.??*
+# Ignore debugger files.
+.byebug*
