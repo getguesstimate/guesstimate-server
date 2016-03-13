@@ -80,7 +80,7 @@ RSpec.describe Space, type: :model do
     }
 
     it 'should fork properly' do
-      s = space.fork!(forking_user)
+      s = space.fork(forking_user)
       expect(s.name).to eq name
       expect(s.user).to be forking_user
       expect(s.id).not_to eq base_id
@@ -94,7 +94,7 @@ RSpec.describe Space, type: :model do
       let(:graph) { nil }
 
       it 'should fork properly' do
-        s = space.fork!(forking_user)
+        s = space.fork(forking_user)
         expect(s.name).to eq name
         expect(s.user).to be forking_user
         expect(s.id).not_to eq base_id

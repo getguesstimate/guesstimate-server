@@ -6,7 +6,7 @@ class ForksController < ApplicationController
   # POST /spaces.json
   def create
     space = Space.find(params[:space_id])
-    space_fork = space.fork!(current_user)
+    space_fork = space.fork(current_user)
     if space_fork.save
       render json: space_fork
     else

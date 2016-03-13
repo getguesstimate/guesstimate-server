@@ -100,7 +100,7 @@ class Space < ActiveRecord::Base
     {'metrics' => Array.wrap(cleaned_metrics), 'guesstimates' => Array.wrap(cleaned_guesstimates)}
   end
 
-  def fork!(user)
+  def fork(user)
     space = Space.new(self.attributes.slice('name', 'description', 'graph'))
     space.user = user
     space.forked_from_id = self.id
