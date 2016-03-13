@@ -78,9 +78,7 @@ class Space < ActiveRecord::Base
   def ensure_metric_space_ids
     if graph
       graph['metrics'].each do |metric|
-        if !metric.has_key?('space')
-          metric['space'] = self.id
-        end
+        metric['space'] = self.id
       end
       self.save
     end
@@ -101,14 +99,11 @@ class Space < ActiveRecord::Base
   end
 
   def fork(user)
+    # We copy the graph directly here as it is handled natively in the after_create call.
     space = Space.new(self.attributes.slice('name', 'description', 'graph'))
     space.user = user
     space.forked_from_id = self.id
     space.is_private = user.preferred_privacy
-    # Reset the graph
-    unless space.graph.nil? || !space.graph.has_key?("metrics")
-      space.graph["metrics"].each { |metric| metric["space"] = space.id }
-    end
     space.save
     return space
   end

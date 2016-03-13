@@ -64,8 +64,8 @@ RSpec.describe Space, type: :model do
 
     let(:name) { 'Test' }
     let(:base_id) { 17 }
-    let(:base_user) { FactoryGirl.build(:user, username: "base_user") }
-    let(:forking_user) { FactoryGirl.build(:user, username: "forking_user") }
+    let(:base_user) { FactoryGirl.create(:user, username: "base_user") }
+    let(:forking_user) { FactoryGirl.create(:user, username: "forking_user") }
     let(:graph) {
       {"metrics"=>
         [{"id"=>"3", "space"=>17, "readableId"=>"AR", "name"=>"Point", "location"=>{"row"=>1, "column"=>0}},
@@ -83,10 +83,14 @@ RSpec.describe Space, type: :model do
       s = space.fork(forking_user)
       expect(s.name).to eq name
       expect(s.user).to be forking_user
-      expect(s.id).not_to eq base_id
+
+      s.save!
 
       forked_graph = graph
       forked_graph["metrics"].each { |metric| metric["space"] = s.id }
+
+      # After saving, we should have new id and graph.
+      expect(s.id).not_to eq base_id
       expect(s.graph).to eq forked_graph
     end
 
