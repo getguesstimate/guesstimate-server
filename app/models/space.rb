@@ -103,7 +103,7 @@ class Space < ActiveRecord::Base
     space = Space.new(self.attributes.slice('name', 'description', 'graph'))
     space.user = user
     space.copied_from_id = self.id
-    space.is_private = user.preferred_privacy
+    space.is_private = user.prefers_private?
     space.save
     return space
   end

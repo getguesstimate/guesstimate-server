@@ -60,17 +60,19 @@ RSpec.describe Space, type: :model do
   end
 
   describe '#copy' do
-    subject(:space) { FactoryGirl.create(:space, name: name, user: base_user, graph: graph) }
+    # We hardcode the id to make the graph valid.
+    subject(:space) { FactoryGirl.create(:space, id: base_id, name: name, user: base_user, graph: graph) }
 
     let(:name) { 'Test' }
+    let(:base_id) { 17 }
     let(:base_user) { FactoryGirl.create(:user, username: "base_user") }
     let(:copying_user) { FactoryGirl.create(:user, username: "copying_user") }
     let(:graph) {
       {"metrics"=>
-        [{"id"=>"3", "space"=>17, "readableId"=>"AR", "name"=>"Point", "location"=>{"row"=>1, "column"=>0}},
-         {"id"=>"4", "space"=>17, "readableId"=>"QK", "name"=>"Uniform", "location"=>{"row"=>1, "column"=>1}},
-         {"id"=>"5", "space"=>17, "readableId"=>"EU", "name"=>"Lognormal", "location"=>{"row"=>2, "column"=>0}},
-         {"id"=>"6", "space"=>17, "readableId"=>"DF", "name"=>"Normal", "location"=>{"row"=>3, "column"=>1}}],
+        [{"id"=>"3", "space"=>base_id, "readableId"=>"AR", "name"=>"Point", "location"=>{"row"=>1, "column"=>0}},
+         {"id"=>"4", "space"=>base_id, "readableId"=>"QK", "name"=>"Uniform", "location"=>{"row"=>1, "column"=>1}},
+         {"id"=>"5", "space"=>base_id, "readableId"=>"EU", "name"=>"Lognormal", "location"=>{"row"=>2, "column"=>0}},
+         {"id"=>"6", "space"=>base_id, "readableId"=>"DF", "name"=>"Normal", "location"=>{"row"=>3, "column"=>1}}],
        "guesstimates"=>
         [{"metric"=>"3", "input"=>"3", "guesstimateType"=>"POINT", "description"=>""},
          {"metric"=>"4", "input"=>"[1,2]", "guesstimateType"=>"UNIFORM", "description"=>""},

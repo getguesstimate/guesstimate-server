@@ -5,8 +5,8 @@ class CopiesController < ApplicationController
   # POST /spaces/:id/copies
   # POST /spaces.json
   def create
-    space = Space.find(params[:space_id])
-    space_copy = space.copy(current_user)
+    space_copy = Space.find(params[:space_id]).copy(current_user)
+
     if space_copy.save
       render json: SpaceRepresenter.new(space_copy).to_json
     else
