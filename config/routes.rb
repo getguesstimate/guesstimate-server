@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   resources :spaces, only: [:show, :create, :update, :destroy]
   resources :spaces do
-    resources :forks, only: [:create]
+    resources :copies, only: [:create]
   end
 
   resources :users do

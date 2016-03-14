@@ -29,8 +29,8 @@ ActiveRecord::Schema.define(version: 20160309205108) do
     t.json     "graph"
     t.integer  "user_id"
     t.boolean  "is_private"
+    t.integer  "copied_from_id"
     t.integer  "viewcount"
-    t.integer  "forked_from_id"
   end
 
   create_table "users", force: :cascade do |t|

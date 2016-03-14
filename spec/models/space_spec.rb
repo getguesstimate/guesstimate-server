@@ -59,13 +59,12 @@ RSpec.describe Space, type: :model do
     end
   end
 
-  describe '#fork' do
-    subject(:space) { FactoryGirl.build(:space, id: base_id, name: name, user: base_user, graph: graph) }
+  describe '#copy' do
+    subject(:space) { FactoryGirl.create(:space, name: name, user: base_user, graph: graph) }
 
     let(:name) { 'Test' }
-    let(:base_id) { 17 }
     let(:base_user) { FactoryGirl.create(:user, username: "base_user") }
-    let(:forking_user) { FactoryGirl.create(:user, username: "forking_user") }
+    let(:copying_user) { FactoryGirl.create(:user, username: "copying_user") }
     let(:graph) {
       {"metrics"=>
         [{"id"=>"3", "space"=>17, "readableId"=>"AR", "name"=>"Point", "location"=>{"row"=>1, "column"=>0}},
@@ -79,29 +78,35 @@ RSpec.describe Space, type: :model do
          {"metric"=>"6", "input"=>"[1,3]", "guesstimateType"=>"NORMAL", "description"=>""}]}
     }
 
-    it 'should fork properly' do
-      s = space.fork(forking_user)
+    it 'should copy properly' do
+      s = space.copy(copying_user)
+
+      expect(s.copied_from).to eq space
+
+      expect(space.copies.count).to eq 1
+      expect(space.copies.first).to eq s
+
       expect(s.name).to eq name
-      expect(s.user).to be forking_user
+      expect(s.user).to be copying_user
 
       s.save!
 
-      forked_graph = graph
-      forked_graph["metrics"].each { |metric| metric["space"] = s.id }
+      copied_graph = graph
+      copied_graph["metrics"].each { |metric| metric["space"] = s.id }
 
       # After saving, we should have new id and graph.
-      expect(s.id).not_to eq base_id
-      expect(s.graph).to eq forked_graph
+      expect(s.id).not_to eq space.id
+      expect(s.graph).to eq copied_graph
     end
 
     context 'with nil graph' do
       let(:graph) { nil }
 
-      it 'should fork properly' do
-        s = space.fork(forking_user)
+      it 'should copy properly' do
+        s = space.copy(copying_user)
         expect(s.name).to eq name
-        expect(s.user).to be forking_user
-        expect(s.id).not_to eq base_id
+        expect(s.user).to be copying_user
+        expect(s.id).not_to eq space.id
         expect(s.graph).to be nil
       end
     end

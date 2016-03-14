@@ -3,8 +3,8 @@ class Space < ActiveRecord::Base
   include FakeNameDetector
 
   belongs_to :user
-  belongs_to :forked_from, :class_name => 'Space', foreign_key: 'forked_from_id'
-  has_many :forks, :class_name => 'Space', foreign_key: 'forked_from_id'
+  belongs_to :copied_from, :class_name => 'Space', foreign_key: 'copied_from_id'
+  has_many :copies, :class_name => 'Space', foreign_key: 'copied_from_id'
 
   validates :user_id, presence: true
   validate :can_create_private_models
@@ -98,11 +98,11 @@ class Space < ActiveRecord::Base
     {'metrics' => Array.wrap(cleaned_metrics), 'guesstimates' => Array.wrap(cleaned_guesstimates)}
   end
 
-  def fork(user)
+  def copy(user)
     # We copy the graph directly here as it is handled natively in the after_create call.
     space = Space.new(self.attributes.slice('name', 'description', 'graph'))
     space.user = user
-    space.forked_from_id = self.id
+    space.copied_from_id = self.id
     space.is_private = user.preferred_privacy
     space.save
     return space
