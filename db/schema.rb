@@ -24,11 +24,12 @@ ActiveRecord::Schema.define(version: 20160309205108) do
   create_table "spaces", force: :cascade do |t|
     t.string   "name"
     t.text     "description"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
     t.json     "graph"
     t.integer  "user_id"
     t.boolean  "is_private"
+    t.integer  "copied_from_id"
     t.integer  "viewcount"
   end
 

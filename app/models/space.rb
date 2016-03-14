@@ -3,13 +3,14 @@ class Space < ActiveRecord::Base
   include FakeNameDetector
 
   belongs_to :user
+  belongs_to :copied_from, :class_name => 'Space', foreign_key: 'copied_from_id'
+  has_many :copies, :class_name => 'Space', foreign_key: 'copied_from_id'
 
   validates :user_id, presence: true
   validate :can_create_private_models
   validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
 
   after_initialize :init
-  after_create :ensure_metric_space_ids
 
   scope :is_private, -> { where(is_private: true) }
   scope :is_public, -> { where(is_private: false) }
@@ -73,17 +74,6 @@ class Space < ActiveRecord::Base
     user ? user.as_json : {}
   end
 
-  def ensure_metric_space_ids
-    if graph
-      graph['metrics'].each do |metric|
-        if !metric.has_key?('space')
-          metric['space'] = self.id
-        end
-      end
-      self.save
-    end
-  end
-
   def can_create_private_models
     if is_private && !user.try(:can_create_private_models)
       errors.add(:user_id, 'can not make more private models with current plan')
@@ -96,6 +86,15 @@ class Space < ActiveRecord::Base
 
   def cleaned_graph
     {'metrics' => Array.wrap(cleaned_metrics), 'guesstimates' => Array.wrap(cleaned_guesstimates)}
+  end
+
+  def copy(user)
+    space = Space.new(self.attributes.slice('name', 'description', 'graph'))
+    space.user = user
+    space.copied_from_id = self.id
+    space.is_private = user.prefers_private?
+    space.save
+    return space
   end
 
   private
