@@ -13,6 +13,9 @@ module FakeNameDetector
   def self.seems_fake(name)
     return true if name.blank?
 
+    # Clone the name so as not to even temporarily modify the underlying object.
+    name = name.clone
+
     name.downcase!
     name.strip!
 

@@ -33,4 +33,16 @@ describe 'fake names' do
       end
     end
   end
+
+  context 'with cased name' do
+    cased_name = "This NaMe HAS weird Cases."
+    let(:name) {cased_name.clone}
+
+    it 'should not modify klass.name' do
+      # Trigger the functionality.
+      klass.has_real_name?
+
+      expect(klass.name).to eq cased_name
+    end
+  end
 end
