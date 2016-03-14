@@ -61,55 +61,50 @@ RSpec.describe Space, type: :model do
 
   describe '#copy' do
     # We hardcode the id to make the graph valid.
-    subject(:space) { FactoryGirl.create(:space, id: base_id, name: name, user: base_user, graph: graph) }
+    subject(:space) { FactoryGirl.create(:space, user: base_user, graph: graph) }
 
-    let(:name) { 'Test' }
-    let(:base_id) { 17 }
-    let(:base_user) { FactoryGirl.create(:user, username: "base_user") }
-    let(:copying_user) { FactoryGirl.create(:user, username: "copying_user") }
+    let(:base_user) { FactoryGirl.create(:user, username: 'base_user') }
+    let(:copying_user) { FactoryGirl.create(:user, username: 'copying_user') }
     let(:graph) {
-      {"metrics"=>
-        [{"id"=>"3", "space"=>base_id, "readableId"=>"AR", "name"=>"Point", "location"=>{"row"=>1, "column"=>0}},
-         {"id"=>"4", "space"=>base_id, "readableId"=>"QK", "name"=>"Uniform", "location"=>{"row"=>1, "column"=>1}},
-         {"id"=>"5", "space"=>base_id, "readableId"=>"EU", "name"=>"Lognormal", "location"=>{"row"=>2, "column"=>0}},
-         {"id"=>"6", "space"=>base_id, "readableId"=>"DF", "name"=>"Normal", "location"=>{"row"=>3, "column"=>1}}],
-       "guesstimates"=>
-        [{"metric"=>"3", "input"=>"3", "guesstimateType"=>"POINT", "description"=>""},
-         {"metric"=>"4", "input"=>"[1,2]", "guesstimateType"=>"UNIFORM", "description"=>""},
-         {"metric"=>"5", "input"=>"=lognormal(AR,QK)", "guesstimateType"=>"FUNCTION", "description"=>""},
-         {"metric"=>"6", "input"=>"[1,3]", "guesstimateType"=>"NORMAL", "description"=>""}]}
+      {'metrics'=>
+        [{'id'=>'3', 'readableId'=>'AR', 'name'=>'Point', 'location'=>{'row'=>1, 'column'=>0}},
+         {'id'=>'4', 'readableId'=>'QK', 'name'=>'Uniform', 'location'=>{'row'=>1, 'column'=>1}},
+         {'id'=>'5', 'readableId'=>'EU', 'name'=>'Lognormal', 'location'=>{'row'=>2, 'column'=>0}},
+         {'id'=>'6', 'readableId'=>'DF', 'name'=>'Normal', 'location'=>{'row'=>3, 'column'=>1}}],
+       'guesstimates'=>
+        [{'metric'=>'3', 'input'=>'3', 'guesstimateType'=>'POINT', 'description'=>''},
+         {'metric'=>'4', 'input'=>'[1,2]', 'guesstimateType'=>'UNIFORM', 'description'=>''},
+         {'metric'=>'5', 'input'=>'=lognormal(AR,QK)', 'guesstimateType'=>'FUNCTION', 'description'=>''},
+         {'metric'=>'6', 'input'=>'[1,3]', 'guesstimateType'=>'NORMAL', 'description'=>''}]}
     }
 
     it 'should copy properly' do
-      s = space.copy(copying_user)
+      copy = space.copy(copying_user)
 
-      expect(s.copied_from).to eq space
+      expect(copy.copied_from).to eq space
 
       expect(space.copies.count).to eq 1
-      expect(space.copies.first).to eq s
+      expect(space.copies.first).to eq copy
 
-      expect(s.name).to eq name
-      expect(s.user).to be copying_user
+      expect(copy.name).to eq space.name
+      expect(copy.user).to be copying_user
 
-      s.save!
-
-      copied_graph = graph
-      copied_graph["metrics"].each { |metric| metric["space"] = s.id }
+      copy.save!
 
       # After saving, we should have new id and graph.
-      expect(s.id).not_to eq space.id
-      expect(s.graph).to eq copied_graph
+      expect(copy.id).not_to eq space.id
+      expect(copy.graph).to eq graph
     end
 
     context 'with nil graph' do
       let(:graph) { nil }
 
       it 'should copy properly' do
-        s = space.copy(copying_user)
-        expect(s.name).to eq name
-        expect(s.user).to be copying_user
-        expect(s.id).not_to eq space.id
-        expect(s.graph).to be nil
+        copy = space.copy(copying_user)
+        expect(copy.name).to eq space.name
+        expect(copy.user).to be copying_user
+        expect(copy.id).not_to eq space.id
+        expect(copy.graph).to be nil
       end
     end
   end

@@ -11,7 +11,6 @@ class Space < ActiveRecord::Base
   validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
 
   after_initialize :init
-  after_create :ensure_metric_space_ids
 
   scope :is_private, -> { where(is_private: true) }
   scope :is_public, -> { where(is_private: false) }
@@ -75,15 +74,6 @@ class Space < ActiveRecord::Base
     user ? user.as_json : {}
   end
 
-  def ensure_metric_space_ids
-    if graph
-      graph['metrics'].each do |metric|
-        metric['space'] = self.id
-      end
-      self.save
-    end
-  end
-
   def can_create_private_models
     if is_private && !user.try(:can_create_private_models)
       errors.add(:user_id, 'can not make more private models with current plan')
@@ -99,7 +89,6 @@ class Space < ActiveRecord::Base
   end
 
   def copy(user)
-    # We copy the graph directly here as it is handled natively in the after_create call.
     space = Space.new(self.attributes.slice('name', 'description', 'graph'))
     space.user = user
     space.copied_from_id = self.id
