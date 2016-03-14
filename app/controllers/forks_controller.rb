@@ -8,7 +8,7 @@ class ForksController < ApplicationController
     space = Space.find(params[:space_id])
     space_fork = space.fork(current_user)
     if space_fork.save
-      render json: space_fork
+      render json: SpaceRepresenter.new(space_fork).to_json
     else
       render json: space_fork.errors, status: :unprocessable_entity
     end
