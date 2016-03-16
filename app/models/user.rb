@@ -35,4 +35,8 @@ class User < ActiveRecord::Base
   def prefers_private?
     can_create_private_models
   end
+
+  def ensure_account
+    account || create_account
+  end
 end
