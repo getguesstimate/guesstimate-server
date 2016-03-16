@@ -33,6 +33,11 @@ class SpacesController < ApplicationController
   def create
     @space = Space.new(space_params)
     @space.user = current_user
+
+    if !space_params.has_key? :is_private
+      @space.is_private = @space.user.prefers_private?
+    end
+
     if @space.save
       render json: @space
     else
