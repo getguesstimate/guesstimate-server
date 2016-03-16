@@ -61,8 +61,6 @@ RSpec.describe Space, type: :model do
 
   describe '#copy' do
     # We hardcode the id to make the graph valid.
-    subject(:space) { FactoryGirl.create(:space, user: base_user, graph: graph) }
-
     let(:base_user) { FactoryGirl.create(:user, username: 'base_user') }
     let(:copying_user) { FactoryGirl.create(:user, username: 'copying_user') }
     let(:graph) {
@@ -77,10 +75,11 @@ RSpec.describe Space, type: :model do
          {'metric'=>'5', 'input'=>'=lognormal(AR,QK)', 'guesstimateType'=>'FUNCTION', 'description'=>''},
          {'metric'=>'6', 'input'=>'[1,3]', 'guesstimateType'=>'NORMAL', 'description'=>''}]}
     }
+    let(:space) { FactoryGirl.create(:space, user: base_user, graph: graph) }
+
+    subject(:copy) {space.copy(copying_user)}
 
     it 'should copy properly' do
-      copy = space.copy(copying_user)
-
       expect(copy.copied_from).to eq space
 
       expect(space.copies.count).to eq 1
@@ -100,7 +99,6 @@ RSpec.describe Space, type: :model do
       let(:graph) { nil }
 
       it 'should copy properly' do
-        copy = space.copy(copying_user)
         expect(copy.name).to eq space.name
         expect(copy.user).to be copying_user
         expect(copy.id).not_to eq space.id
