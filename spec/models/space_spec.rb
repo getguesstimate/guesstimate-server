@@ -3,11 +3,11 @@ require 'spec_helper'
 
 RSpec.describe Space, type: :model do
   describe '#create' do
-    let (:user) { FactoryGirl.create(:user) }
+    let (:creator) { FactoryGirl.create(:user) }
     let (:viewcount) { nil } # default context unviewed.
     let (:is_private) { false } # default context public.
 
-    subject (:space) { FactoryGirl.build(:space, user: user, is_private: is_private, viewcount: viewcount) }
+    subject (:space) { FactoryGirl.build(:space, creator: creator, is_private: is_private, viewcount: viewcount) }
 
     # A public, unviewed space should be valid.
     it { is_expected.to be_valid } 
@@ -20,12 +20,12 @@ RSpec.describe Space, type: :model do
     context 'private space' do
       let(:is_private) { true }
 
-      context 'with user on free plan' do
+      context 'with creator on free plan' do
         it { is_expected.not_to be_valid }
       end
 
-      context 'with user on lite plan' do
-        let (:user) { FactoryGirl.create(:user, :lite_plan) }
+      context 'with creator on lite plan' do
+        let (:creator) { FactoryGirl.create(:user, :lite_plan) }
         it { is_expected.to be_valid }
       end
     end
@@ -61,7 +61,7 @@ RSpec.describe Space, type: :model do
 
   describe '#copy' do
     # We hardcode the id to make the graph valid.
-    let(:base_user) { FactoryGirl.create(:user, username: 'base_user') }
+    let(:creator) { FactoryGirl.create(:user, username: 'creator') }
     let(:copying_user) { FactoryGirl.create(:user, username: 'copying_user') }
     let(:graph) {
       {'metrics'=>
@@ -75,7 +75,7 @@ RSpec.describe Space, type: :model do
          {'metric'=>'5', 'input'=>'=lognormal(AR,QK)', 'guesstimateType'=>'FUNCTION', 'description'=>''},
          {'metric'=>'6', 'input'=>'[1,3]', 'guesstimateType'=>'NORMAL', 'description'=>''}]}
     }
-    let(:space) { FactoryGirl.create(:space, user: base_user, graph: graph) }
+    let(:space) { FactoryGirl.create(:space, creator: creator, graph: graph) }
 
     subject(:copy) {space.copy(copying_user)}
 
@@ -86,7 +86,7 @@ RSpec.describe Space, type: :model do
       expect(space.copies.first).to eq copy
 
       expect(copy.name).to eq space.name
-      expect(copy.user).to be copying_user
+      expect(copy.creator).to be copying_user
 
       copy.save!
 
@@ -100,7 +100,7 @@ RSpec.describe Space, type: :model do
 
       it 'should copy properly' do
         expect(copy.name).to eq space.name
-        expect(copy.user).to be copying_user
+        expect(copy.creator).to be copying_user
         expect(copy.id).not_to eq space.id
         expect(copy.graph).to be nil
       end
