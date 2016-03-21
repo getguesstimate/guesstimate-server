@@ -95,6 +95,8 @@ RSpec.describe Space, type: :model do
 
       expect(copy.name).to eq space.name
       expect(copy.creator).to be copying_user
+      expect(copy.owners.count).to eq 1
+      expect(copy.owners.first).to eq copying_user
 
       copy.save!
 

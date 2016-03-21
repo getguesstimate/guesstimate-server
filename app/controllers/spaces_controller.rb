@@ -8,7 +8,7 @@ class SpacesController < ApplicationController
   def index
     if params['user_id']
       @user = User.find(params['user_id'])
-      @spaces = @user.spaces.visible_by(current_user)
+      @spaces = @user.spaces.visible_by(current_user) # TODO(matthew): Fix
     else
       @spaces = Space.visible_by(current_user).first(10)
     end
@@ -32,7 +32,7 @@ class SpacesController < ApplicationController
   # POST /spaces.json
   def create
     @space = Space.new(space_params)
-    @space.user = current_user
+    @space.creator = current_user
 
     if !space_params.has_key? :is_private
       @space.is_private = @space.user.prefers_private?
@@ -65,7 +65,7 @@ class SpacesController < ApplicationController
   private
 
   def belongs_to_user
-    !current_user.nil? && (@space.user_id == current_user.id)
+    !current_user.nil? && (@space.creator_id == current_user.id)
   end
 
   def check_authorization

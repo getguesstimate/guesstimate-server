@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  has_many :permissions, class_name: "UserSpacePermission"
+  has_many :permissions, class_name: "UserSpacePermission", dependent: :destroy
   has_many :spaces, through: :permissions
   has_many :ownerships, -> { own }, class_name: "UserSpacePermission"
   has_many :owned_spaces, through: :ownerships, source: "space"
