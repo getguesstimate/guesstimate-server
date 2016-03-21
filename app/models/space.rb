@@ -19,9 +19,9 @@ class Space < ActiveRecord::Base
   validates :creator_id, presence: true
   validate :can_create_private_models
   validates :viewcount, numericality: { allow_nil: true, greater_than_or_equal_to: 0 }
-  validates :owners, length: { minimum: 1 }
 
   after_initialize :init
+  after_create :make_creator_owner
 
   scope :is_private, -> { where(is_private: true) }
   scope :is_public, -> { where(is_private: false) }
@@ -122,5 +122,9 @@ class Space < ActiveRecord::Base
 
   def cleaned_guesstimates
     clean_items('guesstimates', 'metric')
+  end
+
+  def make_creator_owner
+    ownerships.create!(user: creator)
   end
 end
