@@ -29,6 +29,14 @@ RSpec.describe Space, type: :model do
         it { is_expected.to be_valid }
       end
     end
+
+    context 'creator should be owner' do
+      it 'should make the creator an owner upon save' do
+        space.save
+        expect(space.owners.count).to eq 1
+        expect(space.owners.first).to eq creator
+      end
+    end
   end
 
   describe '#searchable' do
