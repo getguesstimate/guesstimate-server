@@ -8,11 +8,10 @@ class SpacesController < ApplicationController
   def index
     if params['user_id']
       @user = User.find(params['user_id'])
-      @spaces = @user.spaces.visible_by(current_user) # TODO(matthew): Fix
+      @spaces = @user.spaces.visible_by(current_user)
     else
       @spaces = Space.visible_by(current_user).first(10)
     end
-    #render json: @spaces.as_json(only: [:id, :name, :description, :updated_at, :user_id])
     render json: SpacesRepresenter.new(@spaces).to_json
   end
 
@@ -35,11 +34,11 @@ class SpacesController < ApplicationController
     @space.creator = current_user
 
     if !space_params.has_key? :is_private
-      @space.is_private = @space.user.prefers_private?
+      @space.is_private = @space.creator.prefers_private?
     end
 
     if @space.save
-      render json: @space
+      render json: SpaceRepresenter.new(@space).to_json
     else
       render json: @space.errors, status: :unprocessable_entity
     end
@@ -49,7 +48,7 @@ class SpacesController < ApplicationController
   # PATCH/PUT /spaces/1.json
   def update
     if @space.update(space_params)
-      render json: @space, status: :ok
+      render json: SpaceRepresenter.new(@space).to_json, status: :ok
     else
       render json: @space.errors, status: :unprocessable_entity
     end
@@ -92,6 +91,13 @@ class SpacesController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def space_params
-    params.require(:space).permit(:name, :description, :user_id, :is_private, graph: graph_structure)
+    filtered_params = params.require(:space).permit(:name, :description, :user_id, :is_private, graph: graph_structure)
+
+    if filtered_params.has_key?(:space) && filtered_params[:space].has_key?(:user_id)
+      filtered_params[:space][:creator_id] = filtered_params[:space][:user_id]
+      filtered_params[:space].delete(:user_id)
+    end
+
+    filtered_params
   end
 end
