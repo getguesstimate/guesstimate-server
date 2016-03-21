@@ -1,10 +1,8 @@
 class User < ActiveRecord::Base
   has_many :permissions, class_name: "UserSpacePermission"
   has_many :spaces, through: :permissions
-
-  def owned_spaces
-    spaces.merge(UserSpacePermission.own)
-  end
+  has_many :ownerships, -> { own }, class_name: "UserSpacePermission"
+  has_many :owned_spaces, through: :ownerships, source: "space"
 
   has_many :created_spaces, class_name: "Space", foreign_key: "creator_id"
 

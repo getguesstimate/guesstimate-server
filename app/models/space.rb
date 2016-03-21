@@ -4,9 +4,11 @@ class Space < ActiveRecord::Base
 
   has_many :permissions, class_name: "UserSpacePermission"
   has_many :users, through: :permissions
+  has_many :ownerships, -> { own }, class_name: "UserSpacePermission"
+  has_many :owners, through: :ownerships, source: :user
 
-  def owners
-    users.merge(UserSpacePermission.own)
+  def owned_by?(user)
+    owners.exists? user
   end
 
   belongs_to :creator, class_name: "User"
@@ -16,13 +18,17 @@ class Space < ActiveRecord::Base
 
   validates :creator_id, presence: true
   validate :can_create_private_models
-  validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
+  validates :viewcount, numericality: { allow_nil: true, greater_than_or_equal_to: 0 }
+  validates :owners, length: { minimum: 1 }
 
   after_initialize :init
 
   scope :is_private, -> { where(is_private: true) }
   scope :is_public, -> { where(is_private: false) }
-  scope :visible_by, -> (user) { where 'is_private IS false OR creator_id = ? OR users CONTAINS ?', user.try(:id), user.try(:id) }
+
+  def self.visible_by(user)
+    (Space.is_public.all + user.spaces.all).uniq
+  end
 
   def init
     self.is_private ||= false
