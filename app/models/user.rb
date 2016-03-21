@@ -1,6 +1,15 @@
 class User < ActiveRecord::Base
-  has_many :spaces
+  has_many :permissions, class_name: "UserSpacePermission"
+  has_many :spaces, through: :permissions
+
+  def owned_spaces
+    spaces.merge(UserSpacePermission.own)
+  end
+
+  has_many :created_spaces, class_name: "Space", foreign_key: "creator_id"
+
   has_one :account, dependent: :destroy
+
   after_create :create_account
 
   validates_uniqueness_of :username, allow_blank: true

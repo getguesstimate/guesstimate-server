@@ -2,11 +2,19 @@ class Space < ActiveRecord::Base
   include AlgoliaSearch
   include FakeNameDetector
 
-  belongs_to :user
+  has_many :permissions, class_name: "UserSpacePermission"
+  has_many :users, through: :permissions
+
+  def owners
+    users.merge(UserSpacePermission.own)
+  end
+
+  belongs_to :creator, class_name: "User"
+
   belongs_to :copied_from, :class_name => 'Space', foreign_key: 'copied_from_id'
   has_many :copies, :class_name => 'Space', foreign_key: 'copied_from_id'
 
-  validates :user_id, presence: true
+  validates :creator_id, presence: true
   validate :can_create_private_models
   validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
 
@@ -14,14 +22,14 @@ class Space < ActiveRecord::Base
 
   scope :is_private, -> { where(is_private: true) }
   scope :is_public, -> { where(is_private: false) }
-  scope :visible_by, -> (user) { where 'is_private IS false OR user_id = ?', user.try(:id) }
+  scope :visible_by, -> (user) { where 'is_private IS false OR creator_id = ? OR users CONTAINS ?', user.try(:id), user.try(:id) }
 
   def init
     self.is_private ||= false
   end
 
   algoliasearch if: :is_searchable?, per_environment: true, disable_indexing: Rails.env.test? do
-    attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private, :viewcount
+    attribute :id, :name, :description, :creator_id, :created_at, :updated_at, :is_private, :viewcount
     add_attribute :user_info
 
     # We want to rank equally relevant results by viewcount.
@@ -71,12 +79,12 @@ class Space < ActiveRecord::Base
   end
 
   def user_info
-    user ? user.as_json : {}
+    creator ? creator.as_json : {}
   end
 
   def can_create_private_models
-    if is_private && !user.try(:can_create_private_models)
-      errors.add(:user_id, 'can not make more private models with current plan')
+    if is_private && !creator.try(:can_create_private_models)
+      errors.add(:creator_id, 'can not make more private models with current plan')
     end
   end
 
@@ -90,7 +98,7 @@ class Space < ActiveRecord::Base
 
   def copy(user)
     space = Space.new(self.attributes.slice('name', 'description', 'graph'))
-    space.user = user
+    space.creator = user
     space.copied_from_id = self.id
     space.is_private = user.prefers_private?
     space.save
