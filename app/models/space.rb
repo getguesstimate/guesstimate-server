@@ -43,8 +43,8 @@ class Space < ActiveRecord::Base
     end
   end
 
-  def is_exposed_to?(organization)
-    self.organization.id == organization.id && organization_permission.expose?
+  def exposed_to?(organization)
+    self.organization == organization && organization_permission.exposed?
   end
 
   def metrics
