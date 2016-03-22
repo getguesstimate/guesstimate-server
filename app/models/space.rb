@@ -43,10 +43,6 @@ class Space < ActiveRecord::Base
     end
   end
 
-  def exposed_to?(organization)
-    self.organization == organization && organization_permission.exposed?
-  end
-
   def metrics
     if graph && graph['metrics'].kind_of?(Array)
       graph['metrics'].map{|m| m.slice('name')}

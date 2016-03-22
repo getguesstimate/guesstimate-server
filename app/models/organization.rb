@@ -6,6 +6,4 @@ class Organization < ActiveRecord::Base
 
   has_many :permissions, class_name: 'OrganizationSpacePermission'
   has_many :spaces, through: :permissions
-  has_many :exposurships, -> { exposed }, class_name: 'OrganizationSpacePermission'
-  has_many :exposed_spaces, through: :exposurships, class_name: 'Space', source: :space
 end

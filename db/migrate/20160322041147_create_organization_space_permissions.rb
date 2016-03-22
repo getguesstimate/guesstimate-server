@@ -3,7 +3,6 @@ class CreateOrganizationSpacePermissions < ActiveRecord::Migration
     create_table :organization_space_permissions do |t|
       t.integer :space_id
       t.integer :organization_id
-      t.integer :access_type
 
       t.timestamps null: false
     end
