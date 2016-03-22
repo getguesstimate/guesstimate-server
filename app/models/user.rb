@@ -1,12 +1,20 @@
 class User < ActiveRecord::Base
   has_many :spaces
   has_one :account, dependent: :destroy
+
+  has_one :membership, class_name: 'UserOrganizationMembership'
+  has_one :organization, through: :membership
+
   after_create :create_account
 
   validates_uniqueness_of :username, allow_blank: true
   validates :auth0_id, presence: true, uniqueness: true
 
   enum plan: Plan.as_enum
+
+  def is_admin_of?(organization)
+    self.organization.id == organization.id && membership.admin?
+  end
 
   def plan_details
     Plan.find(plan)

@@ -6,6 +6,9 @@ class Space < ActiveRecord::Base
   belongs_to :copied_from, :class_name => 'Space', foreign_key: 'copied_from_id'
   has_many :copies, :class_name => 'Space', foreign_key: 'copied_from_id'
 
+  has_one :organization_permission, class_name: 'OrganizationSpacePermission'
+  has_one :organization, through: :organization_permission
+
   validates :user_id, presence: true
   validate :can_create_private_models
   validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
@@ -38,6 +41,10 @@ class Space < ActiveRecord::Base
     attribute :metric_count do
       metrics.length.to_i
     end
+  end
+
+  def is_exposed_to?(organization)
+    self.organization.id == organization.id && organization_permission.expose?
   end
 
   def metrics
