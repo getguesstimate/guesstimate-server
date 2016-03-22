@@ -50,6 +50,5 @@ class User < ActiveRecord::Base
   def spaces_visible_by(user)
     all_spaces = (spaces.all + created_spaces.all).uniq # A hack until all spaces have ownership permisisons.
     all_spaces.keep_if { |space| space.is_public? || space.owned_by?(user)}
-    all_spaces
   end
 end
