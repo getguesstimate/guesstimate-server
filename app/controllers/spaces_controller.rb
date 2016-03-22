@@ -64,7 +64,7 @@ class SpacesController < ApplicationController
   private
 
   def belongs_to_user
-    !current_user.nil? && (@space.creator_id == current_user.id)
+    !current_user.nil? && (@space.creator_id == current_user.id || @space.owned_by?(current_user))
   end
 
   def check_authorization
