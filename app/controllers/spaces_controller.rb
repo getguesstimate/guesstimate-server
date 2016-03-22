@@ -8,7 +8,11 @@ class SpacesController < ApplicationController
   def index
     if params['user_id']
       @user = User.find(params['user_id'])
-      @spaces = @user.spaces.visible_by(current_user)
+      if @user.id == current_user.id
+        @spaces = @user.spaces
+      else
+        @spaces = @user.spaces.public
+      end
     else
       @spaces = Space.visible_by(current_user).first(10)
     end
@@ -39,7 +43,7 @@ class SpacesController < ApplicationController
     end
 
     if @space.save
-      render json: @space
+      render json: SpaceRepresenter.new(@space).to_json
     else
       render json: @space.errors, status: :unprocessable_entity
     end
@@ -49,7 +53,7 @@ class SpacesController < ApplicationController
   # PATCH/PUT /spaces/1.json
   def update
     if @space.update(space_params)
-      render json: @space, status: :ok
+      render json: SpaceRepresenter.new(@space).to_json, status: :ok
     else
       render json: @space.errors, status: :unprocessable_entity
     end
@@ -92,6 +96,6 @@ class SpacesController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def space_params
-    params.require(:space).permit(:name, :description, :user_id, :is_private, graph: graph_structure)
+    params.require(:space).permit(:name, :description, :is_private, graph: graph_structure)
   end
 end
