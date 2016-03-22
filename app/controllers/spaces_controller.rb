@@ -8,7 +8,7 @@ class SpacesController < ApplicationController
   def index
     if params['user_id']
       @user = User.find(params['user_id'])
-      @spaces = @user.spaces.visible_by(current_user)
+      @spaces = @user.spaces_visible_by(current_user) 
     else
       @spaces = Space.visible_by(current_user).first(10)
     end
