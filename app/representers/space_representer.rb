@@ -18,4 +18,6 @@ class SpaceRepresenter < Roar::Decorator
     property :name
     property :picture
   end
+
+  property :organization_permission, embedded: true, class: OrganizationSpacePermission, decorator: SpaceOrganizationPermissionRepresenter
 end
