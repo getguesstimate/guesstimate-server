@@ -12,7 +12,7 @@ class User < ActiveRecord::Base
 
   enum plan: Plan.as_enum
 
-  def is_admin_of?(organization)
+  def admin_of?(organization)
     self.organization.id == organization.id && membership.admin?
   end
 
