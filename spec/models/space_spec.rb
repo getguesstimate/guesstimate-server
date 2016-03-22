@@ -57,6 +57,24 @@ RSpec.describe Space, type: :model do
         expect(space.is_searchable?).to be true
       end
     end
+
+    context 'searchable graph lognormal' do
+      let(:graph) {
+        {'metrics'=>
+          [{'name'=>'Point Test'},
+           {'name'=>'Uniform Test'},
+           {'name'=>'LogNormal Test'},
+           {'name'=>'Function Test'}],
+         'guesstimates'=>
+          [{'guesstimateType'=>'POINT'},
+           {'guesstimateType'=>'UNIFORM'},
+           {'guesstimateType'=>'LOGNORMAL'},
+           {'guesstimateType'=>'FUNCTION'}]}
+      }
+      it 'should be searchable with a valid graph' do
+        expect(space.is_searchable?).to be true
+      end
+    end
   end
 
   describe '#copy' do

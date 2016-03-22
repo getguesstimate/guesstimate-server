@@ -48,10 +48,14 @@ class Space < ActiveRecord::Base
     end
   end
 
+  def guesstimates_not_of_type(types)
+    return [] if graph.nil? || graph['guesstimates'].nil?
+    graph['guesstimates'].select {|guesstimate| types.exclude? guesstimate['guesstimateType']}
+  end
+
   def guesstimates_of_type(types)
     return [] if graph.nil? || graph['guesstimates'].nil?
-
-    return graph['guesstimates'].select {|guesstimate| types.include? guesstimate['guesstimateType']}
+    graph['guesstimates'].select {|guesstimate| types.include? guesstimate['guesstimateType']}
   end
 
   def is_public?
@@ -65,7 +69,7 @@ class Space < ActiveRecord::Base
   end
 
   def has_interesting_metrics?
-    guesstimates_of_type(['UNIFORM', 'NORMAL']).any? &&
+    guesstimates_not_of_type(['POINT', 'FUNCTION', 'NONE']).any? &&
     guesstimates_of_type(['FUNCTION']).any? &&
     metrics.length > 3
   end
