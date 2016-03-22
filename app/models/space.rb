@@ -7,10 +7,6 @@ class Space < ActiveRecord::Base
   has_many :ownerships, -> { own }, class_name: "UserSpacePermission"
   has_many :owners, through: :ownerships, source: :user
 
-  def owned_by?(user)
-    owners.exists? user
-  end
-
   belongs_to :creator, class_name: "User"
 
   belongs_to :copied_from, :class_name => 'Space', foreign_key: 'copied_from_id'
@@ -52,6 +48,10 @@ class Space < ActiveRecord::Base
     attribute :metric_count do
       metrics.length.to_i
     end
+  end
+
+  def owned_by?(user)
+    owners.exists? user
   end
 
   def metrics

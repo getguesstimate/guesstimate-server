@@ -8,7 +8,7 @@ class SpacesController < ApplicationController
   def index
     if params['user_id']
       @user = User.find(params['user_id'])
-      @spaces = @user.spaces_visible_by(current_user) 
+      @spaces = @user.spaces_visible_by(current_user)
     else
       @spaces = Space.visible_by(current_user).first(10)
     end
@@ -91,13 +91,6 @@ class SpacesController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def space_params
-    filtered_params = params.require(:space).permit(:name, :description, :user_id, :is_private, graph: graph_structure)
-
-    if filtered_params.has_key?(:space) && filtered_params[:space].has_key?(:user_id)
-      filtered_params[:space][:creator_id] = filtered_params[:space][:user_id]
-      filtered_params[:space].delete(:user_id)
-    end
-
-    filtered_params
+    params.require(:space).permit(:name, :description, :is_private, graph: graph_structure)
   end
 end
