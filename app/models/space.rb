@@ -6,6 +6,8 @@ class Space < ActiveRecord::Base
   belongs_to :copied_from, :class_name => 'Space', foreign_key: 'copied_from_id'
   has_many :copies, :class_name => 'Space', foreign_key: 'copied_from_id'
 
+  belongs_to :organization
+
   validates :user_id, presence: true
   validate :can_create_private_models
   validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
@@ -14,7 +16,12 @@ class Space < ActiveRecord::Base
 
   scope :is_private, -> { where(is_private: true) }
   scope :is_public, -> { where(is_private: false) }
-  scope :visible_by, -> (user) { where 'is_private IS false OR user_id = ?', user.try(:id) }
+  scope :public_or_belonging_to, -> (user) { where 'is_private IS false OR user_id = ?', user.try(:id) }
+
+  def self.visible_by(user)
+    return public_or_belonging_to(user) if user.organization.nil?
+    (public_or_belonging_to(user).all + user.organization.spaces.all).uniq
+  end
 
   def init
     self.is_private ||= false

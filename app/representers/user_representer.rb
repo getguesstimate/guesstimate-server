@@ -23,4 +23,6 @@ class UserRepresenter < Roar::Decorator
     decorator: AccountRepresenter,
     class: Account,
     if: ->(user_options:, **) { user_options[:can_access_account] }
+
+  collection :memberships, embedded: true, decorator: UserOrganizationMembershipRepresenter, class: UserOrganizationMembership
 end

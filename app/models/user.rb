@@ -1,6 +1,10 @@
 class User < ActiveRecord::Base
   has_many :spaces
   has_one :account, dependent: :destroy
+
+  has_many :memberships, class_name: 'UserOrganizationMembership'
+  has_many :organizations, through: :memberships
+
   after_create :create_account
 
   validates_uniqueness_of :username, allow_blank: true
@@ -33,6 +37,7 @@ class User < ActiveRecord::Base
   end
 
   def prefers_private?
+    # TODO(matthew): What happens when a free user joins a paid organization?
     can_create_private_models
   end
 
