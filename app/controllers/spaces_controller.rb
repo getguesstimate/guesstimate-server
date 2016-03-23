@@ -45,18 +45,21 @@ class SpacesController < ApplicationController
     @space.user = current_user
 
     if !space_params.has_key? :is_private
-      @space.is_private = organization.prefers_private? || @space.user.prefers_private?
+      @space.is_private = @space.user.prefers_private?
+      if organization
+        @space.is_private = @space.is_private || organization.prefers_private?
+      end
     end
 
     if @space.save
       if organization
         @permission = organization.permissions.new space: @space
-        if @permission.save
-          render json: SpaceRepresenter.new(@space).to_json
-        else
+        unless @permission.save
           render json: @permission.errors, status: :unprocessable_entity
+          return
         end
       end
+      render json: SpaceRepresenter.new(@space).to_json
     else
       render json: @space.errors, status: :unprocessable_entity
     end
