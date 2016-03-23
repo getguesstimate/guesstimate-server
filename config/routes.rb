@@ -15,6 +15,5 @@ Rails.application.routes.draw do
   resources :organization, only: [:show]
   resources :organizations do
     resources :spaces, only: [:index]
-    resources :users, alias: :members, only: [:index]
   end
 end
