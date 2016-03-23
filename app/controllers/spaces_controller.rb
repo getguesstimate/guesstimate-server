@@ -35,15 +35,28 @@ class SpacesController < ApplicationController
   # POST /spaces
   # POST /spaces.json
   def create
-    @space = Space.new(space_params)
+    organization = nil
+    params_copy = space_params
+    if params_copy.has_key? :organization_id
+      organization = Organization.find(params_copy[:organization_id])
+      params_copy.delete :organization_id
+    end
+    @space = Space.new(params_copy)
     @space.user = current_user
 
     if !space_params.has_key? :is_private
-      @space.is_private = @space.user.prefers_private?
+      @space.is_private = organization.prefers_private? || @space.user.prefers_private?
     end
 
     if @space.save
-      render json: SpaceRepresenter.new(@space).to_json
+      if organization
+        @permission = organization.permissions.new space: @space
+        if @permission.save
+          render json: SpaceRepresenter.new(@space).to_json
+        else
+          render json: @permission.errors, status: :unprocessable_entity
+        end
+      end
     else
       render json: @space.errors, status: :unprocessable_entity
     end
@@ -96,6 +109,6 @@ class SpacesController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def space_params
-    params.require(:space).permit(:name, :description, :is_private, graph: graph_structure)
+    params.require(:space).permit(:name, :description, :is_private, :organization_id, graph: graph_structure)
   end
 end

@@ -2,8 +2,8 @@ class User < ActiveRecord::Base
   has_many :spaces
   has_one :account, dependent: :destroy
 
-  has_one :membership, class_name: 'UserOrganizationMembership'
-  has_one :organization, through: :membership
+  has_many :memberships, class_name: 'UserOrganizationMembership'
+  has_many :organizations, through: :membership
 
   after_create :create_account
 
@@ -11,10 +11,6 @@ class User < ActiveRecord::Base
   validates :auth0_id, presence: true, uniqueness: true
 
   enum plan: Plan.as_enum
-
-  def admin_of?(organization)
-    self.organization.id == organization.id && membership.admin?
-  end
 
   def plan_details
     Plan.find(plan)
@@ -41,6 +37,7 @@ class User < ActiveRecord::Base
   end
 
   def prefers_private?
+    # TODO(matthew): What happens when a free user joins a paid organization?
     can_create_private_models
   end
 

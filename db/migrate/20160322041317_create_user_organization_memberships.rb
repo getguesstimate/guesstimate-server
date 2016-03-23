@@ -3,7 +3,6 @@ class CreateUserOrganizationMemberships < ActiveRecord::Migration
     create_table :user_organization_memberships do |t|
       t.integer :user_id
       t.integer :organization_id
-      t.integer :member_type
 
       t.timestamps null: false
     end

@@ -52,7 +52,6 @@ ActiveRecord::Schema.define(version: 20160322041317) do
   create_table "user_organization_memberships", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "organization_id"
-    t.integer  "member_type"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
   end
