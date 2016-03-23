@@ -4,7 +4,7 @@ class SpacesRepresenter < Roar::Decorator
   include Roar::JSON
   include Roar::JSON::HAL
 
-  collection :to_a, as: "items", class: Space do
+  collection :to_a, as: 'items', class: Space do
     property :id
     property :name
     property :description

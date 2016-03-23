@@ -6,7 +6,4 @@ class OrganizationRepresenter < Roar::Decorator
 
   property :id
   property :name
-
-  collection :memberships, decorator: OrganizationUserMembershipRepresenter, class: UserOrganizationMembership
-  collection :permissions, decorator: OrganizationSpacePermissionRepresenter, class: OrganizationSpacePermission
 end

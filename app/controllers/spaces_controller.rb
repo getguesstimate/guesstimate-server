@@ -13,6 +13,14 @@ class SpacesController < ApplicationController
       else
         @spaces = @user.spaces.public
       end
+    elsif params['organization_id']
+      @organization = Organization.find(params[:organization_id])
+      if @organization.members.exists? current_user
+        @spaces = @organization.spaces
+      else
+        head :unauthorized
+        return
+      end
     else
       @spaces = Space.visible_by(current_user).first(10)
     end
@@ -35,30 +43,17 @@ class SpacesController < ApplicationController
   # POST /spaces
   # POST /spaces.json
   def create
-    organization = nil
-    params_copy = space_params
-    if params_copy.has_key? :organization_id
-      organization = Organization.find(params_copy[:organization_id])
-      params_copy.delete :organization_id
-    end
-    @space = Space.new(params_copy)
+    @space = Space.new(space_params)
     @space.user = current_user
 
     if !space_params.has_key? :is_private
       @space.is_private = @space.user.prefers_private?
-      if organization
+      if @space.organization
         @space.is_private = @space.is_private || organization.prefers_private?
       end
     end
 
     if @space.save
-      if organization
-        @permission = organization.permissions.new space: @space
-        unless @permission.save
-          render json: @permission.errors, status: :unprocessable_entity
-          return
-        end
-      end
       render json: SpaceRepresenter.new(@space).to_json
     else
       render json: @space.errors, status: :unprocessable_entity
