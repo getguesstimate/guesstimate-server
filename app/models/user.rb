@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
   has_one :account, dependent: :destroy
 
   has_many :memberships, class_name: 'UserOrganizationMembership'
-  has_many :organizations, through: :membership
+  has_many :organizations, through: :memberships
 
   after_create :create_account
 

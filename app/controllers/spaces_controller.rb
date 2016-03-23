@@ -8,10 +8,10 @@ class SpacesController < ApplicationController
   def index
     if params['user_id']
       @user = User.find(params['user_id'])
-      if @user.id == current_user.id
+      if current_user && @user.id == current_user.id
         @spaces = @user.spaces
       else
-        @spaces = @user.spaces.public
+        @spaces = @user.spaces.is_public
       end
     elsif params['organization_id']
       @organization = Organization.find(params[:organization_id])
