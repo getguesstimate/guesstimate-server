@@ -15,7 +15,7 @@ class SpacesController < ApplicationController
       end
     elsif params['organization_id']
       @organization = Organization.find(params[:organization_id])
-      if @organization.members.exists? current_user
+      if current_user.member_of? @organization
         @spaces = @organization.spaces
       else
         head :unauthorized

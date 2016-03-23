@@ -6,7 +6,7 @@ class OrganizationsController < ApplicationController
     end
 
     @organization = Organization.find(params[:id])
-    if @organization.members.exists? current_user
+    if current_user.member_of? @organization
       render json: OrganizationRepresenter.new(@organization).to_json
     else
       head :unauthorized

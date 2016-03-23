@@ -16,6 +16,10 @@ class User < ActiveRecord::Base
     Plan.find(plan)
   end
 
+  def member_of?(organization)
+    organizations.exists? organization.id
+  end
+
   def satisfied_private_model_count
     (self.private_access_count <= self.spaces.is_private.count)
   end
