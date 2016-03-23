@@ -6,8 +6,7 @@ class Space < ActiveRecord::Base
   belongs_to :copied_from, :class_name => 'Space', foreign_key: 'copied_from_id'
   has_many :copies, :class_name => 'Space', foreign_key: 'copied_from_id'
 
-  has_one :organization_permission, class_name: 'OrganizationSpacePermission'
-  has_one :organization, through: :organization_permission
+  belongs_to :organization
 
   validates :user_id, presence: true
   validate :can_create_private_models
