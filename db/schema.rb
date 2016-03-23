@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160322041317) do
+ActiveRecord::Schema.define(version: 20160323021023) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -20,16 +20,6 @@ ActiveRecord::Schema.define(version: 20160322041317) do
     t.integer "user_id"
     t.boolean "has_payment_account"
   end
-
-  create_table "organization_space_permissions", force: :cascade do |t|
-    t.integer  "space_id"
-    t.integer  "organization_id"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
-  end
-
-  add_index "organization_space_permissions", ["organization_id"], name: "index_organization_space_permissions_on_organization_id", using: :btree
-  add_index "organization_space_permissions", ["space_id"], name: "index_organization_space_permissions_on_space_id", using: :btree
 
   create_table "organizations", force: :cascade do |t|
     t.string   "name"
@@ -40,19 +30,19 @@ ActiveRecord::Schema.define(version: 20160322041317) do
   create_table "spaces", force: :cascade do |t|
     t.string   "name"
     t.text     "description"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
     t.json     "graph"
     t.integer  "user_id"
     t.boolean  "is_private"
     t.integer  "copied_from_id"
     t.integer  "viewcount"
+    t.integer  "organization_id"
   end
 
   create_table "user_organization_memberships", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "organization_id"
-    t.integer  "member_type"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
   end
