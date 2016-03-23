@@ -12,5 +12,6 @@ class SpacesRepresenter < Roar::Decorator
     property :updated_at
     property :is_private
     property :user_id
+    property :organization_id
   end
 end
