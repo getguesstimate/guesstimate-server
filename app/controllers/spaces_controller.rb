@@ -81,12 +81,13 @@ class SpacesController < ApplicationController
 
   private
 
+  # TODO(matthew): !current_user.nil? or current_user?
   def belongs_to_user
     !current_user.nil? && (@space.user_id == current_user.id)
   end
 
   def belongs_to_users_organization
-    current_user && current_user.member_of?(@space.organization.id)
+    current_user && current_user.member_of?(@space.organization_id)
   end
 
   def check_authorization
