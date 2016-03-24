@@ -90,7 +90,7 @@ class SpacesController < ApplicationController
   end
 
   def check_authorization
-    if !(belongs_to_user || belongs_to_users_organization)
+    unless belongs_to_user || belongs_to_users_organization
       head :unauthorized
     end
   end

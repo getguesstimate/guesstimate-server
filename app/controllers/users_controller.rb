@@ -16,9 +16,9 @@ class UsersController < ApplicationController
 
   def index
     if params[:organization_id]
-      @organization = Organization.find params[:organization_id]
-      if @organization.members.exists? current_user
-        render json: OrganizationMembershipsRepresenter.new(@organization.memberships).to_json
+      if current_user && current_user.member_of?(params[:organization_id])
+        organization = Organization.find params[:organization_id]
+        render json: OrganizationMembershipsRepresenter.new(organization.memberships).to_json
       else
         head :unauthorized
       end
