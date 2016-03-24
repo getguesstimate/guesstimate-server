@@ -94,6 +94,10 @@ class Space < ActiveRecord::Base
     {'metrics' => Array.wrap(cleaned_metrics), 'guesstimates' => Array.wrap(cleaned_guesstimates)}
   end
 
+  def visible_to?(user)
+    is_public? || user.id == self.user_id || user.member_of? self.organization_id
+  end
+
   def copy(user)
     space = Space.new(self.attributes.slice('name', 'description', 'graph'))
     space.user = user
