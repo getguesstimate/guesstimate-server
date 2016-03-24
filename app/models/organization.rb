@@ -3,4 +3,8 @@ class Organization < ActiveRecord::Base
   has_many :members, through: :memberships, class_name: 'User', source: :user
 
   has_many :spaces, dependent: :destroy
+
+  def prefers_private?
+    true
+  end
 end

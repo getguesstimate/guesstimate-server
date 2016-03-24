@@ -41,6 +41,7 @@ class User < ActiveRecord::Base
   end
 
   def prefers_private?
+    # TODO(matthew): What happens when a free user joins a paid organization?
     can_create_private_models
   end
 
