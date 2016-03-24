@@ -12,7 +12,9 @@ class SpaceRepresenter < Roar::Decorator
   property :graph
   property :is_private
   property :user_id
+  property :organization_id
 
+  # TODO(matthew): Is this actually being used at all? Client still re-fetches for the user based on ID.
   property :user, class: User, embedded: true  do
     property :id
     property :name

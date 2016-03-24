@@ -83,8 +83,12 @@ class SpacesController < ApplicationController
     !current_user.nil? && (@space.user_id == current_user.id)
   end
 
+  def belongs_to_users_organization
+    current_user && current_user.organization && (@space.organization_id == current_user.organization.id)
+  end
+
   def check_authorization
-    if !belongs_to_user
+    if !(belongs_to_user || belongs_to_users_organization)
       head :unauthorized
     end
   end
