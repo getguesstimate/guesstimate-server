@@ -2,7 +2,7 @@ class User < ActiveRecord::Base
   has_many :spaces
   has_one :account, dependent: :destroy
 
-  has_many :memberships, class_name: 'UserOrganizationMembership'
+  has_many :memberships, class_name: 'UserOrganizationMembership', dependent: :destroy
   has_many :organizations, through: :memberships
 
   after_create :create_account

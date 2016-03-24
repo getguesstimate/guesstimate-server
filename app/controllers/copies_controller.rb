@@ -1,12 +1,16 @@
 class CopiesController < ApplicationController
-  # TODO(matthew): Any purpose to the below?
   before_action :authenticate, only: [:create]
-  before_action :set_space, only: [:show]
 
   # POST /spaces/:id/copies
   # POST /spaces.json
   def create
-    space_copy = Space.find(params[:space_id]).copy(current_user)
+    space = Space.find(params[:space_id])
+    unless current_user && space.visible_to?(current_user)
+      head :unauthorized
+      return
+    end
+
+    space_copy = space.copy(current_user)
 
     if space_copy.save
       render json: SpaceRepresenter.new(space_copy).to_json

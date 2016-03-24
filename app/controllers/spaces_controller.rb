@@ -15,13 +15,15 @@ class SpacesController < ApplicationController
       end
     elsif params['organization_id']
       @organization = Organization.find(params[:organization_id])
-      if current_user.member_of? @organization.id
+      if current_user && current_user.member_of? @organization.id
         @spaces = @organization.spaces
       else
         head :unauthorized
         return
       end
     else
+      # TODO(matthew): Do we have a use for this case? It carries some extra baggage that I'd like to remove, if we
+      # don't really need it.
       @spaces = Space.visible_by(current_user).first(10)
     end
     #render json: @spaces.as_json(only: [:id, :name, :description, :updated_at, :user_id])
