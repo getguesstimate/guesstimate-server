@@ -5,11 +5,6 @@ class OrganizationUserMembershipRepresenter < Roar::Decorator
   include Roar::JSON::HAL
 
   property :id
-  property :member_type
-
-  property :user, class: User, embedded: true  do
-    property :id
-    property :name
-    property :picture
-  end
+  property :user_id
+  property :organization_id
 end
