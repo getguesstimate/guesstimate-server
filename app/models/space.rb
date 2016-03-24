@@ -2,26 +2,36 @@ class Space < ActiveRecord::Base
   include AlgoliaSearch
   include FakeNameDetector
 
-  belongs_to :user
+  has_many :permissions, class_name: "UserSpacePermission", dependent: :destroy
+  has_many :users, through: :permissions
+  has_many :ownerships, -> { own }, class_name: "UserSpacePermission"
+  has_many :owners, through: :ownerships, source: :user
+
+  belongs_to :creator, class_name: "User"
+
   belongs_to :copied_from, :class_name => 'Space', foreign_key: 'copied_from_id'
   has_many :copies, :class_name => 'Space', foreign_key: 'copied_from_id'
 
-  validates :user_id, presence: true
+  validates :creator_id, presence: true
   validate :can_create_private_models
-  validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
+  validates :viewcount, numericality: { allow_nil: true, greater_than_or_equal_to: 0 }
 
   after_initialize :init
+  after_create :make_creator_owner
 
   scope :is_private, -> { where(is_private: true) }
   scope :is_public, -> { where(is_private: false) }
-  scope :visible_by, -> (user) { where 'is_private IS false OR user_id = ?', user.try(:id) }
+
+  def self.visible_by(user)
+    (Space.is_public.all + user.spaces.all).uniq
+  end
 
   def init
     self.is_private ||= false
   end
 
   algoliasearch if: :is_searchable?, per_environment: true, disable_indexing: Rails.env.test? do
-    attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private, :viewcount
+    attribute :id, :name, :description, :creator_id, :created_at, :updated_at, :is_private, :viewcount
     add_attribute :user_info
 
     # We want to rank equally relevant results by viewcount.
@@ -38,6 +48,10 @@ class Space < ActiveRecord::Base
     attribute :metric_count do
       metrics.length.to_i
     end
+  end
+
+  def owned_by?(user)
+    owners.exists? user
   end
 
   def metrics
@@ -75,12 +89,12 @@ class Space < ActiveRecord::Base
   end
 
   def user_info
-    user ? user.as_json : {}
+    creator ? creator.as_json : {}
   end
 
   def can_create_private_models
-    if is_private && !user.try(:can_create_private_models)
-      errors.add(:user_id, 'can not make more private models with current plan')
+    if is_private && !creator.try(:can_create_private_models)
+      errors.add(:creator_id, 'can not make more private models with current plan')
     end
   end
 
@@ -94,7 +108,7 @@ class Space < ActiveRecord::Base
 
   def copy(user)
     space = Space.new(self.attributes.slice('name', 'description', 'graph'))
-    space.user = user
+    space.creator = user
     space.copied_from_id = self.id
     space.is_private = user.prefers_private?
     space.save
@@ -112,5 +126,9 @@ class Space < ActiveRecord::Base
 
   def cleaned_guesstimates
     clean_items('guesstimates', 'metric')
+  end
+
+  def make_creator_owner
+    ownerships.create!(user: creator)
   end
 end

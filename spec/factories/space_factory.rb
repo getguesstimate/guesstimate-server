@@ -1,5 +1,5 @@
 FactoryGirl.define do
   factory :space do
-    user
+    association :creator, factory: :user
   end
 end

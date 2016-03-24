@@ -1,6 +1,13 @@
 class User < ActiveRecord::Base
-  has_many :spaces
+  has_many :permissions, class_name: "UserSpacePermission", dependent: :destroy
+  has_many :spaces, through: :permissions
+  has_many :ownerships, -> { own }, class_name: "UserSpacePermission"
+  has_many :owned_spaces, through: :ownerships, source: "space"
+
+  has_many :created_spaces, class_name: "Space", foreign_key: "creator_id"
+
   has_one :account, dependent: :destroy
+
   after_create :create_account
 
   validates_uniqueness_of :username, allow_blank: true
@@ -38,5 +45,10 @@ class User < ActiveRecord::Base
 
   def ensure_account
     account || create_account
+  end
+
+  def spaces_visible_by(user)
+    all_spaces = (spaces.all + created_spaces.all).uniq # A hack until all spaces have ownership permisisons.
+    all_spaces.keep_if { |space| space.is_public? || space.owned_by?(user)}
   end
 end
