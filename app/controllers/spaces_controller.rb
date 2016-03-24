@@ -5,6 +5,7 @@ class SpacesController < ApplicationController
 
   #GET /spaces
   #GET /spaces.json
+  #TODO(matthew): params['strings'] or params[:symbols]?
   def index
     if params['user_id']
       @user = User.find(params['user_id'])
@@ -14,9 +15,8 @@ class SpacesController < ApplicationController
         @spaces = @user.spaces.is_public
       end
     elsif params['organization_id']
-      @organization = Organization.find(params[:organization_id])
-      if current_user && current_user.member_of? @organization.id
-        @spaces = @organization.spaces
+      if current_user && current_user.member_of?(params['organization_id'])
+        @spaces = Organization.find(params['organization_id']).spaces
       else
         head :unauthorized
         return

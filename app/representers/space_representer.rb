@@ -14,7 +14,7 @@ class SpaceRepresenter < Roar::Decorator
   property :user_id
   property :organization_id
 
-  # TODO(matthew): Is this actually being used at all? Client still re-fetches for the user based on ID.
+  # TODO(matthew): These aren't being used atm. Should we remove them?
   property :user, class: User, embedded: true  do
     property :id
     property :name
