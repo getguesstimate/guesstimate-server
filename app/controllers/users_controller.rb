@@ -15,7 +15,15 @@ class UsersController < ApplicationController
   end
 
   def index
-    if params[:auth0_id]
+    if params[:organization_id]
+      @organization = Organization.find params[:organization_id]
+      if @organization.members.exists? current_user
+        render json: OrganizationMembershipsRepresenter.new(@organization.memberships).to_json
+      else
+        head :unauthorized
+      end
+      return
+    elsif params[:auth0_id]
       @users = User.where(auth0_id: params[:auth0_id])
 
       if @users.empty?

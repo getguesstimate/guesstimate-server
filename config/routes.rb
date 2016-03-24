@@ -15,5 +15,6 @@ Rails.application.routes.draw do
   resources :organization, only: [:show]
   resources :organizations do
     resources :spaces, only: [:index]
+    resources :members, controller: 'users', only: [:index]
   end
 end
