@@ -1,4 +1,5 @@
 class CopiesController < ApplicationController
+  # TODO(matthew): Any purpose to the below?
   before_action :authenticate, only: [:create]
   before_action :set_space, only: [:show]
 
