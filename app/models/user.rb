@@ -17,7 +17,7 @@ class User < ActiveRecord::Base
   end
 
   def member_of?(organization_id)
-    memberships.where(organization_id: organization_id).any?
+    memberships.for_organization(organization_id).any?
   end
 
   def satisfied_private_model_count
