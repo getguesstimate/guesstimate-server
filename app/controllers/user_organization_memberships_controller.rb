@@ -1,4 +1,4 @@
-class UserOrganizationMembershipController < ApplicationController
+class UserOrganizationMembershipsController < ApplicationController
   before_action :ensure_logged_in
   before_action :ensure_member, only: :organization_memberships
 
@@ -14,7 +14,7 @@ class UserOrganizationMembershipController < ApplicationController
 
   private
   def ensure_logged_in
-    head :unauthorized unless logged_in?
+    head :unauthorized if current_user.nil?
   end
 
   def ensure_member
