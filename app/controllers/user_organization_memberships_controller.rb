@@ -3,12 +3,12 @@ class UserOrganizationMembershipsController < ApplicationController
   before_action :ensure_member, only: :organization_memberships
 
   def user_memberships
-    @memberships = memberships.for_user(params[:user_id])
+    @memberships = UserOrganizationMembership.for_user(params[:user_id])
     render json: OrganizationMembershipsRepresenter.new(@memberships).to_json
   end
 
   def organization_memberships
-    @memberships = memberships.for_organization(params[:organization_id])
+    @memberships = UserOrganizationMembership.for_organization(params[:organization_id])
     render json: OrganizationMembershipsRepresenter.new(@memberships).to_json
   end
 
