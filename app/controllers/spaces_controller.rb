@@ -84,7 +84,7 @@ class SpacesController < ApplicationController
   end
 
   def belongs_to_users_organization
-    current_user && current_user.member_of?(@space.organization)
+    current_user && current_user.member_of?(@space.organization.id)
   end
 
   def check_authorization
