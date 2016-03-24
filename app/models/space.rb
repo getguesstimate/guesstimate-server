@@ -6,6 +6,8 @@ class Space < ActiveRecord::Base
   belongs_to :copied_from, :class_name => 'Space', foreign_key: 'copied_from_id'
   has_many :copies, :class_name => 'Space', foreign_key: 'copied_from_id'
 
+  belongs_to :organization
+
   validates :user_id, presence: true
   validate :can_create_private_models
   validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
@@ -92,11 +94,21 @@ class Space < ActiveRecord::Base
     {'metrics' => Array.wrap(cleaned_metrics), 'guesstimates' => Array.wrap(cleaned_guesstimates)}
   end
 
+  def visible_to?(user)
+    is_public? || user.id == self.user_id || user.member_of?(self.organization_id)
+  end
+
   def copy(user)
     space = Space.new(self.attributes.slice('name', 'description', 'graph'))
     space.user = user
     space.copied_from_id = self.id
     space.is_private = user.prefers_private?
+
+    # This space should be retained within the organization if it is being copied within the organization.
+    if organization_id && user.member_of?(organization_id)
+      space.organization_id = organization_id
+    end
+
     space.save
     return space
   end
