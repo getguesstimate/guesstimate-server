@@ -13,6 +13,7 @@ class SpaceRepresenter < Roar::Decorator
   property :is_private
   property :user_id
 
+  # TODO(matthew): These aren't being used atm. Should we remove them?
   property :user, class: User, embedded: true  do
     property :id
     property :name
