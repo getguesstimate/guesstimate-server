@@ -8,6 +8,7 @@ Rails.application.routes.draw do
 
   resources :users do
     resources :spaces, only: [:index]
+    get :memberships, to: 'user_organization_memberships#user_memberships'
     post '/account/synchronization', to: 'accounts#synchronization'
     get '/account/new_subscription_iframe', to: 'accounts#new_subscription_iframe'
   end
@@ -15,5 +16,6 @@ Rails.application.routes.draw do
   resources :organization, only: [:show]
   resources :organizations do
     resources :spaces, only: [:index]
+    get :members, to: 'user_organization_memberships#organization_memberships'
   end
 end
