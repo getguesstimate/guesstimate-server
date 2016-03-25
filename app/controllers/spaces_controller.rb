@@ -33,7 +33,7 @@ class SpacesController < ApplicationController
   # GET /spaces/1
   # GET /spaces/1.json
   def show
-    if @space.is_public || (current_user && belongs_to_user_or_users_organization)
+    if @space.is_public? || (current_user && belongs_to_user_or_users_organization)
       newSpace = @space
       newSpace.graph = @space.cleaned_graph
       render json: SpaceRepresenter.new(newSpace).to_json
@@ -51,10 +51,11 @@ class SpacesController < ApplicationController
     if !space_params.has_key? :is_private
       @space.is_private = @space.user.prefers_private?
       if @space.organization
-        @space.is_private = @space.is_private || organization.prefers_private?
+        @space.is_private = @space.is_private || @space.organization.prefers_private?
       end
     end
 
+    pry
     if @space.save
       render json: SpaceRepresenter.new(@space).to_json
     else
