@@ -33,12 +33,12 @@ class SpacesController < ApplicationController
   # GET /spaces/1
   # GET /spaces/1.json
   def show
-    if @space.is_private
-      head :unauthorized unless current_user && belongs_to_user_or_users_organization
-    else
+    if @space.is_public || (current_user && belongs_to_user_or_users_organization)
       newSpace = @space
       newSpace.graph = @space.cleaned_graph
       render json: SpaceRepresenter.new(newSpace).to_json
+    else
+      head :unauthorized
     end
   end
 
