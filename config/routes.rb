@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  get 'user_organization_membership/index'
-
   mount Knock::Engine => '/knock'
 
   resources :spaces, only: [:show, :create, :update, :destroy]
