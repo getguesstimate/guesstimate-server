@@ -86,7 +86,7 @@ class Space < ActiveRecord::Base
   end
 
   def can_create_private_models
-    if is_private && !user.try(:can_create_private_models)
+    unless is_public? || organization_id || user.try(:can_create_private_models)
       errors.add(:user_id, 'can not make more private models with current plan')
     end
   end

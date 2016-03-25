@@ -51,10 +51,11 @@ class SpacesController < ApplicationController
     if !space_params.has_key? :is_private
       @space.is_private = @space.user.prefers_private?
       if @space.organization
-        @space.is_private = @space.is_private || organization.prefers_private?
+        @space.is_private = @space.is_private || @space.organization.prefers_private?
       end
     end
 
+    pry
     if @space.save
       render json: SpaceRepresenter.new(@space).to_json
     else
