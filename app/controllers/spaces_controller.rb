@@ -33,8 +33,8 @@ class SpacesController < ApplicationController
   # GET /spaces/1
   # GET /spaces/1.json
   def show
-    if @space.is_private && !belongs_to_user
-      head :unauthorized
+    if @space.is_private
+      head :unauthorized unless current_user && belongs_to_user_or_users_organization
     else
       newSpace = @space
       newSpace.graph = @space.cleaned_graph
@@ -81,19 +81,12 @@ class SpacesController < ApplicationController
 
   private
 
-  # TODO(matthew): !current_user.nil? or current_user?
-  def belongs_to_user
-    !current_user.nil? && (@space.user_id == current_user.id)
-  end
-
-  def belongs_to_users_organization
-    current_user && current_user.member_of?(@space.organization_id)
+  def belongs_to_user_or_users_organization
+    @space.user_id == current_user.id || current_user.member_of?(@space.organization_id)
   end
 
   def check_authorization
-    unless belongs_to_user || belongs_to_users_organization
-      head :unauthorized
-    end
+    head :unauthorized unless belongs_to_user_or_users_organization
   end
 
   # Use callbacks to share common setup or constraints between actions.
