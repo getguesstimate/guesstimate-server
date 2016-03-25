@@ -55,7 +55,6 @@ class SpacesController < ApplicationController
       end
     end
 
-    pry
     if @space.save
       render json: SpaceRepresenter.new(@space).to_json
     else
