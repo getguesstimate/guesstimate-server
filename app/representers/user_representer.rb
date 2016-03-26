@@ -5,7 +5,9 @@ class UserRepresenter < Roar::Decorator
   include Roar::JSON::HAL
 
   property :id
-  property :name
+  # We use the below hack until we decide what our strategy will be for real names, to keep the client behavior the same.
+  property :username, as: "name"
+  property :email
   property :picture
   property :created_at
   property :updated_at

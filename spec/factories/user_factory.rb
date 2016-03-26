@@ -1,6 +1,8 @@
 FactoryGirl.define do
   factory :user do
-    sequence(:username) { |n| "user #{n}" }
+    sequence(:name) { |n| "user #{n}" }
+    sequence(:username) { |n| "username #{n}" }
+    sequence(:email) { |n| "email_#{n}@email.com" }
     sequence(:auth0_id) { |n| "auth0_id #{n}" }
     has_private_access false
     plan :personal_free
