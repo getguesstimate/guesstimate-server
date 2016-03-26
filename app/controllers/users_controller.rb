@@ -32,7 +32,7 @@ class UsersController < ApplicationController
 
   private
   def user_params
-    params.require(:user).permit(:name, :picture, :auth0_id, :email, :username, :location, :locale, :gender, :email_verified)
+    params.require(:user).permit(:name, :picture, :auth0_id, :email, :username, :location, :locale, :gender)
   end
 
   def user_representation(user)
