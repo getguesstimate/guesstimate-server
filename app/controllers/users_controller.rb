@@ -36,10 +36,10 @@ class UsersController < ApplicationController
   end
 
   def user_representation(user)
-    UserRepresenter.new(user).to_json(user_options: {can_access_account: can_access_account?(user)})
+    UserRepresenter.new(user).to_json(user_options: {is_current_user: is_current_user?(user)})
   end
 
-  def can_access_account?(user)
+  def is_current_user?(user)
     current_user.present? && (current_user.id == user.id)
   end
 end
