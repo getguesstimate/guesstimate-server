@@ -27,7 +27,12 @@ class Authentor
     new_users = new_auth0_users
     new_users.each do |auth0_user|
       attributes = {
-          name: auth0_user['nickname'],
+          name: auth0_user['name'],
+          username: auth0_user['nickname'],
+          email: auth0_user['email'],
+          locale: auth0_user['locale'],
+          location: auth0_user['location'],
+          gender: auth0_user['gender'],
           picture: auth0_user['picture'],
           auth0_id: auth0_user['user_id'],
       }

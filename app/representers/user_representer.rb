@@ -6,6 +6,8 @@ class UserRepresenter < Roar::Decorator
 
   property :id
   property :name
+  property :username
+  property :email
   property :picture
   property :created_at
   property :updated_at

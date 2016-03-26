@@ -7,7 +7,9 @@ class User < ActiveRecord::Base
 
   after_create :create_account
 
-  validates_uniqueness_of :username, allow_blank: true
+  validates_presence_of :username
+  validates_presence_of :name
+  validates :email, presence: true, format: /@/
   validates :auth0_id, presence: true, uniqueness: true
 
   enum plan: Plan.as_enum
