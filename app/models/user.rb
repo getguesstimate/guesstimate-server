@@ -22,6 +22,10 @@ class User < ActiveRecord::Base
     memberships.for_organization(organization_id).any?
   end
 
+  def domain_name
+    email[/@(?<domain>.*).com/,"domain"]
+  end
+
   def satisfied_private_model_count
     (self.private_access_count <= self.spaces.is_private.count)
   end
