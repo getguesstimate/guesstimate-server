@@ -7,7 +7,6 @@ class UserRepresenter < Roar::Decorator
   property :id
   # We use the below hack until we decide what our strategy will be for real names, to keep the client behavior the same.
   property :username, as: "name"
-  property :email, if: ->(user_options:, **) { user_options[:is_current_user] }
   property :picture
   property :created_at
   property :updated_at
