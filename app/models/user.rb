@@ -23,7 +23,7 @@ class User < ActiveRecord::Base
   end
 
   def domain_name
-    email[/@(?<domain>.*).com/,"domain"]
+    email[/@(?<domain>[^\.]*).(.*)/,"domain"]
   end
 
   def satisfied_private_model_count
