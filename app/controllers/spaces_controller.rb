@@ -18,8 +18,7 @@ class SpacesController < ApplicationController
       if current_user && current_user.member_of?(params['organization_id'])
         @spaces = Organization.find(params['organization_id']).spaces
       else
-        head :unauthorized
-        return
+        @spaces = Organization.find(params['organization_id']).spaces.is_public
       end
     else
       # TODO(matthew): Do we have a use for this case? It carries some extra baggage that I'd like to remove, if we
