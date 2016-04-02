@@ -54,4 +54,17 @@ RSpec.describe User, type: :model do
       it { is_expected.to eq(100) }
     end
   end
+
+  describe '#domain_name' do
+    let (:email) { 'foo@barcom.com' }
+    let (:user) {FactoryGirl.build(:user, email: email) }
+    subject (:domain_name) { user.domain_name }
+
+    it { is_expected.to eq('barcom') }
+
+    context '.net address' do
+      let (:email) { 'foo@barnet.net' }
+      it { is_expected.to eq('barnet') }
+    end
+  end
 end
