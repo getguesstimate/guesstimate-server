@@ -6,7 +6,7 @@ class UsersRepresenter < Roar::Decorator
 
   collection :to_a, as: 'items', class: User do
     property :id
-    property :name
+    property :username, as: "name"
     property :picture
     property :created_at
     property :updated_at
