@@ -82,7 +82,7 @@ class Space < ActiveRecord::Base
   end
 
   def user_info
-    user ? user.as_json : {}
+    user ? UserRepresenter.new(user).to_hash(user_options: {is_current_user: false}) : {}
   end
 
   def can_create_private_models
