@@ -16,7 +16,7 @@ class SpacesRepresenter < Roar::Decorator
 
     property :user, class: User, embedded: true do
       property :id
-      property :name
+      property :username, as: "name"
       property :picture
     end
   end
