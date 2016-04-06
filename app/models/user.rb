@@ -27,9 +27,7 @@ class User < ActiveRecord::Base
   end
 
   def organization_names
-    names = ""
-    organizations.find_each { |o| names += "#{o.name}," }
-    names
+    organizations.map(&:name).join(',')
   end
 
   def identify
