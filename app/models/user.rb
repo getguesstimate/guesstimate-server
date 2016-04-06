@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
   has_many :organizations, through: :memberships
 
   after_create :create_account
+  after_save :identify
 
   validates_presence_of :username
   validates_presence_of :name
@@ -71,7 +72,7 @@ class User < ActiveRecord::Base
     nodes = 0.0
     total = 0.0
     spaces.find_each do |space|
-      nodes += space.graph["metrics"].length if space.graph
+      nodes += space.graph["metrics"].length if space.graph && space.graph["metrics"]
       total += 1
     end
     nodes/total
