@@ -44,7 +44,7 @@ class UsersController < ApplicationController
 
   private
   def user_params
-    params.require(:user).permit(:name, :picture, :auth0_id, :email, :username, :location, :locale, :gender)
+    params.require(:user).permit(:name, :picture, :auth0_id, :job_title, :email, :username, :location, :locale, :gender)
   end
 
   def user_representation(user)

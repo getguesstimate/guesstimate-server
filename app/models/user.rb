@@ -26,6 +26,12 @@ class User < ActiveRecord::Base
     email[/@(?<domain>[^\.]*).(.*)/,"domain"]
   end
 
+  def organization_names
+    names = ""
+    organizations.find_each { |o| names << o.name << ',' }
+    names
+  end
+
   def satisfied_private_model_count
     (self.private_access_count <= self.spaces.is_private.count)
   end

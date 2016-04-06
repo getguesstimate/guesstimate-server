@@ -30,6 +30,7 @@ class Authentor
           name: auth0_user['name'],
           username: auth0_user['nickname'],
           email: auth0_user['email'],
+          job_title: auth0_user['job_title'],
           locale: auth0_user['locale'],
           location: auth0_user['location'],
           gender: auth0_user['gender'],
