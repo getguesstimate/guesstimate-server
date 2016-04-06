@@ -13,6 +13,8 @@ class Space < ActiveRecord::Base
   validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
 
   after_initialize :init
+  after_save :identify_user
+  after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
   scope :is_public, -> { where(is_private: false) }
@@ -129,5 +131,9 @@ class Space < ActiveRecord::Base
 
   def cleaned_guesstimates
     clean_items('guesstimates', 'metric')
+  end
+
+  def identify_user
+    user.identify
   end
 end

@@ -8,18 +8,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      Analytics.identify(
-        user_id: @user.id,
-        traits: {
-          name: @user.name,
-          email: @user.email,
-          domain_name: @user.domain_name,
-          gender: @user.gender,
-          locale: @user.locale,
-          location: @user.location,
-          created_at: @user.created_at
-        }
-      )
+      @user.identify
       render json: user_representation(@user)
     else
       render json: @user.errors, status: :unprocessable_entity
@@ -44,7 +33,7 @@ class UsersController < ApplicationController
 
   private
   def user_params
-    params.require(:user).permit(:name, :picture, :auth0_id, :email, :username, :location, :locale, :gender)
+    params.require(:user).permit(:name, :picture, :auth0_id, :company, :email, :username, :location, :locale, :gender)
   end
 
   def user_representation(user)
