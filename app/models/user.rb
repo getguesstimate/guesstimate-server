@@ -28,8 +28,27 @@ class User < ActiveRecord::Base
 
   def organization_names
     names = ""
-    organizations.find_each { |o| names << o.name << ',' }
+    organizations.find_each { |o| names += "#{o.name}," }
     names
+  end
+
+  def identify
+    Analytics.identify(
+      user_id: id,
+      traits: {
+        name: name,
+        email: email,
+        company: company,
+        domain_name: domain_name,
+        organization_names: organization_names,
+        industry: industry,
+        role: role,
+        gender: gender,
+        locale: locale,
+        location: location,
+        created_at: created_at
+      }
+    )
   end
 
   def satisfied_private_model_count

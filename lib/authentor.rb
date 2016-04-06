@@ -30,14 +30,15 @@ class Authentor
           name: auth0_user['name'],
           username: auth0_user['nickname'],
           email: auth0_user['email'],
-          job_title: auth0_user['job_title'],
+          company: auth0_user['company'],
           locale: auth0_user['locale'],
           location: auth0_user['location'],
           gender: auth0_user['gender'],
           picture: auth0_user['picture'],
           auth0_id: auth0_user['user_id'],
       }
-      User.create(attributes)
+      user = User.create(attributes)
+      user.identify
       puts "Created user with attributes #{attributes}"
       Rails.logger.info "Created user with attributes #{attributes}"
     end
