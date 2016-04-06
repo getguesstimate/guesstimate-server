@@ -7,4 +7,12 @@ class UserOrganizationMembership < ActiveRecord::Base
 
   scope :for_organization, -> (organization_id) { where(organization_id: organization_id) }
   scope :for_user, -> (user_id) { where(user_id: user_id) }
+
+  after_create :identify_user
+
+  private
+
+  def identify_user
+    user.identify
+  end
 end
