@@ -23,7 +23,7 @@ class User < ActiveRecord::Base
   end
 
   def domain_name
-    email[/@(?<domain>[^\.]*).(.*)/,"domain"]
+    email[/@(?<domain>[^\.]*).(.*)/,"domain"] if email
   end
 
   def organization_names
@@ -41,6 +41,10 @@ class User < ActiveRecord::Base
         company: company,
         domain_name: domain_name,
         organization_names: organization_names,
+        public_model_count: public_model_count,
+        private_model_count: private_model_count,
+        nodes_per_model: nodes_per_model,
+        plan: plan,
         industry: industry,
         role: role,
         gender: gender,
@@ -61,6 +65,18 @@ class User < ActiveRecord::Base
 
   def public_model_count
     self.spaces.is_public.count
+  end
+
+  def nodes_per_model
+    return 0 if self.spaces.empty?
+
+    nodes = 0.0
+    total = 0.0
+    spaces.find_each do |space|
+      nodes += space.graph["metrics"].length if space.graph
+      total += 1
+    end
+    nodes/total
   end
 
   def private_model_limit

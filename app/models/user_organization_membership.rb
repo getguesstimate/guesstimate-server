@@ -9,9 +9,9 @@ class UserOrganizationMembership < ActiveRecord::Base
   scope :for_user, -> (user_id) { where(user_id: user_id) }
 
   after_create :identify_user
+  after_destroy :identify_user
 
   private
-
   def identify_user
     user.identify
   end
