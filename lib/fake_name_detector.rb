@@ -6,7 +6,7 @@ DISALLOWED_SUB_WORDS = [
 DISALLOWED_WORDS = [
   'my', 'to', 'in', 'at', 'or', 'of', 'is', 'be', 'as', 'at', 'so', 'we', 'he', 'by', 'on', 'do', 'if', 'me', 'up',
   'an', 'go', 'no', 'us', 'am', 'foo', 'foobar', 'bar', 'and', 'one', 'two', 'three', 'four', 'five', 'six', 'seven',
-  'eight', 'nine', 'ten', 'ha', 'fake'
+  'eight', 'nine', 'ten', 'ha', 'fake', 'idk'
 ]
 
 module FakeNameDetector
