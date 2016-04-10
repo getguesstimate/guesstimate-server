@@ -120,6 +120,14 @@ class Space < ActiveRecord::Base
     return space
   end
 
+  def generate_screenshot
+    base_url = "http://test.getguesstimate.com"
+    url = base_url + "models/#{id}/embed"
+    screenshot = Screenshot.new(url)
+    picture_url = screenshot.url
+    update_attributes(screenshot: picture_url)
+  end
+
   private
   def clean_items(key, uniqKey)
     graph && graph[key] && graph[key].reverse.uniq{|m| m[uniqKey]}.reverse
