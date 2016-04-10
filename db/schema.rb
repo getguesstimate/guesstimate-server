@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160409041418) do
+ActiveRecord::Schema.define(version: 20160409230234) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -40,6 +40,7 @@ ActiveRecord::Schema.define(version: 20160409041418) do
     t.integer  "viewcount"
     t.integer  "organization_id"
     t.string   "category"
+    t.string   "screenshot"
   end
 
   create_table "user_organization_memberships", force: :cascade do |t|
