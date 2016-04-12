@@ -15,6 +15,8 @@ class User < ActiveRecord::Base
 
   enum plan: Plan.as_enum
 
+  scope :uncategorized_since, -> (date) { where 'categorized IS NOT true AND DATE(created_at) >= ?', date }
+
   def plan_details
     Plan.find(plan)
   end
