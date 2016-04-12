@@ -25,6 +25,7 @@ ActiveRecord::Schema.define(version: 20160412182211) do
     t.string   "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string   "picture"
   end
 
   create_table "spaces", force: :cascade do |t|
@@ -39,6 +40,7 @@ ActiveRecord::Schema.define(version: 20160412182211) do
     t.integer  "viewcount"
     t.integer  "organization_id"
     t.string   "category"
+    t.string   "screenshot"
     t.boolean  "categorized"
   end
 

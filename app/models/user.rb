@@ -44,7 +44,7 @@ class User < ActiveRecord::Base
         organization_names: organization_names,
         public_model_count: public_model_count,
         private_model_count: private_model_count,
-        nodes_per_model: nodes_per_model,
+        nodes_per_model: nodes_per_model.round(2),
         plan: plan,
         industry: industry,
         role: role,

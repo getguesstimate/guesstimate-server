@@ -31,7 +31,7 @@ class Space < ActiveRecord::Base
   end
 
   algoliasearch if: :is_searchable?, per_environment: true, disable_indexing: Rails.env.test? do
-    attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private, :viewcount
+    attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private, :viewcount, :screenshot
     add_attribute :user_info
 
     # We want to rank equally relevant results by viewcount.
@@ -119,6 +119,24 @@ class Space < ActiveRecord::Base
 
     space.save
     return space
+  end
+
+  def generate_screenshot
+    base_url = "http://test.getguesstimate.com/"
+    url = base_url + "models/#{id}/embed"
+
+    width = 212 * (max_columns + 1)
+    screenshot = Screenshot.new(url, width)
+    picture_url = screenshot.url
+    update_columns(screenshot: picture_url)
+  end
+
+  def max_columns
+    if graph && graph['metrics']
+      return graph['metrics'].map{|e| (e['location'] && e['location']['column'] || 0)}.max
+    else
+      return 0
+    end
   end
 
   private

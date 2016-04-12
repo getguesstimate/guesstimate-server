@@ -6,4 +6,5 @@ class OrganizationRepresenter < Roar::Decorator
 
   property :id
   property :name
+  property :picture
 end

@@ -13,6 +13,7 @@ class SpacesRepresenter < Roar::Decorator
     property :is_private
     property :user_id
     property :organization_id
+    property :screenshot
 
     property :user, class: User, embedded: true do
       property :id
