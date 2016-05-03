@@ -69,11 +69,11 @@ class User < ActiveRecord::Base
   end
 
   def nodes_per_model
-    return 0 if self.spaces.empty?
+    return 0 if self.spaces.is_public.empty?
 
     nodes = 0.0
     total = 0.0
-    spaces.find_each do |space|
+    spaces.is_public.find_each do |space|
       nodes += space.graph["metrics"].length if space.graph && space.graph["metrics"]
       total += 1
     end
