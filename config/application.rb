@@ -26,7 +26,7 @@ module GuesstimateApi
 
     config.middleware.insert_before 0, "Rack::Cors" do
       allow do
-        origins '*.getguesstimate.com', 'localhost:3000', 'https://guesstimate.herokuapp.com/users/5193', 'https://www.getguesstimate.com'
+        origins 'http://*.getguesstimate.com', 'localhost:3000', 'https://www.getguesstimate.com', 'http://payments.getguesstimate.com', 'http://testimate.getguesstimate.com'
         resource '*', :headers => :any, :methods => [:get, :post, :options, :delete, :put, :update, :patch]
       end
     end
