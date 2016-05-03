@@ -30,6 +30,9 @@ gem 'sass-rails'
 # Analytics & Reporting
 gem 'analytics-ruby', '~> 2.0.0', require: 'segment/analytics'
 
+# Caching
+gem 'actionpack-action_caching'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
