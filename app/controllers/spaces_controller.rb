@@ -3,6 +3,9 @@ class SpacesController < ApplicationController
   before_action :set_space, only: [:show, :update, :destroy]
   before_action :check_authorization, only: [:update, :destroy]
 
+  caches_action :show
+  caches_action :index
+
   #GET /spaces
   #GET /spaces.json
   #TODO(matthew): params['strings'] or params[:symbols]?
@@ -55,6 +58,7 @@ class SpacesController < ApplicationController
     end
 
     if @space.save
+      expire_action :index
       render json: SpaceRepresenter.new(@space).to_json
     else
       render json: @space.errors, status: :unprocessable_entity
@@ -65,6 +69,7 @@ class SpacesController < ApplicationController
   # PATCH/PUT /spaces/1.json
   def update
     if @space.update(space_params)
+      expire_action :show
       render json: SpaceRepresenter.new(@space).to_json, status: :ok
     else
       render json: @space.errors, status: :unprocessable_entity
