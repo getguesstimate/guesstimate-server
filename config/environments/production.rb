@@ -55,7 +55,14 @@ Rails.application.configure do
   config.logger = Le.new('b3f94a58-f3f0-32d2-86b4-59656185a2df', :debug => true, :local => true)
 
   # Use a different cache store in production.
-  # config.cache_store = :mem_cache_store
+  # Change this to MEMCACHEDCLOUD_* to switch MEMCACHE clients (and get the other addon).
+  config.cache_store = :dalli_store,
+    (ENV["MEMCACHIER_SERVERS"] || "").split(","),
+    username: ENV["MEMCACHIER_USERNAME"],
+    password: ENV["MEMCACHIER_PASSWORD"],
+    failover: true,
+    socket_timeout: 1.5,
+    socket_failure_delay: 0.2
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.action_controller.asset_host = 'http://assets.example.com'
