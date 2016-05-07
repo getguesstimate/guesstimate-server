@@ -26,14 +26,18 @@ module GuesstimateApi
 
     config.middleware.insert_before 0, "Rack::Cors" do
       allow do
-        origins 'https://www.getguesstimate.com', 'localhost:3000', /\Ahttp:\/\/.+\.getguesstimate\.com/
+        origins '*'
         resource '*', headers: :any, methods: [:get, :post, :options, :delete, :put, :update, :patch]
       end
+      #allow do
+      #  origins 'getguesstimate.com'
+      #  resource '*', headers: :any, methods: [:get, :post, :options, :delete, :put, :update, :patch]
+      #end
 
-      allow do
-        origins 'localhost:3000'
-        resource '*', headers: :any, methods: [:get, :options]
-      end
+      #allow do
+      #  origins 'localhost:3000'
+      #  resource '*', headers: :any, methods: [:get, :options]
+      #end
     end
   end
 end
