@@ -3,7 +3,7 @@ class SpacesController < ApplicationController
   before_action :set_space, only: [:show, :update, :destroy]
   before_action :check_authorization, only: [:update, :destroy]
 
-  caches_action :show, cache_path: Proc.new { |c| c.params.merge(format: c.request.format) }
+  caches_action :show
   caches_action :index
 
   #GET /spaces
@@ -80,6 +80,7 @@ class SpacesController < ApplicationController
   # DELETE /spaces/1.json
   def destroy
     @space.destroy
+    expire_action action: :index
     head :no_content
   end
 
