@@ -58,7 +58,7 @@ class SpacesController < ApplicationController
     end
 
     if @space.save
-      expire_action :index
+      expire_action action: :index
       render json: SpaceRepresenter.new(@space).to_json
     else
       render json: @space.errors, status: :unprocessable_entity
@@ -69,8 +69,8 @@ class SpacesController < ApplicationController
   # PATCH/PUT /spaces/1.json
   def update
     if @space.update(space_params)
-      expire_action :show
       render json: SpaceRepresenter.new(@space).to_json, status: :ok
+      expire_action action: :show
     else
       render json: @space.errors, status: :unprocessable_entity
     end
@@ -80,6 +80,7 @@ class SpacesController < ApplicationController
   # DELETE /spaces/1.json
   def destroy
     @space.destroy
+    expire_action action: :index
     head :no_content
   end
 
