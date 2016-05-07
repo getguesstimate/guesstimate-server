@@ -15,6 +15,8 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 # Use the puma server
 gem 'puma'
+# Memcache
+gem 'dalli'
 
 gem 'rack-cors', require: 'rack/cors'
 
