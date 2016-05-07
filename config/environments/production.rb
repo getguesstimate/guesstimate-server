@@ -56,12 +56,13 @@ Rails.application.configure do
 
   # Use a different cache store in production.
   config.cache_store = :dalli_store,
-    (ENV["MEMCACHEDCLOUD_SERVERS"] || "").split(","),
-    username: ENV["MEMCACHEDCLOUD_USERNAME"],
-    password: ENV["MEMCACHEDCLOUD_PASSWORD"],
-    failover: true,
-    socket_timeout: 1.5,
-    socket_failure_delay: 0.2
+    (Rails.application.secrets.memcachedcloud_servers || "").split(","),
+    {username: Rails.application.secrets.memcachedcloud_username,
+     password: Rails.application.secrets.memcachedcloud_password,
+     failover: true,
+     socket_timeout: 1.5,
+     socket_failure_delay: 0.2
+    }
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.action_controller.asset_host = 'http://assets.example.com'
