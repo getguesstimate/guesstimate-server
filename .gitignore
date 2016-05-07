@@ -17,3 +17,6 @@
 .ruby-*.??*
 # Ignore debugger files.
 .byebug*
+
+# tags files
+tags
