@@ -14,6 +14,7 @@ class Space < ActiveRecord::Base
 
   after_initialize :init
   after_save :identify_user
+  after_save :generate_screenshot, if: :has_old_screenshot?
   after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
@@ -121,6 +122,11 @@ class Space < ActiveRecord::Base
     return space
   end
 
+  def has_old_screenshot?
+    return true unless screenshot_timestamp
+    5.minutes.ago >= screenshot_timestamp
+  end
+
   def generate_screenshot
     base_url = "http://test.getguesstimate.com/"
     url = base_url + "models/#{id}/embed"
@@ -128,7 +134,7 @@ class Space < ActiveRecord::Base
     width = 212 * (max_columns + 1)
     screenshot = Screenshot.new(url, width)
     picture_url = screenshot.url
-    update_columns(screenshot: picture_url)
+    update_columns screenshot: picture_url, screenshot_timestamp: DateTime.now
   end
 
   def max_columns
