@@ -1,3 +1,5 @@
+require 'net/http'
+
 class Space < ActiveRecord::Base
   include AlgoliaSearch
   include FakeNameDetector
@@ -134,7 +136,12 @@ class Space < ActiveRecord::Base
     width = 212 * (max_columns + 1)
     screenshot = Screenshot.new(url, width)
     picture_url = screenshot.url
-    update_columns screenshot: picture_url, screenshot_timestamp: DateTime.now
+    update_columns screenshot: picture_url
+  end
+
+  def take_screenshot
+    Thread.new {Net::HTTP.get(URI.parse(screenshot))}
+    update_columns screenshot_timestamp: DateTime.now
   end
 
   def max_columns
