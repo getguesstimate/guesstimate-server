@@ -1,5 +1,7 @@
 require 'net/http'
 
+BASE_URL = "https://www.getguesstimate.com/"
+
 class Space < ActiveRecord::Base
   include AlgoliaSearch
   include FakeNameDetector
@@ -134,8 +136,7 @@ class Space < ActiveRecord::Base
   end
 
   def get_screenshot_url(force = false)
-    base_url = "http://getguesstimate.com/"
-    url = base_url + "models/#{id}/embed"
+    url = BASE_URL + "models/#{id}/embed"
 
     width = 212 * (max_columns + 1)
     screenshot = Screenshot.new(url, width, force)
