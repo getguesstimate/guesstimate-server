@@ -16,7 +16,7 @@ class Space < ActiveRecord::Base
 
   after_initialize :init
   after_save :identify_user
-  after_save :generate_screenshot, if: :has_old_screenshot?
+  after_save :take_screenshot, if: :needs_new_screenshot?
   after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
@@ -124,23 +124,32 @@ class Space < ActiveRecord::Base
     return space
   end
 
+  def needs_new_screenshot?
+    Rails.env == "production" && is_searchable? && has_old_screenshot?
+  end
+
   def has_old_screenshot?
     return true unless screenshot_timestamp
     5.minutes.ago >= screenshot_timestamp
   end
 
-  def generate_screenshot
-    base_url = "http://test.getguesstimate.com/"
+  def get_screenshot_url(force = false)
+    base_url = "http://getguesstimate.com/"
     url = base_url + "models/#{id}/embed"
 
     width = 212 * (max_columns + 1)
-    screenshot = Screenshot.new(url, width)
-    picture_url = screenshot.url
-    update_columns screenshot: picture_url
+    screenshot = Screenshot.new(url, width, force)
+    screenshot.url
   end
 
   def take_screenshot
-    Thread.new {Net::HTTP.get(URI.parse(screenshot))}
+    picture_url = get_screenshot_url(true)
+    if !screenshot
+      picture_url = get_screenshot_url
+      update_columns screenshot: picture_url
+    end
+
+    Thread.new {Net::HTTP.get URI.parse(picture_url)}
     update_columns screenshot_timestamp: DateTime.now
   end
 

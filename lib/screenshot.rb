@@ -33,8 +33,8 @@ def urlbox(url, options={}, format='png')
 end
 
 class Screenshot
-  def initialize(url, width)
-    @url = urlbox(url, {full_page: false, width: width, height: (width * 0.6).floor, quality: 90, delay: 40000, force: false}, 'jpg')
+  def initialize(url, width, force = false)
+    @url = urlbox(url, {full_page: false, thumb_width: 200, width: width, height: (width * 0.6).floor, quality: 90, delay: 40000, force: force}, 'jpg')
   end
 
   def url
