@@ -138,7 +138,8 @@ class Space < ActiveRecord::Base
   def get_screenshot_url(force = false)
     url = BASE_URL + "models/#{id}/embed"
 
-    width = 212 * (max_columns + 1)
+    column_count = [max_columns, 5].max
+    width = 212 * (column_count + 1)
     screenshot = Screenshot.new(url, width, force)
     screenshot.url
   end
