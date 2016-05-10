@@ -16,7 +16,7 @@ class Space < ActiveRecord::Base
 
   after_initialize :init
   after_save :identify_user
-  #after_save :take_screenshot, if: :needs_new_screenshot? Disabled for now so we can generate screenshot URLs 
+  after_save :take_screenshot, if: :needs_new_screenshot?
   after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
