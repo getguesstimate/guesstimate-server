@@ -4,7 +4,6 @@ class SpacesController < ApplicationController
   before_action :check_authorization, only: [:update, :destroy]
 
   caches_action :show
-  caches_action :index
 
   #GET /spaces
   #GET /spaces.json
@@ -58,7 +57,6 @@ class SpacesController < ApplicationController
     end
 
     if @space.save
-      expire_action action: :index
       render json: SpaceRepresenter.new(@space).to_json
     else
       render json: @space.errors, status: :unprocessable_entity
@@ -80,7 +78,6 @@ class SpacesController < ApplicationController
   # DELETE /spaces/1.json
   def destroy
     @space.destroy
-    expire_action action: :index
     head :no_content
   end
 
