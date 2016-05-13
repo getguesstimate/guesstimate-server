@@ -127,7 +127,7 @@ class Space < ActiveRecord::Base
   end
 
   def needs_new_screenshot?
-    Rails.env == "production" && is_searchable? && has_old_screenshot?
+    Rails.env == "production" && is_public? && has_old_screenshot?
   end
 
   def has_old_screenshot?
