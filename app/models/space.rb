@@ -139,7 +139,7 @@ class Space < ActiveRecord::Base
     url = BASE_URL + "models/#{id}/embed"
 
     column_count = [max_columns, 5].max
-    width = 212 * (column_count + 1)
+    width = 212 * (column_count + 1) + 10
     screenshot = Screenshot.new(url, width, force)
     screenshot.url
   end
