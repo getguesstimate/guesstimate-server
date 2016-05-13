@@ -145,13 +145,8 @@ class Space < ActiveRecord::Base
   end
 
   def take_screenshot
-    picture_url = get_screenshot_url(true)
-    if !screenshot
-      picture_url = get_screenshot_url
-      update_columns screenshot: picture_url
-    end
-
-    Thread.new {Net::HTTP.get URI.parse(picture_url)}
+    update_columns screenshot: get_screenshot_url
+    Thread.new {Net::HTTP.get URI.parse(get_screenshot_url(true))}
     update_columns screenshot_timestamp: DateTime.now
     index!
   end
