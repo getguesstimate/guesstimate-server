@@ -153,6 +153,7 @@ class Space < ActiveRecord::Base
 
     Thread.new {Net::HTTP.get URI.parse(picture_url)}
     update_columns screenshot_timestamp: DateTime.now
+    index!
   end
 
   def max_columns
