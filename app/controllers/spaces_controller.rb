@@ -3,7 +3,7 @@ class SpacesController < ApplicationController
   before_action :set_space, only: [:show, :update, :destroy]
   before_action :check_authorization, only: [:update, :destroy]
 
-  caches_action :show
+  #caches_action :show
 
   #GET /spaces
   #GET /spaces.json
@@ -68,7 +68,7 @@ class SpacesController < ApplicationController
   def update
     if @space.update(space_params)
       render json: SpaceRepresenter.new(@space).to_json, status: :ok
-      expire_action action: :show
+      #expire_action action: :show
     else
       render json: @space.errors, status: :unprocessable_entity
     end
