@@ -20,3 +20,6 @@
 
 # tags files
 tags
+
+#rake_tasks tmp
+.rake_tasks~

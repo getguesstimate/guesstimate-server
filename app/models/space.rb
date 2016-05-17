@@ -1,14 +1,15 @@
 require 'net/http'
 
-BASE_URL = "https://www.getguesstimate.com/"
+BASE_URL = 'https://www.getguesstimate.com/'
 
 class Space < ActiveRecord::Base
   include AlgoliaSearch
   include FakeNameDetector
 
   belongs_to :user
-  belongs_to :copied_from, :class_name => 'Space', foreign_key: 'copied_from_id'
-  has_many :copies, :class_name => 'Space', foreign_key: 'copied_from_id'
+  belongs_to :copied_from, class_name: 'Space', foreign_key: 'copied_from_id'
+  has_many :copies, class_name: 'Space', foreign_key: 'copied_from_id'
+  has_many :checkpoints, class_name: 'SpaceCheckpoint', dependent: :destroy
 
   belongs_to :organization
 
@@ -19,6 +20,7 @@ class Space < ActiveRecord::Base
   after_initialize :init
   after_save :identify_user
   after_save :take_screenshot, if: :needs_new_screenshot?
+  after_save :take_checkpoint
   after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
@@ -124,6 +126,13 @@ class Space < ActiveRecord::Base
 
     space.save
     return space
+  end
+
+  def take_checkpoint
+    checkpoints.create name: name, description: description, graph: graph
+    if checkpoints.count > 1000
+      checkpoints.order('created_at').first.delete
+    end
   end
 
   def needs_new_screenshot?
