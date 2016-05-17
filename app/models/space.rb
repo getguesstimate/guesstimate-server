@@ -7,8 +7,9 @@ class Space < ActiveRecord::Base
   include FakeNameDetector
 
   belongs_to :user
-  belongs_to :copied_from, :class_name => 'Space', foreign_key: 'copied_from_id'
-  has_many :copies, :class_name => 'Space', foreign_key: 'copied_from_id'
+  belongs_to :copied_from, class_name: 'Space', foreign_key: 'copied_from_id'
+  has_many :copies, class_name: 'Space', foreign_key: 'copied_from_id'
+  has_many :checkpoints, class_name: 'SpaceCheckpoint', dependent: :destroy
 
   belongs_to :organization
 
@@ -19,6 +20,7 @@ class Space < ActiveRecord::Base
   after_initialize :init
   after_save :identify_user
   after_save :take_screenshot, if: :needs_new_screenshot?
+  after_save :take_checkpoint, if: :needs_checkpoint?
   after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
@@ -124,6 +126,20 @@ class Space < ActiveRecord::Base
 
     space.save
     return space
+  end
+
+
+  def needs_checkpoint?
+    checkpoint = checkpoints.order("created_at").last
+    return false unless checkpoint && graph
+    15.minutes.ago >= checkpoint.created_at
+  end
+
+  def take_checkpoint
+    checkpoints.create name: name, description: description, graph: graph
+    if checkpoints.count > 3000 # 3000 at 15 minute intervals in 1 month
+      checkpoints.order("created_at").first.delete
+    end
   end
 
   def needs_new_screenshot?
