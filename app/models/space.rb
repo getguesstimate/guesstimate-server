@@ -20,7 +20,7 @@ class Space < ActiveRecord::Base
   after_initialize :init
   after_save :identify_user
   after_save :take_screenshot, if: :needs_new_screenshot?
-  after_save :take_checkpoint
+  after_save :take_checkpoint, if: :needs_checkpoint?
   after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
@@ -126,6 +126,11 @@ class Space < ActiveRecord::Base
 
     space.save
     return space
+  end
+
+
+  def needs_checkpoint?
+    !graph.nil?
   end
 
   def take_checkpoint
