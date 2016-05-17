@@ -1,6 +1,6 @@
 require 'net/http'
 
-BASE_URL = "https://www.getguesstimate.com/"
+BASE_URL = 'https://www.getguesstimate.com/'
 
 class Space < ActiveRecord::Base
   include AlgoliaSearch
@@ -20,7 +20,7 @@ class Space < ActiveRecord::Base
   after_initialize :init
   after_save :identify_user
   after_save :take_screenshot, if: :needs_new_screenshot?
-  after_save :take_checkpoint, if: :needs_checkpoint?
+  after_save :take_checkpoint
   after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
@@ -128,17 +128,10 @@ class Space < ActiveRecord::Base
     return space
   end
 
-
-  def needs_checkpoint?
-    checkpoint = checkpoints.order("created_at").last
-    return false unless checkpoint && graph
-    15.minutes.ago >= checkpoint.created_at
-  end
-
   def take_checkpoint
     checkpoints.create name: name, description: description, graph: graph
-    if checkpoints.count > 3000 # 3000 at 15 minute intervals in 1 month
-      checkpoints.order("created_at").first.delete
+    if checkpoints.count > 1000
+      checkpoints.order('created_at').first.delete
     end
   end
 
