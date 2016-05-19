@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160517160357) do
+ActiveRecord::Schema.define(version: 20160519210111) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -55,6 +55,7 @@ ActiveRecord::Schema.define(version: 20160517160357) do
     t.string   "screenshot"
     t.boolean  "categorized"
     t.datetime "screenshot_timestamp"
+    t.string   "big_screenshot"
   end
 
   create_table "user_organization_memberships", force: :cascade do |t|
