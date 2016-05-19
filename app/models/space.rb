@@ -38,7 +38,7 @@ class Space < ActiveRecord::Base
   end
 
   algoliasearch if: :is_searchable?, per_environment: true, disable_indexing: Rails.env.test? do
-    attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private, :viewcount, :screenshot
+    attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private, :viewcount, :screenshot, :big_screenshot
     add_attribute :user_info
 
     # We want to rank equally relevant results by viewcount.
