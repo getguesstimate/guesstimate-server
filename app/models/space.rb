@@ -19,7 +19,7 @@ class Space < ActiveRecord::Base
 
   after_initialize :init
   after_save :identify_user
-  after_save :take_screenshot, if: :needs_new_screenshot?
+  after_save :take_screenshots, if: :needs_new_screenshots?
   after_save :take_checkpoint, if: :needs_checkpoint?
   after_destroy :identify_user
 
@@ -140,27 +140,31 @@ class Space < ActiveRecord::Base
     end
   end
 
-  def needs_new_screenshot?
-    Rails.env == "production" && is_public? && has_old_screenshot?
+  def needs_new_screenshots?
+    Rails.env == "production" && is_public? && has_old_screenshots?
   end
 
-  def has_old_screenshot?
+  def has_old_screenshots?
     return true unless screenshot_timestamp
     5.minutes.ago >= screenshot_timestamp
   end
 
-  def get_screenshot_url(force = false)
+  def get_screenshot_url(thumb, force = false)
     url = BASE_URL + "models/#{id}/embed"
 
     column_count = [max_columns, 5].max
     width = 212 * (column_count + 1) + 10
-    screenshot = Screenshot.new(url, width, force)
+    screenshot = Screenshot.new(url, width, thumb, force)
     screenshot.url
   end
 
-  def take_screenshot
-    update_columns screenshot: get_screenshot_url
-    Thread.new {Net::HTTP.get URI.parse(get_screenshot_url(true))}
+  def take_screenshots
+    update_columns screenshot: get_screenshot_url(true)
+    update_columns big_screenshot: get_screenshot_url(false)
+    Thread.new {
+      Net::HTTP.get URI.parse(get_screenshot_url(true, true))
+      Net::HTTP.get URI.parse(get_screenshot_url(false, true))
+    }
     update_columns screenshot_timestamp: DateTime.now
     index!
   end

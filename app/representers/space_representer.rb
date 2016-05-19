@@ -14,6 +14,7 @@ class SpaceRepresenter < Roar::Decorator
   property :user_id
   property :organization_id
   property :screenshot
+  property :big_screenshot
 
   property :user, class: User, embedded: true  do
     property :id
