@@ -35,7 +35,7 @@ end
 class Screenshot
   def initialize(url, width, thumb, force = false)
     options = {full_page: false, width: width, height: (width * 0.6).floor, quality: 90, delay: 40000, force: force}
-    options[:thumb_width] = 200 if thumb_width
+    options[:thumb_width] = 200 if thumb
     @url = urlbox(url, options, 'jpg')
   end
 
