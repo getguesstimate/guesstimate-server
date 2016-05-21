@@ -21,6 +21,7 @@ class Space < ActiveRecord::Base
   after_save :identify_user
   after_save :take_screenshots, if: :needs_new_screenshots?
   after_save :take_checkpoint, if: :needs_checkpoint?
+  after_save :recache_html, if: :needs_recache?
   after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
@@ -128,6 +129,23 @@ class Space < ActiveRecord::Base
     return space
   end
 
+  def needs_recache?
+    !(description.empty? && name.empty?)
+    # TODO(matthew): Time component.
+  end
+
+  def recache_html
+    url = BASE_URL + "models/#{id}"
+
+    Thread.new {
+      uri = URI.parse('http://api.prerender.io')
+      http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Post.new('/recache')
+      request.add_field('Content-Type', 'application/json')
+      request.body = JSON.generate prerenderToken: Rails.application.secret.prerenderToken, url: url
+      http.request request
+    }
+  end
 
   def needs_checkpoint?
     !graph.nil?
