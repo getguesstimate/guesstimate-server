@@ -130,7 +130,7 @@ class Space < ActiveRecord::Base
   end
 
   def needs_recache?
-    !(description.empty? && name.empty?)
+    Rails.env == 'PRODUCTION' && !(description.empty? && name.empty?)
     # TODO(matthew): Time component.
   end
 
@@ -159,7 +159,7 @@ class Space < ActiveRecord::Base
   end
 
   def needs_new_screenshots?
-    Rails.env == "production" && is_public? && has_old_screenshots?
+    Rails.env == 'production' && is_public? && has_old_screenshots?
   end
 
   def has_old_screenshots?
