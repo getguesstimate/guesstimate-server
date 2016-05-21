@@ -140,10 +140,12 @@ class Space < ActiveRecord::Base
     Thread.new {
       uri = URI.parse('http://api.prerender.io')
       http = Net::HTTP.new(uri.host, uri.port)
-      request = Net::HTTP::Post.new('/recache')
-      request.add_field('Content-Type', 'application/json')
-      request.body = JSON.generate prerenderToken: Rails.application.secret.prerenderToken, url: url
-      http.request request
+      req = Net::HTTP::Post.new(
+        'http://api.prerender.io/recache',
+        initHeader = {'Content-Type' => 'application/json'}
+      )
+      req.body = JSON.generate prerenderToken: Rails.application.secrets.prerender_token, url: url
+      http.request req
     }
   end
 
