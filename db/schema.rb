@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160519210111) do
+ActiveRecord::Schema.define(version: 20160523173606) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,7 +26,10 @@ ActiveRecord::Schema.define(version: 20160519210111) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string   "picture"
+    t.integer  "admin_id"
   end
+
+  add_index "organizations", ["admin_id"], name: "index_organizations_on_admin_id", using: :btree
 
   create_table "space_checkpoints", force: :cascade do |t|
     t.json     "graph"
@@ -43,8 +46,8 @@ ActiveRecord::Schema.define(version: 20160519210111) do
   create_table "spaces", force: :cascade do |t|
     t.string   "name"
     t.text     "description"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
     t.json     "graph"
     t.integer  "user_id"
     t.boolean  "is_private"
@@ -54,7 +57,7 @@ ActiveRecord::Schema.define(version: 20160519210111) do
     t.string   "category"
     t.string   "screenshot"
     t.boolean  "categorized"
-    t.datetime "screenshot_timestamp"
+    t.datetime "snapshot_timestamp"
     t.string   "big_screenshot"
   end
 

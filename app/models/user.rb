@@ -4,6 +4,7 @@ class User < ActiveRecord::Base
 
   has_many :memberships, class_name: 'UserOrganizationMembership', dependent: :destroy
   has_many :organizations, through: :memberships
+  has_many :admistrated_organizations, class_name: 'Organization', foreign_key: 'admin_id'
 
   after_create :create_account
   after_save :identify
