@@ -12,38 +12,45 @@ end
 RSpec.describe SpacesController, type: :controller do
   describe 'GET show' do
     let (:owning_user) { FactoryGirl.create(:user, :lite_plan) }
-    let (:viewcount) { nil } # default context unviewed.
     let (:is_private) { false } # default context public.
-    subject (:space) { FactoryGirl.create(:space, user: owning_user, is_private: is_private, viewcount: viewcount) }
+    let (:space) { FactoryGirl.create(:space, user: owning_user, is_private: is_private) }
 
-    it 'shows a public space' do
-      get :show, id: space.id
-      expect(response).to have_http_status :ok
-    end
-
-    context 'private space, not logged in' do
-      let (:is_private) { true }
-      it 'shows the private space' do
-        expect(response).to have_http_status :ok
-      end
-    end
-
-    context 'private space, owner logged in' do
-      let (:is_private) { true }
-      it 'shows the private space' do
-        setup_knock(owning_user)
+    context 'when user is logged out' do
+      before do
         get :show, id: space.id
-        expect(response).to have_http_status :ok
+      end
+      it { is_expected.to respond_with :ok }
+
+      context 'when space is private' do
+        let (:is_private) { true }
+        it { is_expected.to respond_with :unauthorized }
       end
     end
 
-    context 'private space, other user logged in' do
+    context 'when user is logged in' do
       let (:viewing_user) { FactoryGirl.create(:user) }
-      let (:is_private) { true }
-      it 'returns a 401 error' do
+
+      before do
         setup_knock(viewing_user)
         get :show, id: space.id
-        expect(response).to have_http_status 401
+      end
+
+      it { is_expected.to respond_with :ok }
+
+      context 'when space is private' do
+        let (:is_private) { true }
+        it { is_expected.to respond_with :unauthorized }
+      end
+
+      context 'when viewer is owner' do
+        let (:viewing_user) { owning_user }
+
+        it { is_expected.to respond_with :ok }
+
+        context 'when space is private' do
+          let (:is_private) { true }
+          it { is_expected.to respond_with :ok }
+        end
       end
     end
   end
