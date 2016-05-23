@@ -19,9 +19,8 @@ class Space < ActiveRecord::Base
 
   after_initialize :init
   after_save :identify_user
-  after_save :take_screenshots, if: :needs_new_screenshots?
+  after_save :take_snapshot, if: :needs_new_snapshot?
   after_save :take_checkpoint, if: :needs_checkpoint?
-  after_save :recache_html, if: :needs_recache?
   after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
@@ -129,26 +128,6 @@ class Space < ActiveRecord::Base
     return space
   end
 
-  def needs_recache?
-    Rails.env == 'PRODUCTION' && !(description.empty? && name.empty?)
-    # TODO(matthew): Time component.
-  end
-
-  def recache_html
-    url = BASE_URL + "models/#{id}"
-
-    Thread.new {
-      uri = URI.parse('http://api.prerender.io')
-      http = Net::HTTP.new(uri.host, uri.port)
-      req = Net::HTTP::Post.new(
-        'http://api.prerender.io/recache',
-        initHeader = {'Content-Type' => 'application/json'}
-      )
-      req.body = JSON.generate prerenderToken: Rails.application.secrets.prerender_token, url: url
-      http.request req
-    }
-  end
-
   def needs_checkpoint?
     !graph.nil?
   end
@@ -160,13 +139,13 @@ class Space < ActiveRecord::Base
     end
   end
 
-  def needs_new_screenshots?
-    Rails.env == 'production' && is_public? && has_old_screenshots?
+  def needs_new_snapshot?
+    Rails.env == 'production' && is_public? && has_old_snapshot?
   end
 
-  def has_old_screenshots?
-    return true unless screenshot_timestamp
-    5.minutes.ago >= screenshot_timestamp
+  def has_old_snapshot?
+    return true unless snapshot_timestamp
+    5.minutes.ago >= snapshot_timestamp
   end
 
   def get_screenshot_url(thumb, force = false)
@@ -179,13 +158,29 @@ class Space < ActiveRecord::Base
   end
 
   def take_screenshots
-    update_columns screenshot: get_screenshot_url(true)
-    update_columns big_screenshot: get_screenshot_url(false)
+    Net::HTTP.get URI.parse(get_screenshot_url(true, true))
+    Net::HTTP.get URI.parse(get_screenshot_url(false, true))
+  end
+
+  def recache_html
+    url = BASE_URL + "models/#{id}"
+
+    uri = URI.parse('http://api.prerender.io')
+    http = Net::HTTP.new(uri.host, uri.port)
+    req = Net::HTTP::Post.new(
+      'http://api.prerender.io/recache',
+      initHeader = {'Content-Type' => 'application/json'}
+    )
+    req.body = JSON.generate prerenderToken: Rails.application.secrets.prerender_token, url: url
+    http.request req
+  end
+
+  def take_snapshot
+    update_columns screenshot: get_screenshot_url(true), big_screenshot: get_screenshot_url(false), snapshot_timestamp: DateTime.now
     Thread.new {
-      Net::HTTP.get URI.parse(get_screenshot_url(true, true))
-      Net::HTTP.get URI.parse(get_screenshot_url(false, true))
+      take_screenshots
+      recache_html
     }
-    update_columns screenshot_timestamp: DateTime.now
     index!
   end
 
