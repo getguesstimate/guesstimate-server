@@ -16,9 +16,8 @@ RSpec.describe SpacesController, type: :controller do
     let (:space) { FactoryGirl.create(:space, user: owning_user, is_private: is_private) }
 
     context 'when user is logged out' do
-      before do
-        get :show, id: space.id
-      end
+      before { get :show, id: space.id }
+
       it { is_expected.to respond_with :ok }
 
       context 'when space is private' do
