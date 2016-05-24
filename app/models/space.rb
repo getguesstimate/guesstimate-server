@@ -28,11 +28,6 @@ class Space < ActiveRecord::Base
   scope :public_or_belonging_to, -> (user) { where 'is_private IS false OR user_id = ?', user.try(:id) }
   scope :uncategorized_since, -> (date) { where 'categorized IS NOT true AND DATE(created_at) >= ?', date }
 
-  def self.visible_by(user)
-    return public_or_belonging_to(user) if user.organization.nil?
-    (public_or_belonging_to(user).all + user.organization.spaces.all).uniq
-  end
-
   def init
     self.is_private ||= false
   end
