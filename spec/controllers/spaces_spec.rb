@@ -17,18 +17,18 @@ RSpec.describe SpacesController, type: :controller do
     let (:organization) { nil } # default context no organization.
     let (:space) { FactoryGirl.create(:space, user: creator, organization: organization, is_private: is_private) }
 
-    context 'when user is logged out' do
+    context 'for a logged out viewer' do
       before { get :show, id: space.id }
 
       it { is_expected.to respond_with :ok }
 
-      context 'when space is private' do
+      context 'for a private space' do
         let (:is_private) { true }
         it { is_expected.to respond_with :unauthorized }
       end
     end
 
-    context 'when user is logged in' do
+    context 'for a logged in viewer' do
       let (:viewing_user) { FactoryGirl.create(:user) }
 
       before do
@@ -38,25 +38,25 @@ RSpec.describe SpacesController, type: :controller do
 
       it { is_expected.to respond_with :ok }
 
-      context 'when space is private' do
+      context 'for a private space' do
         let (:is_private) { true }
         it { is_expected.to respond_with :unauthorized }
       end
 
-      context 'when viewer is owner' do
+      context 'for a viewing creator' do
         let (:viewing_user) { creator }
 
         it { is_expected.to respond_with :ok }
 
-        context 'when space is private' do
+        context 'for a private space' do
           let (:is_private) { true }
 
-          context 'when space does not have organization' do
+          context 'for a space without organization' do
             it { is_expected.to respond_with :ok }
           end
 
-          context 'when space has organization' do
-            context 'when creator is member' do
+          context 'for a space with organization' do
+            context 'for a creator who is a member' do
               let (:organization) {
                 organization = FactoryGirl.create(:organization)
                 FactoryGirl.create(:user_organization_membership, user: creator, organization: organization)
@@ -65,7 +65,7 @@ RSpec.describe SpacesController, type: :controller do
               it { is_expected.to respond_with :ok }
             end
 
-            context 'when creator is not member' do
+            context 'for a non-membered creator' do
               let (:organization) { FactoryGirl.create(:organization) }
               it { is_expected.to respond_with :unauthorized }
             end
@@ -118,12 +118,12 @@ RSpec.describe SpacesController, type: :controller do
     context 'viewing user' do
       let (:get_params) {{user_id: creator.id}}
 
-      context 'when viewer is logged out' do
+      context 'for a logged out viewer' do
         let (:expected_rendered_spaces) { [:creator_public_org, :creator_public_no_org, :creator_public_org_no_member] }
         include_examples 'has_visible_spaces'
       end
 
-      context 'when viewer is owner' do
+      context 'for a viewing creator' do
         let (:viewing_user) { creator }
         let (:expected_rendered_spaces) {[
           :creator_public_org,
@@ -134,7 +134,7 @@ RSpec.describe SpacesController, type: :controller do
         include_examples 'has_visible_spaces'
       end
 
-      context 'when viewer is not owner' do
+      context 'for a logged in viewer (not creator)' do
         let (:viewing_user) { FactoryGirl.create(:user) }
         let (:expected_rendered_spaces) {[
           :creator_public_org,
@@ -148,12 +148,12 @@ RSpec.describe SpacesController, type: :controller do
     context 'viewing organization' do
       let (:get_params) {{organization_id: organization_creator_member.id}}
 
-      context 'when viewer is logged out' do
+      context 'for a logged out viewer' do
         let (:expected_rendered_spaces) {[:creator_public_org, :secondary_public_org]}
         include_examples 'has_visible_spaces'
       end
 
-      context 'when viewer is member' do
+      context 'for a viewing member' do
         let (:viewing_user) { creator }
         let (:expected_rendered_spaces) {[
           :creator_public_org,
@@ -164,7 +164,7 @@ RSpec.describe SpacesController, type: :controller do
         include_examples 'has_visible_spaces'
       end
 
-      context 'when viewer is not member' do
+      context 'for a viewer who is not a member' do
         let (:viewing_user) { FactoryGirl.create(:user) }
         let (:expected_rendered_spaces) {[:creator_public_org, :secondary_public_org]}
         include_examples 'has_visible_spaces'
