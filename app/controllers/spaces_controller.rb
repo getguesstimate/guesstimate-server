@@ -22,12 +22,7 @@ class SpacesController < ApplicationController
       else
         @spaces = Organization.find(params['organization_id']).spaces.is_public
       end
-    else
-      # TODO(matthew): Do we have a use for this case? It carries some extra baggage that I'd like to remove, if we
-      # don't really need it.
-      @spaces = Space.visible_by(current_user).first(10)
     end
-    #render json: @spaces.as_json(only: [:id, :name, :description, :updated_at, :user_id])
     render json: SpacesRepresenter.new(@spaces).to_json
   end
 
