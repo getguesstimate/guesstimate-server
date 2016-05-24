@@ -12,7 +12,8 @@ class SpacesController < ApplicationController
     if params['user_id']
       @user = User.find(params['user_id'])
       if current_user && @user.id == current_user.id
-        @spaces = @user.spaces
+        organization_ids = @user.organizations.map {|o| o.id}
+        @spaces = @user.spaces.where(organization_id: [nil] + organization_ids)
       else
         @spaces = @user.spaces.is_public
       end
@@ -79,7 +80,11 @@ class SpacesController < ApplicationController
   private
 
   def belongs_to_user_or_users_organization
-    @space.user_id == current_user.id || current_user.member_of?(@space.organization_id)
+    if @space.organization_id.nil?
+      @space.user_id == current_user.id
+    else
+      current_user.member_of?(@space.organization_id)
+    end
   end
 
   def check_authorization
