@@ -35,6 +35,7 @@ class Space < ActiveRecord::Base
   algoliasearch if: :is_searchable?, per_environment: true, disable_indexing: Rails.env.test? do
     attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private, :viewcount, :screenshot, :big_screenshot
     add_attribute :user_info
+    add_attribute :organization_info
 
     # We want to rank equally relevant results by viewcount.
     customRanking ['desc(viewcount)']
@@ -88,6 +89,10 @@ class Space < ActiveRecord::Base
 
   def user_info
     user ? UserRepresenter.new(user).to_hash(user_options: {is_current_user: false}) : {}
+  end
+
+  def organization_info
+    organization ? OrganizationRepresenter.new(organization).to_hash : {}
   end
 
   def can_create_private_models
