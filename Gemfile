@@ -52,6 +52,7 @@ end
 
 group :test do
   gem 'shoulda-matchers'
+  gem 'rspec-collection_matchers'
 end
 
 group :development do

@@ -176,6 +176,8 @@ GEM
       roar (>= 1.0.0, <= 1.1.0)
       test_xml (>= 0.1.6)
       uber (>= 0.0.5)
+    rspec-collection_matchers (1.1.2)
+      rspec-expectations (>= 2.99.0.beta1)
     rspec-core (3.4.3)
       rspec-support (~> 3.4.0)
     rspec-expectations (3.4.0)
@@ -265,6 +267,7 @@ DEPENDENCIES
   rails_12factor
   responders
   roar-rails
+  rspec-collection_matchers
   rspec-rails
   sass-rails
   sdoc (~> 0.4.0)

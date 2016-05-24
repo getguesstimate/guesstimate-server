@@ -1,5 +1,6 @@
 require 'rails_helper'
 require 'spec_helper'
+require 'rspec/collection_matchers'
 
 def setup_knock(user)
   request.headers['authorization'] = 'Bearer JWTTOKEN'
@@ -111,7 +112,12 @@ RSpec.describe SpacesController, type: :controller do
         it { is_expected.to respond_with :ok }
 
         it 'should contain only the creator\'s public spaces' do
-          expect(rendered_space_ids).to include(spaces[:creator_public_org][:id], spaces[:creator_public_no_org][:id])
+          expect(rendered_space_ids).to have(3).ids
+          expect(rendered_space_ids).to include(
+            spaces[:creator_public_org][:id],
+            spaces[:creator_public_no_org][:id],
+            spaces[:creator_public_org_no_member][:id],
+          )
         end
       end
 
@@ -126,11 +132,11 @@ RSpec.describe SpacesController, type: :controller do
           let (:viewing_user) { creator }
           it { is_expected.to respond_with :ok }
 
-          it 'should contain only the spaces belonging to orgs of which the creator is a member (including no org) and public spaces' do
+          it 'should contain only the spaces belonging to orgs of which the creator is a member (including no org) (not public spaces)' do
+            expect(rendered_space_ids).to have(4).ids
             expect(rendered_space_ids).to include(
               spaces[:creator_public_org][:id],
               spaces[:creator_public_no_org][:id],
-              spaces[:creator_public_org_no_member][:id],
               spaces[:creator_private_org][:id],
               spaces[:creator_private_no_org][:id],
             )
@@ -141,7 +147,12 @@ RSpec.describe SpacesController, type: :controller do
           let (:viewing_user) { FactoryGirl.create(:user) }
           it { is_expected.to respond_with :ok }
           it 'should contain only the creator\'s public spaces' do
-            expect(rendered_space_ids).to include(spaces[:creator_public_org][:id], spaces[:creator_public_no_org][:id])
+            expect(rendered_space_ids).to have(3).ids
+            expect(rendered_space_ids).to include(
+              spaces[:creator_public_org][:id],
+              spaces[:creator_public_no_org][:id],
+              spaces[:creator_public_org_no_member][:id],
+            )
           end
         end
       end
@@ -156,6 +167,7 @@ RSpec.describe SpacesController, type: :controller do
       context 'when user is logged out' do
         it { is_expected.to respond_with :ok }
         it 'should contain only the organization\'s public spaces' do
+          expect(rendered_space_ids).to have(2).ids
           expect(rendered_space_ids).to include(spaces[:creator_public_org][:id], spaces[:secondary_public_org][:id])
         end
       end
@@ -171,6 +183,7 @@ RSpec.describe SpacesController, type: :controller do
           let (:viewing_user) { creator }
           it { is_expected.to respond_with :ok }
           it 'should contain all the organization\'s spaces' do
+            expect(rendered_space_ids).to have(4).ids
             expect(rendered_space_ids).to include(
               spaces[:creator_public_org][:id],
               spaces[:creator_private_org][:id],
@@ -184,6 +197,7 @@ RSpec.describe SpacesController, type: :controller do
           let (:viewing_user) { FactoryGirl.create(:user) }
           it { is_expected.to respond_with :ok }
           it 'should contain only the organization\'s public spaces' do
+            expect(rendered_space_ids).to have(2).ids
             expect(rendered_space_ids).to include(spaces[:creator_public_org][:id], spaces[:secondary_public_org][:id])
           end
         end
