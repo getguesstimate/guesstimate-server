@@ -14,9 +14,7 @@ class UserOrganizationMembershipsController < ApplicationController
 
   def destroy
     @membership = UserOrganizationMembership.find(params[:id])
-    if @membership.nil?
-      head 404
-    elsif current_user.id == @membership.organization.admin_id
+    if current_user.id == @membership.organization.admin_id
       @membership.destroy
       head :no_content
     else
