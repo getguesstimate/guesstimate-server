@@ -100,107 +100,74 @@ RSpec.describe SpacesController, type: :controller do
     #TODO(matthew): I want to just parse this via the spaces representer but that seems impossible.
     #let (:rendered_spaces) { SpacesRepresenter.new([]).from_json(response.body) }
     let (:rendered_space_ids) { JSON.parse(response.body)['items'].map {|s| s['id']} }
+    let (:viewing_user) { nil }
+
+    before do
+      spaces
+      viewing_user && setup_knock(viewing_user)
+      get :index, get_params
+    end
+
+    shared_examples 'has_visible_spaces' do
+      it { is_expected.to respond_with :ok }
+      it 'has correct spaces' do
+        expect(rendered_space_ids).to match_array(expected_rendered_spaces.map{|e| spaces[e][:id]})
+      end
+    end
 
     context 'viewing user' do
+      let (:get_params) {{user_id: creator.id}}
 
-      before do
-        spaces
-        get :index, user_id: creator.id
+      context 'when viewer is logged out' do
+        let (:expected_rendered_spaces) { [:creator_public_org, :creator_public_no_org, :creator_public_org_no_member] }
+        include_examples 'has_visible_spaces'
       end
 
-      context 'when user is logged out' do
-        it { is_expected.to respond_with :ok }
-
-        it 'should contain only the creator\'s public spaces' do
-          expect(rendered_space_ids).to have(3).ids
-          expect(rendered_space_ids).to include(
-            spaces[:creator_public_org][:id],
-            spaces[:creator_public_no_org][:id],
-            spaces[:creator_public_org_no_member][:id],
-          )
-        end
+      context 'when viewer is owner' do
+        let (:viewing_user) { creator }
+        let (:expected_rendered_spaces) {[
+          :creator_public_org,
+          :creator_public_no_org,
+          :creator_private_org,
+          :creator_private_no_org,
+        ]}
+        include_examples 'has_visible_spaces'
       end
 
-      context 'when user is logged in' do
-        before do
-          spaces
-          setup_knock(viewing_user)
-          get :index, user_id: creator.id
-        end
-
-        context 'when user is self' do
-          let (:viewing_user) { creator }
-          it { is_expected.to respond_with :ok }
-
-          it 'should contain only the spaces belonging to orgs of which the creator is a member (including no org) (not public spaces)' do
-            expect(rendered_space_ids).to have(4).ids
-            expect(rendered_space_ids).to include(
-              spaces[:creator_public_org][:id],
-              spaces[:creator_public_no_org][:id],
-              spaces[:creator_private_org][:id],
-              spaces[:creator_private_no_org][:id],
-            )
-          end
-        end
-
-        context 'when user is not self' do
-          let (:viewing_user) { FactoryGirl.create(:user) }
-          it { is_expected.to respond_with :ok }
-          it 'should contain only the creator\'s public spaces' do
-            expect(rendered_space_ids).to have(3).ids
-            expect(rendered_space_ids).to include(
-              spaces[:creator_public_org][:id],
-              spaces[:creator_public_no_org][:id],
-              spaces[:creator_public_org_no_member][:id],
-            )
-          end
-        end
+      context 'when viewer is not owner' do
+        let (:viewing_user) { FactoryGirl.create(:user) }
+        let (:expected_rendered_spaces) {[
+          :creator_public_org,
+          :creator_public_no_org,
+          :creator_public_org_no_member,
+        ]}
+        include_examples 'has_visible_spaces'
       end
     end
 
     context 'viewing organization' do
-      before do
-        spaces
-        get :index, organization_id: organization_creator_member.id
+      let (:get_params) {{organization_id: organization_creator_member.id}}
+
+      context 'when viewer is logged out' do
+        let (:expected_rendered_spaces) {[:creator_public_org, :secondary_public_org]}
+        include_examples 'has_visible_spaces'
       end
 
-      context 'when user is logged out' do
-        it { is_expected.to respond_with :ok }
-        it 'should contain only the organization\'s public spaces' do
-          expect(rendered_space_ids).to have(2).ids
-          expect(rendered_space_ids).to include(spaces[:creator_public_org][:id], spaces[:secondary_public_org][:id])
-        end
+      context 'when viewer is member' do
+        let (:viewing_user) { creator }
+        let (:expected_rendered_spaces) {[
+          :creator_public_org,
+          :creator_private_org,
+          :secondary_public_org,
+          :secondary_private_org,
+        ]}
+        include_examples 'has_visible_spaces'
       end
 
-      context 'when user is logged in' do
-        before do
-          spaces
-          setup_knock(viewing_user)
-          get :index, organization_id: organization_creator_member.id
-        end
-
-        context 'when user is member' do
-          let (:viewing_user) { creator }
-          it { is_expected.to respond_with :ok }
-          it 'should contain all the organization\'s spaces' do
-            expect(rendered_space_ids).to have(4).ids
-            expect(rendered_space_ids).to include(
-              spaces[:creator_public_org][:id],
-              spaces[:creator_private_org][:id],
-              spaces[:secondary_public_org][:id],
-              spaces[:secondary_private_org][:id],
-            )
-          end
-        end
-
-        context 'when user is not member' do
-          let (:viewing_user) { FactoryGirl.create(:user) }
-          it { is_expected.to respond_with :ok }
-          it 'should contain only the organization\'s public spaces' do
-            expect(rendered_space_ids).to have(2).ids
-            expect(rendered_space_ids).to include(spaces[:creator_public_org][:id], spaces[:secondary_public_org][:id])
-          end
-        end
+      context 'when viewer is not member' do
+        let (:viewing_user) { FactoryGirl.create(:user) }
+        let (:expected_rendered_spaces) {[:creator_public_org, :secondary_public_org]}
+        include_examples 'has_visible_spaces'
       end
     end
   end

@@ -85,6 +85,14 @@ class Space < ActiveRecord::Base
     metrics.length > 3
   end
 
+  def editable_by_user?(user)
+    if organization
+      user.member_of?(organization)
+    else
+      user_id == user.id
+    end
+  end
+
   def user_info
     user ? UserRepresenter.new(user).to_hash(user_options: {is_current_user: false}) : {}
   end
