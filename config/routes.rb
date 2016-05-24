@@ -18,4 +18,6 @@ Rails.application.routes.draw do
     resources :spaces, only: [:index]
     get :members, to: 'user_organization_memberships#organization_memberships'
   end
+
+  resources :user_organization_memberships, only: [:destroy]
 end

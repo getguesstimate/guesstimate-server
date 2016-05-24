@@ -12,7 +12,8 @@ class SpacesController < ApplicationController
     if params['user_id']
       @user = User.find(params['user_id'])
       if current_user && @user.id == current_user.id
-        @spaces = @user.spaces
+        organization_ids = @user.organizations.map {|o| o.id}
+        @spaces = @user.spaces.where(organization_id: [nil] + organization_ids)
       else
         @spaces = @user.spaces.is_public
       end
@@ -29,7 +30,7 @@ class SpacesController < ApplicationController
   # GET /spaces/1
   # GET /spaces/1.json
   def show
-    if @space.is_public? || (current_user && belongs_to_user_or_users_organization)
+    if @space.is_public? || (current_user && @space.editable_by_user?(current_user))
       newSpace = @space
       newSpace.graph = @space.cleaned_graph
       render json: SpaceRepresenter.new(newSpace).to_json
@@ -78,12 +79,8 @@ class SpacesController < ApplicationController
 
   private
 
-  def belongs_to_user_or_users_organization
-    @space.user_id == current_user.id || current_user.member_of?(@space.organization_id)
-  end
-
   def check_authorization
-    head :unauthorized unless belongs_to_user_or_users_organization
+    head :unauthorized unless @space.editable_by_user current_user
   end
 
   # Use callbacks to share common setup or constraints between actions.

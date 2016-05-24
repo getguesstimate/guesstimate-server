@@ -25,7 +25,6 @@ class Space < ActiveRecord::Base
 
   scope :is_private, -> { where(is_private: true) }
   scope :is_public, -> { where(is_private: false) }
-  scope :public_or_belonging_to, -> (user) { where 'is_private IS false OR user_id = ?', user.try(:id) }
   scope :uncategorized_since, -> (date) { where 'categorized IS NOT true AND DATE(created_at) >= ?', date }
 
   def init
@@ -85,6 +84,14 @@ class Space < ActiveRecord::Base
     guesstimates_not_of_type(['POINT', 'FUNCTION', 'NONE']).any? &&
     guesstimates_of_type(['FUNCTION']).any? &&
     metrics.length > 3
+  end
+
+  def editable_by_user?(user)
+    if organization
+      user.member_of?(organization)
+    else
+      user_id == user.id
+    end
   end
 
   def user_info

@@ -1,4 +1,8 @@
 class UserOrganizationMembershipsController < ApplicationController
+  before_action :authenticate, only: [:destroy]
+  before_action :set_membership, only: [:destroy]
+  before_action :check_authorization, only: [:destroy]
+
   def user_memberships
     # We use a UserOrganizationMemberships scope here to avoid unnecessary DB indirection through the user.
     @memberships = UserOrganizationMembership.for_user(params[:user_id])
@@ -9,5 +13,20 @@ class UserOrganizationMembershipsController < ApplicationController
     # We use a UserOrganizationMemberships scope here to avoid unnecessary DB indirection through the organization.
     @memberships = UserOrganizationMembership.for_organization(params[:organization_id])
     render json: OrganizationMembershipsRepresenter.new(@memberships).to_json
+  end
+
+  def destroy
+    @membership.destroy
+    head :no_content
+  end
+
+  private
+
+  def set_membership
+    @membership = UserOrganizationMembership.find(params[:id])
+  end
+
+  def check_authorization
+    head :unauthorized unless current_user.id == @membership.organization.admin_id
   end
 end
