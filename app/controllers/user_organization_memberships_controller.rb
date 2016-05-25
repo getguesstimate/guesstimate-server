@@ -1,7 +1,7 @@
 class UserOrganizationMembershipsController < ApplicationController
   before_action :authenticate, only: [:create_by_email, :destroy]
   before_action :set_membership, only: [:destroy]
-  before_action :set_organization, only: [:create_by_email]
+  before_action :set_entities, only: [:create_by_email]
   before_action :check_authorization, only: [:create_by_email, :destroy]
 
   def user_memberships
@@ -17,13 +17,12 @@ class UserOrganizationMembershipsController < ApplicationController
   end
 
   def create_by_email
-    user = User.find_by_email params[:email]
-    if user.nil?
+    if @user.nil?
       head 404
       return
     end
 
-    @membership = UserOrganizationMembership.new user: user, organization_id: params[:organization_id]
+    @membership = UserOrganizationMembership.new user: @user, organization: @organization
     if @membership.save
       render json: OrganizationMembershipRepresenter.new(@membership).to_json
     else
@@ -43,8 +42,9 @@ class UserOrganizationMembershipsController < ApplicationController
     @organization = @membership.organization
   end
 
-  def set_organization
+  def set_entities
     @organization = Organization.find(params[:organization_id])
+    @user = User.find_by_email(params[:email])
   end
 
   def check_authorization
