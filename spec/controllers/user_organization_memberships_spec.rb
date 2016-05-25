@@ -59,4 +59,81 @@ RSpec.describe UserOrganizationMembershipsController, type: :controller do
       include_examples 'delete failed'
     end
   end
+
+  describe 'POST create_by_email' do
+    let (:requesting_user) { nil }
+    let (:organization) { FactoryGirl.create :organization }
+    let (:existing_user) { nil }
+    let (:email) { "" }
+    before do
+      existing_user
+      requesting_user
+      organization
+      requesting_user && setup_knock(requesting_user)
+      post :create_by_email, organization_id: organization[:id], email: email
+    end
+
+    shared_examples 'successfully creates' do
+      it { is_expected.to respond_with :ok }
+      it 'should create the right membership' do
+        expect(JSON.parse(response.body)["user_id"]).to eq existing_user.id
+        expect(JSON.parse(response.body)["organization_id"]).to eq organization.id
+      end
+    end
+
+    shared_examples 'authorization fails' do
+      it { is_expected.to respond_with :unauthorized }
+    end
+
+    shared_examples 'fails to find entity' do
+      it { is_expected.to respond_with :not_found }
+    end
+
+    shared_context 'for existing user', user: true do
+      let (:existing_user) { FactoryGirl.create :user }
+      let (:email) { existing_user.email }
+    end
+
+    context 'for visitor' do
+      include_examples 'authorization fails'
+
+      context 'for an existing user', user: true do
+        include_examples 'authorization fails'
+      end
+    end
+
+    context 'for logged in requester' do
+      let (:requesting_user) { FactoryGirl.create :user }
+      include_examples 'authorization fails'
+
+      context 'for an existing user', user: true do
+        include_examples 'authorization fails'
+      end
+    end
+
+    context 'for logged in member requester' do
+      let (:requesting_user) {
+        user = FactoryGirl.create :user
+        FactoryGirl.create :user_organization_membership, user: user, organization: organization
+        user
+      }
+
+      include_examples 'authorization fails'
+
+      context 'on existing user', user: true do
+        include_examples 'authorization fails'
+      end
+    end
+
+    context 'for logged in admin requester' do
+      let (:requesting_user) { user = FactoryGirl.create :user }
+      let (:organization) { FactoryGirl.create :organization, admin: requesting_user }
+
+      include_examples 'fails to find entity'
+
+      context 'on existing user', user: true do
+        include_examples 'successfully creates'
+      end
+    end
+  end
 end
