@@ -80,7 +80,7 @@ class SpacesController < ApplicationController
   private
 
   def check_authorization
-    head :unauthorized unless @space.editable_by_user current_user
+    head :unauthorized unless @space.editable_by_user? current_user
   end
 
   # Use callbacks to share common setup or constraints between actions.
