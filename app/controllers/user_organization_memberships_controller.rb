@@ -25,9 +25,8 @@ class UserOrganizationMembershipsController < ApplicationController
   def invite_user(email)
     password = generate_random_password
     @user = Authentor.new().create_user email: email, password: password
-    sign_in_url = "https://www.getguesstimate.com"
 
-    UserOrganizationMembershipMailer.send_invite_email(@user, @organization, sign_in_url, password).deliver_later
+    UserOrganizationMembershipMailer.send_invite_email(@user, @organization, BASE_URL, password).deliver_later
   end
 
   def create_by_email
