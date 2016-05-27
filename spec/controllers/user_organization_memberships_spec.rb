@@ -1,5 +1,6 @@
 require 'rails_helper'
 require 'spec_helper'
+require 'authentor'
 
 def setup_knock(user)
   request.headers['authorization'] = 'Bearer JWTTOKEN'
@@ -7,6 +8,12 @@ def setup_knock(user)
   allow(knock).to receive(:current_user).and_return(user)
   allow(knock).to receive(:validate!).and_return(true)
   allow(Knock::AuthToken).to receive(:new).and_return(knock)
+end
+
+class AuthentorMock
+  def create_user(params)
+    return FactoryGirl.create :user, email: params[:email], username: params[:email]
+  end
 end
 
 RSpec.describe UserOrganizationMembershipsController, type: :controller do
@@ -65,15 +72,23 @@ RSpec.describe UserOrganizationMembershipsController, type: :controller do
     let (:organization) { FactoryGirl.create :organization }
     let (:existing_user) { nil }
     let (:email) { "" }
+
     before do
       existing_user
       requesting_user
       organization
+
       requesting_user && setup_knock(requesting_user)
+
+      if existing_user.nil?
+        authentor = class_double("Authentor").as_stubbed_const
+        allow(authentor).to receive(:new).and_return(AuthentorMock.new())
+      end
+
       post :create_by_email, organization_id: organization[:id], email: email
     end
 
-    shared_examples 'successfully creates' do
+    shared_examples 'successfully creates for existing user' do
       it { is_expected.to respond_with :ok }
       it 'should create the right membership' do
         expect(JSON.parse(response.body)["user_id"]).to eq existing_user.id
@@ -85,13 +100,22 @@ RSpec.describe UserOrganizationMembershipsController, type: :controller do
       it { is_expected.to respond_with :unauthorized }
     end
 
-    shared_examples 'fails to find entity' do
-      it { is_expected.to respond_with :not_found }
+    shared_examples 'creates a new auth0 user' do
+      it { is_expected.to respond_with :ok }
+      it 'should create the right membership' do
+        expect(JSON.parse(response.body)["_embedded"]["user"]["name"]).to eq email
+        expect(JSON.parse(response.body)["organization_id"]).to eq organization.id
+      end
     end
 
     shared_context 'for existing user', user: true do
       let (:existing_user) { FactoryGirl.create :user }
       let (:email) { existing_user.email }
+    end
+
+    shared_context 'non-existent user', user: false do
+      let (:existing_user) { nil }
+      let (:email) { "foo@bar.com" }
     end
 
     context 'for visitor' do
@@ -129,10 +153,12 @@ RSpec.describe UserOrganizationMembershipsController, type: :controller do
       let (:requesting_user) { user = FactoryGirl.create :user }
       let (:organization) { FactoryGirl.create :organization, admin: requesting_user }
 
-      include_examples 'fails to find entity'
+      context 'on new user', user: false do
+        include_examples 'creates a new auth0 user'
+      end
 
       context 'on existing user', user: true do
-        include_examples 'successfully creates'
+        include_examples 'successfully creates for existing user'
       end
     end
   end

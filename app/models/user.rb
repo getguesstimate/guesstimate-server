@@ -18,6 +18,20 @@ class User < ActiveRecord::Base
 
   scope :uncategorized_since, -> (date) { where 'categorized IS NOT true AND DATE(created_at) >= ?', date }
 
+  def self.create_from_auth0_user(auth0_user)
+    User.create(
+      name: auth0_user['name'],
+      username: auth0_user['nickname'],
+      email: auth0_user['email'],
+      company: auth0_user['company'],
+      locale: auth0_user['locale'],
+      location: auth0_user['location'],
+      gender: auth0_user['gender'],
+      picture: auth0_user['picture'],
+      auth0_id: auth0_user['user_id'],
+    )
+  end
+
   def plan_details
     Plan.find(plan)
   end

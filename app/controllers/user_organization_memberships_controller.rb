@@ -1,3 +1,5 @@
+require 'securerandom'
+
 class UserOrganizationMembershipsController < ApplicationController
   before_action :authenticate, only: [:create_by_email, :destroy]
   before_action :set_membership, only: [:destroy]
@@ -18,8 +20,11 @@ class UserOrganizationMembershipsController < ApplicationController
 
   def create_by_email
     if @user.nil?
-      head 404
-      return
+      invite_user params[:email]
+      if !@user.valid?
+        render json: @user.errors, status: :unprocessable_entity
+        return
+      end
     end
 
     @membership = UserOrganizationMembership.new user: @user, organization: @organization
@@ -36,6 +41,17 @@ class UserOrganizationMembershipsController < ApplicationController
   end
 
   private
+
+  def generate_random_password
+    SecureRandom.urlsafe_base64(6)
+  end
+
+  def invite_user(email)
+    password = generate_random_password
+    @user = Authentor.new().create_user email: email, password: password
+
+    UserOrganizationMembershipMailer.new_user_invite(@user, @organization, BASE_URL, password).deliver_later
+  end
 
   def set_membership
     @membership = UserOrganizationMembership.find(params[:id])

@@ -1,7 +1,5 @@
 require 'net/http'
 
-BASE_URL = 'https://www.getguesstimate.com/'
-
 class Space < ActiveRecord::Base
   include AlgoliaSearch
   include FakeNameDetector
