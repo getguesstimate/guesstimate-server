@@ -39,7 +39,6 @@ class UserOrganizationMembershipsController < ApplicationController
     )
 
     @user = User.create name: new_auth0_user["name"], username: email, email: email, auth0_id: new_auth0_user["user_id"], picture: new_auth0_user["picture"]
-    @organization.memberships.create user: @user
 
     #url = generate_verification_ticket new_auth0_user
 

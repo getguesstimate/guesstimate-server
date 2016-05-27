@@ -5,4 +5,5 @@ class UserOrganizationMembershipMailer < ApplicationMailer
     @password = password
     @redirect_url = redirect_url
     mail to: @user.email, subject: "Welcome to Guesstimate"
+  end
 end
