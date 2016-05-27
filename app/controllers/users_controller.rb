@@ -21,7 +21,7 @@ class UsersController < ApplicationController
 
       if @users.empty?
         Rails.logger.error "Requested user not found.  Syncing with authentication provider."
-        Authentor.new().run
+        Authentor.new().fetch_users
         @users = User.where(auth0_id: params[:auth0_id])
       end
     else

@@ -1,7 +1,7 @@
 require 'securerandom'
 
 class UserOrganizationMembershipsController < ApplicationController
-  before_action :authenticate, only: [:create_by_email, :destroy]
+  #before_action :authenticate, only: [:create_by_email, :destroy]
   before_action :set_membership, only: [:destroy]
   before_action :set_entities, only: [:create_by_email]
   before_action :check_authorization, only: [:create_by_email, :destroy]
@@ -22,23 +22,9 @@ class UserOrganizationMembershipsController < ApplicationController
     SecureRandom.urlsafe_base64(6)
   end
 
-  def invite_user email
-    # TODO(matthew): Move this to authentor (and refactor that class).
-    auth0 = Auth0Client.new(
-      :api_version => 2,
-      :token => Rails.application.secrets.auth0_api_token,
-      :domain => Rails.application.secrets.auth0_api_domain
-    )
+  def invite_user(email)
     password = generate_random_password
-    new_auth0_user = auth0.create_user(
-      email,
-      connection: Rails.application.secrets.auth0_authentication_connection,
-      email: email,
-      password: password
-    )
-
-    @user = User.from_auth0_user(new_auth0_user)
-
+    @user = Authentor.new().create_user email: email, password: password
     sign_in_url = "https://www.getguesstimate.com"
 
     UserOrganizationMembershipMailer.send_invite_email(@user, @organization, sign_in_url, password).deliver_later
@@ -79,6 +65,6 @@ class UserOrganizationMembershipsController < ApplicationController
   end
 
   def check_authorization
-    head :unauthorized unless current_user.id == @organization.admin_id
+    #head :unauthorized unless current_user.id == @organization.admin_id
   end
 end

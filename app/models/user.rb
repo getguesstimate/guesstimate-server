@@ -20,11 +20,15 @@ class User < ActiveRecord::Base
 
   def self.from_auth0_user(auth0_user)
     User.create(
-      name: auth0_user["name"],
-      username: auth0_user["nickname"],
-      email: auth0_user["email"],
-      auth0_id: auth0_user["user_id"],
-      picture: auth0_user["picture"],
+      name: auth0_user['name'],
+      username: auth0_user['nickname'],
+      email: auth0_user['email'],
+      company: auth0_user['company'],
+      locale: auth0_user['locale'],
+      location: auth0_user['location'],
+      gender: auth0_user['gender'],
+      picture: auth0_user['picture'],
+      auth0_id: auth0_user['user_id'],
     )
   end
 
