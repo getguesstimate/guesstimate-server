@@ -7,6 +7,7 @@ class OrganizationRepresenter < Roar::Decorator
   property :id
   property :name
   property :picture
+  property :admin_id
 
   property :admin, class: User, embedded: true  do
     property :id
