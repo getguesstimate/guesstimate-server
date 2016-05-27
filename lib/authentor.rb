@@ -12,11 +12,9 @@ class Authentor
     @api_params = {connection: Rails.application.secrets.auth0_connection}
   end
 
-  def create_user params
-    new_auth0_user = @auth0.create_user(
-      params[:name] ? params[:name] : params[:email], @api_params.merge(params)
-    )
-    User.from_auth0_user(new_auth0_user)
+  def create_user(params)
+    new_auth0_user = @auth0.create_user(params[:email], @api_params.merge(params))
+    User.create_from_auth0_user(new_auth0_user)
   end
 
   def fetch_users
@@ -34,7 +32,7 @@ class Authentor
 
     new_users = new_auth0_users
     new_users.each do |auth0_user|
-      user = User.from_auth0_user auth0_user
+      user = User.create_from_auth0_user auth0_user
       Rails.logger.info "Created user from auth0 user #{auth0_user}"
     end
   end

@@ -1,5 +1,5 @@
 class UserOrganizationMembershipMailer < ApplicationMailer
-  def send_invite_email(user, organization, redirect_url, password)
+  def new_user_invite(user, organization, redirect_url, password)
     @user = user
     @organization = organization
     @password = password

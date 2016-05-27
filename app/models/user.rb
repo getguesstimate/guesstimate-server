@@ -18,7 +18,7 @@ class User < ActiveRecord::Base
 
   scope :uncategorized_since, -> (date) { where 'categorized IS NOT true AND DATE(created_at) >= ?', date }
 
-  def self.from_auth0_user(auth0_user)
+  def self.create_from_auth0_user(auth0_user)
     User.create(
       name: auth0_user['name'],
       username: auth0_user['nickname'],

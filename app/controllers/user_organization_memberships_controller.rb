@@ -18,17 +18,6 @@ class UserOrganizationMembershipsController < ApplicationController
     render json: OrganizationMembershipsRepresenter.new(@memberships).to_json
   end
 
-  def generate_random_password
-    SecureRandom.urlsafe_base64(6)
-  end
-
-  def invite_user(email)
-    password = generate_random_password
-    @user = Authentor.new().create_user email: email, password: password
-
-    UserOrganizationMembershipMailer.send_invite_email(@user, @organization, BASE_URL, password).deliver_later
-  end
-
   def create_by_email
     if @user.nil?
       invite_user params[:email]
@@ -52,6 +41,17 @@ class UserOrganizationMembershipsController < ApplicationController
   end
 
   private
+
+  def generate_random_password
+    SecureRandom.urlsafe_base64(6)
+  end
+
+  def invite_user(email)
+    password = generate_random_password
+    @user = Authentor.new().create_user email: email, password: password
+
+    UserOrganizationMembershipMailer.new_user_invite(@user, @organization, BASE_URL, password).deliver_later
+  end
 
   def set_membership
     @membership = UserOrganizationMembership.find(params[:id])
