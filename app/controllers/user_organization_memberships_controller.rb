@@ -1,3 +1,5 @@
+require 'securerandom'
+
 class UserOrganizationMembershipsController < ApplicationController
   #before_action :authenticate, only: [:create_by_email, :destroy]
   before_action :set_membership, only: [:destroy]
@@ -17,14 +19,11 @@ class UserOrganizationMembershipsController < ApplicationController
   end
 
   def generate_random_password
-    "password ... but random1"
-  end
-
-  def generate_verification_ticket
-
+    SecureRandom.urlsafe_base64(6)
   end
 
   def invite_user email
+    # TODO(matthew): Move this to authentor (and refactor that class).
     auth0 = Auth0Client.new(
       :api_version => 2,
       :token => Rails.application.secrets.auth0_api_token,
@@ -38,18 +37,20 @@ class UserOrganizationMembershipsController < ApplicationController
       password: password
     )
 
-    @user = User.create name: new_auth0_user["name"], username: email, email: email, auth0_id: new_auth0_user["user_id"], picture: new_auth0_user["picture"]
+    @user = User.from_auth0_user(new_auth0_user)
 
-    #url = generate_verification_ticket new_auth0_user
+    sign_in_url = "https://www.getguesstimate.com"
 
-    url = "https://www.getguesstimate.com"
-
-    UserOrganizationMembershipMailer.send_invite_email(@user, @organization, url, password).deliver_later
+    UserOrganizationMembershipMailer.send_invite_email(@user, @organization, sign_in_url, password).deliver_later
   end
 
   def create_by_email
     if @user.nil?
       invite_user params[:email]
+      if !@user.valid?
+        render json: @user.errors, status: :unprocessable_entity
+        return
+      end
     end
 
     @membership = UserOrganizationMembership.new user: @user, organization: @organization
