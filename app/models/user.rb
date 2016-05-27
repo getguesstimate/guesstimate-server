@@ -11,7 +11,7 @@ class User < ActiveRecord::Base
 
   validates_presence_of :username
   validates_presence_of :name
-  validates :email, presence: true, format: /@/
+  validates :email, presence: true, format: /@/, uniqueness: true
   validates :auth0_id, presence: true, uniqueness: true
 
   enum plan: Plan.as_enum
