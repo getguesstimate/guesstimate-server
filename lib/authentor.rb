@@ -9,7 +9,7 @@ class Authentor
       :token => Rails.application.secrets.auth0_api_token,
       :domain => Rails.application.secrets.auth0_api_domain
     )
-    @api_params = {connection: Rails.application.secrets.auth0_authentication_connection}
+    @api_params = {connection: Rails.application.secrets.auth0_connection}
   end
 
   def create_user params
