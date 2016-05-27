@@ -1,7 +1,7 @@
 require 'securerandom'
 
 class UserOrganizationMembershipsController < ApplicationController
-  #before_action :authenticate, only: [:create_by_email, :destroy]
+  before_action :authenticate, only: [:create_by_email, :destroy]
   before_action :set_membership, only: [:destroy]
   before_action :set_entities, only: [:create_by_email]
   before_action :check_authorization, only: [:create_by_email, :destroy]
@@ -65,6 +65,6 @@ class UserOrganizationMembershipsController < ApplicationController
   end
 
   def check_authorization
-    #head :unauthorized unless current_user.id == @organization.admin_id
+    head :unauthorized unless current_user.id == @organization.admin_id
   end
 end
