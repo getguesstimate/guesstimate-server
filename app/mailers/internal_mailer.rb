@@ -1,6 +1,7 @@
 class InternalMailer < ApplicationMailer
-  def organization_changed_member_count(organization)
+  def organization_changed_member_count(organization, delta)
     @organization = organization
-    mail to: ["matthew@getguesstimate.com", "ozzie@getguesstimate.com"], subject: "Organization added or removed member."
+    @delta = delta
+    mail to: ["matthew@getguesstimate.com", "ozzie@getguesstimate.com"], subject: "Organization #{delta} a member."
   end
 end
