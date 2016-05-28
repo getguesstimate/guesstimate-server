@@ -71,6 +71,12 @@ class User < ActiveRecord::Base
     )
   end
 
+  def update_sign_in_count!
+    count = Authentor.new().sign_in_count(self.auth0_id)
+    puts count
+    update_attribute(:sign_in_count, count)
+  end
+
   def satisfied_private_model_count
     (self.private_access_count <= self.spaces.is_private.count)
   end
