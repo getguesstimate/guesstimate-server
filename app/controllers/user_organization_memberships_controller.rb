@@ -37,6 +37,7 @@ class UserOrganizationMembershipsController < ApplicationController
   end
 
   def destroy
+    InternalMailer.organization_changed_member_count(@organization).deliver_later
     @membership.destroy
     head :no_content
   end
