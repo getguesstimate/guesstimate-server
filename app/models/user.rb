@@ -11,14 +11,14 @@ class User < ActiveRecord::Base
 
   validates_presence_of :username
   validates_presence_of :name
-  validates :email, presence: true, format: /@/
+  validates :email, presence: true, format: /@/, uniqueness: true
   validates :auth0_id, presence: true, uniqueness: true
 
   enum plan: Plan.as_enum
 
   scope :uncategorized_since, -> (date) { where 'categorized IS NOT true AND DATE(created_at) >= ?', date }
 
-  def self.from_auth0_user(auth0_user)
+  def self.create_from_auth0_user(auth0_user)
     User.create(
       name: auth0_user['name'],
       username: auth0_user['nickname'],
