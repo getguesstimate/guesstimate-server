@@ -2,7 +2,7 @@ class OrganizationsController < ApplicationController
   before_action :authenticate, only: [:create]
 
   def create
-    @organization = Organization.new organiztion_params.merge(admin_id: current_user.id)
+    @organization = Organization.new organization_params.merge(admin_id: current_user.id)
     if @organization.save
       render json: OrganizationRepresenter.new(@organization).to_json
     else
@@ -17,7 +17,7 @@ class OrganizationsController < ApplicationController
 
   private
 
-  def organiztion_params
+  def organization_params
     params.require(:organization).permit(:name, :picture)
   end
 end
