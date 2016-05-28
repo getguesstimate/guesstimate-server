@@ -30,6 +30,7 @@ class UserOrganizationMembershipsController < ApplicationController
     end
   end
 
+  #destroy
   def destroy
     @membership.destroy
     head :no_content
