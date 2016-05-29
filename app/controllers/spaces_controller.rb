@@ -62,11 +62,27 @@ class SpacesController < ApplicationController
   # PATCH/PUT /spaces/1
   # PATCH/PUT /spaces/1.json
   def update
-    if @space.update(space_params)
-      render json: SpaceRepresenter.new(@space).to_json, status: :ok
-      #expire_action action: :show
+    if space_params[:previous_updated_at].nil?
+      if @space.update(space_params)
+        render json: SpaceRepresenter.new(@space).to_json, status: :ok
+        #expire_action action: :show
+      else
+        render json: @space.errors, status: :unprocessable_entity
+      end
+      return
     else
-      render json: @space.errors, status: :unprocessable_entity
+      curr_time_str = @space.updated_at.to_datetime.to_s
+      passed_time_str = space_params[:previous_updated_at].to_datetime.to_s
+      if curr_time_str == passed_time_str
+        if @space.update(space_params.reject { |k,v| k == 'previous_updated_at' })
+          render json: SpaceRepresenter.new(@space).to_json, status: :ok
+          #expire_action action: :show
+        else
+          render json: @space.errors, status: :unprocessable_entity
+        end
+      else
+        render json: SpaceRepresenter.new(@space).to_json, status: :conflict
+      end
     end
   end
 
@@ -101,6 +117,6 @@ class SpacesController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def space_params
-    params.require(:space).permit(:name, :description, :is_private, :organization_id, graph: graph_structure)
+    params.require(:space).permit(:name, :description, :is_private, :previous_updated_at, :organization_id, graph: graph_structure)
   end
 end
