@@ -73,7 +73,6 @@ class User < ActiveRecord::Base
 
   def update_sign_in_count!
     count = Authentor.new().sign_in_count(self.auth0_id)
-    puts count
     update_attribute(:sign_in_count, count)
   end
 
