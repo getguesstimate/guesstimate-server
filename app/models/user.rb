@@ -7,6 +7,7 @@ class User < ActiveRecord::Base
   has_many :admistrated_organizations, class_name: 'Organization', foreign_key: 'admin_id'
 
   after_create :create_account
+  after_create :accept_invitations
   after_save :identify
 
   validates_presence_of :username
@@ -110,5 +111,12 @@ class User < ActiveRecord::Base
 
   def ensure_account
     account || create_account
+  end
+
+  def accept_invitations
+    UserOrganizationInvitation.for_email(email).find_each do |invitation|
+      UserOrganizationMembership.create user: self, organization_id: invitation.organization_id
+      invitation.delete
+    end
   end
 end

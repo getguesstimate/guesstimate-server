@@ -1,10 +1,8 @@
-require 'securerandom'
-
 class UserOrganizationMembershipsController < ApplicationController
-  before_action :authenticate, only: [:create_by_email, :destroy]
+  before_action :authenticate, only: [:invite_by_email, :destroy]
   before_action :set_membership, only: [:destroy]
-  before_action :set_entities, only: [:create_by_email]
-  before_action :check_authorization, only: [:create_by_email, :destroy]
+  before_action :set_entities, only: [:invite_by_email]
+  before_action :check_authorization, only: [:invite_by_email, :destroy]
 
   def user_memberships
     # We use a UserOrganizationMemberships scope here to avoid unnecessary DB indirection through the user.
@@ -18,20 +16,11 @@ class UserOrganizationMembershipsController < ApplicationController
     render json: OrganizationMembershipsRepresenter.new(@memberships).to_json
   end
 
-  def create_by_email
+  def invite_by_email
     if @user.nil?
-      invite_user params[:email]
-      if !@user.valid?
-        render json: @user.errors, status: :unprocessable_entity
-        return
-      end
-    end
-
-    @membership = UserOrganizationMembership.new user: @user, organization: @organization
-    if @membership.save
-      render json: OrganizationMembershipRepresenter.new(@membership).to_json
+      invite_new_user
     else
-      render json: @membership.errors, status: :unprocessable_entity
+      create_new_membership
     end
   end
 
@@ -42,15 +31,23 @@ class UserOrganizationMembershipsController < ApplicationController
 
   private
 
-  def generate_random_password
-    SecureRandom.urlsafe_base64(6)
+  def invite_new_user
+    @invitation = UserOrganizationInvitation.new email: params[:email], organization: @organization
+    if @invitation.save
+      UserOrganizationInvitationMailer.new_user_invite(@invitation).deliver_later
+      render json: OrganizationInvitationRepresenter.new(@invitation).to_json
+    else
+      render json: @invitation.errors, status: :unprocessable_entity
+    end
   end
 
-  def invite_user(email)
-    password = generate_random_password
-    @user = Authentor.new().create_user email: email, password: password
-
-    UserOrganizationMembershipMailer.new_user_invite(@user, @organization, BASE_URL, password).deliver_later
+  def create_new_membership
+    @membership = UserOrganizationMembership.new user: @user, organization: @organization
+    if @membership.save
+      render json: OrganizationMembershipRepresenter.new(@membership).to_json
+    else
+      render json: @membership.errors, status: :unprocessable_entity
+    end
   end
 
   def set_membership

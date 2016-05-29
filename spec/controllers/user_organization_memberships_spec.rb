@@ -67,7 +67,7 @@ RSpec.describe UserOrganizationMembershipsController, type: :controller do
     end
   end
 
-  describe 'POST create_by_email' do
+  describe 'POST invite_by_email' do
     let (:requesting_user) { nil }
     let (:organization) { FactoryGirl.create :organization }
     let (:existing_user) { nil }
@@ -85,7 +85,7 @@ RSpec.describe UserOrganizationMembershipsController, type: :controller do
         allow(authentor).to receive(:new).and_return(AuthentorMock.new())
       end
 
-      post :create_by_email, organization_id: organization[:id], email: email
+      post :invite_by_email, organization_id: organization[:id], email: email
     end
 
     shared_examples 'successfully creates for existing user' do
@@ -100,10 +100,10 @@ RSpec.describe UserOrganizationMembershipsController, type: :controller do
       it { is_expected.to respond_with :unauthorized }
     end
 
-    shared_examples 'creates a new auth0 user' do
+    shared_examples 'invites the user' do
       it { is_expected.to respond_with :ok }
       it 'should create the right membership' do
-        expect(JSON.parse(response.body)["_embedded"]["user"]["name"]).to eq email
+        expect(JSON.parse(response.body)["email"]).to eq email
         expect(JSON.parse(response.body)["organization_id"]).to eq organization.id
       end
     end
@@ -154,7 +154,7 @@ RSpec.describe UserOrganizationMembershipsController, type: :controller do
       let (:organization) { FactoryGirl.create :organization, admin: requesting_user }
 
       context 'on new user', user: false do
-        include_examples 'creates a new auth0 user'
+        include_examples 'invites the user'
       end
 
       context 'on existing user', user: true do

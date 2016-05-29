@@ -34,6 +34,17 @@ RSpec.describe User, type: :model do
       let (:auth0_id) { nil }
       it { is_expected.to_not be_valid }
     end
+
+    context 'with invitation' do
+      let (:organization) { FactoryGirl.create :organization }
+      let (:invitation) { FactoryGirl.create :user_organization_invitation, email: email, organization: organization }
+      it 'should be added to the organization' do
+        organization
+        invitation
+        subject.save
+        expect(subject.organizations).to match_array [organization]
+      end
+    end
   end
 
   describe '#private_model_limit' do
