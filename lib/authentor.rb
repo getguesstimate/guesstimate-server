@@ -37,6 +37,15 @@ class Authentor
     end
   end
 
+  def sign_in_count(id)
+    user = @auth0.user(id)
+    if user && user['logins_count']
+      user['logins_count']
+    else
+      0
+    end
+  end
+
   def new_auth0_users
     @auth0_users.select{|e| !User.exists?(auth0_id: e["user_id"])}
   end

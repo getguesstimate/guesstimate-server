@@ -6,6 +6,12 @@ class UsersController < ApplicationController
   end
 
   def create
+    existing_user = User.find_by_auth0_id(user_params[:auth0_id])
+    if existing_user.present?
+      render json: user_representation(existing_user)
+      return
+    end
+
     @user = User.new(user_params)
     if @user.save
       @user.identify
@@ -23,6 +29,8 @@ class UsersController < ApplicationController
         Rails.logger.error "Requested user not found.  Syncing with authentication provider."
         Authentor.new().fetch_users
         @users = User.where(auth0_id: params[:auth0_id])
+      else
+        @users[0].update_sign_in_count!
       end
     else
       @users = User.last(10)

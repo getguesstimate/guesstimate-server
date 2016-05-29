@@ -99,6 +99,7 @@ ActiveRecord::Schema.define(version: 20160529203604) do
     t.string   "industry"
     t.string   "role"
     t.boolean  "categorized"
+    t.integer  "sign_in_count",        default: 0, null: false
   end
 
 end

@@ -25,6 +25,7 @@ class UserOrganizationMembershipsController < ApplicationController
   end
 
   def destroy
+    InternalMailer.organization_changed_member_count(@organization, 'removed').deliver_later
     @membership.destroy
     head :no_content
   end
@@ -44,6 +45,7 @@ class UserOrganizationMembershipsController < ApplicationController
   def create_new_membership
     @membership = UserOrganizationMembership.new user: @user, organization: @organization
     if @membership.save
+      InternalMailer.organization_changed_member_count(@organization, 'added').deliver_later
       render json: OrganizationMembershipRepresenter.new(@membership).to_json
     else
       render json: @membership.errors, status: :unprocessable_entity

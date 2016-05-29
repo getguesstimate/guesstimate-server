@@ -13,9 +13,9 @@ Rails.application.routes.draw do
     get '/account/new_subscription_iframe', to: 'accounts#new_subscription_iframe'
   end
 
-  resources :organization, only: [:show]
+  resources :organization, only: [:show, :create]
   resources :organizations do
-    resources :spaces, only: [:index]
+    get :spaces, to: 'spaces#index'
     get :members, to: 'user_organization_memberships#organization_memberships'
     post :members, to: 'user_organization_memberships#invite_by_email'
   end
