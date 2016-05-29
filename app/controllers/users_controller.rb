@@ -6,6 +6,12 @@ class UsersController < ApplicationController
   end
 
   def create
+    existing_user = User.find_by_auth0_id(user_params[:auth0_id])
+    if existing_user.present?
+      render json: user_representation(existing_user)
+      return
+    end
+
     @user = User.new(user_params)
     if @user.save
       @user.identify
