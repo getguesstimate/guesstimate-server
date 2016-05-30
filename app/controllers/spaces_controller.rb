@@ -72,7 +72,7 @@ class SpacesController < ApplicationController
       return
     else
       curr_time_str = @space.updated_at.to_datetime.to_s
-      passed_time_str = space_params[:previous_updated_at].to_datetime.to_s
+      passed_time_str = DateTime.parse(space_params[:previous_updated_at]).to_datetime.to_s
       if curr_time_str == passed_time_str
         if @space.update(space_params.reject { |k,v| k == 'previous_updated_at' })
           render json: SpaceRepresenter.new(@space).to_json, status: :ok
