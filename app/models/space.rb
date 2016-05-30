@@ -52,7 +52,6 @@ class Space < ActiveRecord::Base
 
   def last_updated_at?(datetime_str)
     updated_at.to_datetime.to_s == DateTime.parse(datetime_str).to_datetime.to_s
-
   end
 
   def metrics
