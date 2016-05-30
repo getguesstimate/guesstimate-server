@@ -59,30 +59,23 @@ class SpacesController < ApplicationController
     end
   end
 
+  def update_raw(parameters)
+    if @space.update(parameters)
+      render json: SpaceRepresenter.new(@space).to_json, status: :ok
+    else
+      render json: @space.errors, status: :unprocessable_entity
+    end
+  end
+
   # PATCH/PUT /spaces/1
   # PATCH/PUT /spaces/1.json
   def update
     if space_params[:previous_updated_at].nil?
-      if @space.update(space_params)
-        render json: SpaceRepresenter.new(@space).to_json, status: :ok
-        #expire_action action: :show
-      else
-        render json: @space.errors, status: :unprocessable_entity
-      end
-      return
+      update_raw space_params
+    elsif @space.last_updated_at? space_params[:previous_updated_at]
+      update_raw space_params.reject { |k,v| k == 'previous_updated_at' }
     else
-      curr_time_str = @space.updated_at.to_datetime.to_s
-      passed_time_str = DateTime.parse(space_params[:previous_updated_at]).to_datetime.to_s
-      if curr_time_str == passed_time_str
-        if @space.update(space_params.reject { |k,v| k == 'previous_updated_at' })
-          render json: SpaceRepresenter.new(@space).to_json, status: :ok
-          #expire_action action: :show
-        else
-          render json: @space.errors, status: :unprocessable_entity
-        end
-      else
-        render json: SpaceRepresenter.new(@space).to_json, status: :conflict
-      end
+      render json: SpaceRepresenter.new(@space).to_json, status: :conflict
     end
   end
 
@@ -117,6 +110,7 @@ class SpacesController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def space_params
+    # TODO(matthew): Clean up client so we don't need to nest previous_updated_at within space.
     params.require(:space).permit(:name, :description, :is_private, :previous_updated_at, :organization_id, graph: graph_structure)
   end
 end
