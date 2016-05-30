@@ -7,4 +7,6 @@ class OrganizationInvitationRepresenter < Roar::Decorator
   property :id
   property :email
   property :organization_id
+
+  property :membership, class: UserOrganizationMembership, embedded: true, decorator: OrganizationMembershipRepresenter
 end

@@ -1,6 +1,7 @@
 class UserOrganizationMembership < ActiveRecord::Base
   belongs_to :organization
   belongs_to :user
+  belongs_to :invitation, class_name: 'UserOrganizationInvitation'
 
   validates_presence_of :organization, :user
   validates_uniqueness_of :organization_id, scope: :user_id

@@ -1,5 +1,6 @@
 class UserOrganizationInvitation < ActiveRecord::Base
   belongs_to :organization
+  has_one :membership, class_name: 'UserOrganizationMembership', foreign_key: 'invitation_id'
 
   validates_presence_of :organization
   validates :email, presence: true, format: /@/

@@ -120,8 +120,7 @@ class User < ActiveRecord::Base
 
   def accept_invitations
     UserOrganizationInvitation.for_email(email).find_each do |invitation|
-      UserOrganizationMembership.create user: self, organization_id: invitation.organization_id
-      invitation.delete
+      UserOrganizationMembership.create user: self, organization_id: invitation.organization_id, invitation: invitation
     end
   end
 end
