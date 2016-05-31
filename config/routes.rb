@@ -17,7 +17,8 @@ Rails.application.routes.draw do
   resources :organizations do
     get :spaces, to: 'spaces#index'
     get :members, to: 'user_organization_memberships#organization_memberships'
-    post :members, to: 'user_organization_memberships#create_by_email'
+    get :invitees, to: 'user_organization_invitations#organization_invitations'
+    post :members, to: 'user_organization_invitations#invite_by_email'
   end
 
   resources :user_organization_memberships, only: [:destroy]
