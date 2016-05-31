@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160528031543) do
+ActiveRecord::Schema.define(version: 20160531232042) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,8 +38,10 @@ ActiveRecord::Schema.define(version: 20160528031543) do
     t.integer  "space_id"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.integer  "author_id"
   end
 
+  add_index "space_checkpoints", ["author_id"], name: "index_space_checkpoints_on_author_id", using: :btree
   add_index "space_checkpoints", ["created_at"], name: "index_space_checkpoints_on_created_at", using: :btree
   add_index "space_checkpoints", ["space_id"], name: "index_space_checkpoints_on_space_id", using: :btree
 
@@ -61,11 +63,22 @@ ActiveRecord::Schema.define(version: 20160528031543) do
     t.string   "big_screenshot"
   end
 
+  create_table "user_organization_invitations", force: :cascade do |t|
+    t.string   "email"
+    t.integer  "organization_id"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "user_organization_invitations", ["email"], name: "index_user_organization_invitations_on_email", using: :btree
+  add_index "user_organization_invitations", ["organization_id"], name: "index_user_organization_invitations_on_organization_id", using: :btree
+
   create_table "user_organization_memberships", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "organization_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+    t.integer  "invitation_id"
   end
 
   add_index "user_organization_memberships", ["organization_id"], name: "index_user_organization_memberships_on_organization_id", using: :btree

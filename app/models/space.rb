@@ -18,7 +18,6 @@ class Space < ActiveRecord::Base
   after_initialize :init
   after_save :identify_user
   after_save :take_snapshot, if: :needs_new_snapshot?
-  after_save :take_checkpoint, if: :needs_checkpoint?
   after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
@@ -141,8 +140,8 @@ class Space < ActiveRecord::Base
     !graph.nil?
   end
 
-  def take_checkpoint
-    checkpoints.create name: name, description: description, graph: graph
+  def take_checkpoint(author)
+    checkpoints.create author: author, name: name, description: description, graph: graph
     if checkpoints.count > 1000
       checkpoints.order('created_at').first.delete
     end
