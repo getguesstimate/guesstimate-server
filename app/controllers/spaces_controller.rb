@@ -2,6 +2,7 @@ class SpacesController < ApplicationController
   before_action :authenticate, only: [:create, :update, :destroy]
   before_action :set_space, only: [:show, :update, :destroy]
   before_action :check_authorization, only: [:update, :destroy]
+  before_action :check_previously_updated_at, only: [:update]
 
   #caches_action :show
 
@@ -59,23 +60,14 @@ class SpacesController < ApplicationController
     end
   end
 
-  def update_raw(parameters)
-    if @space.update(parameters)
-      render json: SpaceRepresenter.new(@space).to_json, status: :ok
-    else
-      render json: @space.errors, status: :unprocessable_entity
-    end
-  end
-
   # PATCH/PUT /spaces/1
   # PATCH/PUT /spaces/1.json
   def update
-    if space_params[:previous_updated_at].nil?
-      update_raw space_params
-    elsif @space.last_updated_at? space_params[:previous_updated_at]
-      update_raw space_params.reject { |k,v| k == 'previous_updated_at' }
+    filtered_params = space_params.reject { |k,v| k == 'previous_updated_at' }
+    if @space.update(filtered_params)
+      render json: SpaceRepresenter.new(@space).to_json, status: :ok
     else
-      render json: SpaceRepresenter.new(@space).to_json, status: :conflict
+      render json: @space.errors, status: :unprocessable_entity
     end
   end
 
@@ -95,6 +87,12 @@ class SpacesController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_space
     @space = Space.find(params[:id])
+  end
+
+  def check_previously_updated_at
+    if !(@space.last_updated_at? space_params[:previous_updated_at])
+      render json: SpaceRepresenter.new(@space).to_json, status: :conflict
+    end
   end
 
   def graph_structure
