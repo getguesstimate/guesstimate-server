@@ -1,6 +1,7 @@
 class UserOrganizationMembership < ActiveRecord::Base
   belongs_to :organization
   belongs_to :user
+  belongs_to :invitation, class_name: 'UserOrganizationInvitation'
 
   validates_presence_of :organization, :user
   validates_uniqueness_of :organization_id, scope: :user_id
@@ -9,10 +10,14 @@ class UserOrganizationMembership < ActiveRecord::Base
   scope :for_user, -> (user_id) { where(user_id: user_id) }
 
   after_create :identify_user
-  after_destroy :identify_user
+  after_destroy :identify_user, :delete_invitation
 
   private
   def identify_user
     user.identify
+  end
+
+  def delete_invitation
+    invitation.destroy if invitation.present?
   end
 end
