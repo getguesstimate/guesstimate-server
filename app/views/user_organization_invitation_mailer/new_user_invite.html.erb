@@ -1,9 +1,5 @@
-Hello <%=@email%>, <br/> <br/>
-
-You've been invited to <%=@organization.name%> on <a href='https://www.getguesstimate.com'>Guesstimate</a>. As soon as you sign up 
-with the email address `<%=@email%>', you'll be added to <%=@organization.name%> and can start making collaborative models. <br />
-
-Click <a href='<%=@redirect_url%>'>here</a> to sign in and claim your invite. <br /><br />
+You've been invited by <%=@inviter.name%> to join the organization <%=@organization.name%> on <a href='https://www.getguesstimate.com'>Guesstimate</a>.
+Sign up to <a href='<%=@redirect_url%>'>Guesstimate</a> using the email <%=@email%> to accept this invitation. <br /><br />
 
 Happy Modeling! <br />
-- The Guesstimate Team
+The Guesstimate Team
