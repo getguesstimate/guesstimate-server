@@ -53,6 +53,12 @@ class Space < ActiveRecord::Base
     updated_at.to_datetime.to_s == DateTime.parse(datetime_str).to_datetime.to_s
   end
 
+  def someone_else_editing?(current_user, previous_updated_at_str)
+    return false if last_updated_at?(previous_updated_at_str) || checkpoints.last.nil?
+
+    checkpoints.last.author_id != current_user.id
+  end
+
   def metrics
     if graph && graph['metrics'].kind_of?(Array)
       graph['metrics'].map{|m| m.slice('name')}
