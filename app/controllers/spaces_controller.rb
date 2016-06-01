@@ -65,6 +65,7 @@ class SpacesController < ApplicationController
   def update
     filtered_params = space_params.reject { |k,v| k == 'previous_updated_at' }
     if @space.update(filtered_params)
+      @space.take_checkpoint(current_user) if @space.needs_checkpoint?
       render json: SpaceRepresenter.new(@space).to_json, status: :ok
     else
       render json: @space.errors, status: :unprocessable_entity
