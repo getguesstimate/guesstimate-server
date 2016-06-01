@@ -8,5 +8,9 @@ class UserMembershipRepresenter < Roar::Decorator
   property :user_id
   property :organization_id
 
-  property :organization, class: Organization, embedded: true, decorator: OrganizationRepresenter
+  property :organization, class: Organization, embedded: true do
+    property :id
+    property :name
+    property :picture
+  end
 end
