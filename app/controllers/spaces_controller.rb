@@ -90,7 +90,7 @@ class SpacesController < ApplicationController
   end
 
   def check_previously_updated_at
-    if !(@space.last_updated_at? space_params[:previous_updated_at])
+    if space_params[:previous_updated_at].present? && !@space.last_updated_at?(space_params[:previous_updated_at])
       render json: SpaceRepresenter.new(@space).to_json, status: :conflict
     end
   end
