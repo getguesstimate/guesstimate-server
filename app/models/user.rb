@@ -50,6 +50,8 @@ class User < ActiveRecord::Base
   end
 
   def identify
+    # TODO(matthew): This makes our space update action more expensive, by running repetitive queires
+    # (public_model_count and private_model_count) in particular. This prompts a skylight warning.
     Analytics.identify(
       user_id: id,
       traits: {
