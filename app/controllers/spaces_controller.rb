@@ -2,7 +2,7 @@ class SpacesController < ApplicationController
   before_action :authenticate, only: [:create, :update, :destroy]
   before_action :set_space, only: [:show, :update, :destroy]
   before_action :check_authorization, only: [:update, :destroy]
-  before_action :check_previously_updated_at, only: [:update]
+  before_action :check_previous_author, only: [:update]
 
   #caches_action :show
 
@@ -90,8 +90,8 @@ class SpacesController < ApplicationController
     @space = Space.find(params[:id])
   end
 
-  def check_previously_updated_at
-    if space_params[:previous_updated_at].present? && !@space.last_updated_at?(space_params[:previous_updated_at])
+  def check_previous_author
+    if space_params[:previous_updated_at].present? && @space.someone_else_editing?(current_user, space_params[:previous_updated_at])
       render json: SpaceRepresenter.new(@space).to_json, status: :conflict
     end
   end
