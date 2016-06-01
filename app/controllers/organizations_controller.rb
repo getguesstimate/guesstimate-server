@@ -14,8 +14,8 @@ class OrganizationsController < ApplicationController
     @organization = Organization.find(params[:id])
     render json: OrganizationRepresenter.new(@organization).to_json(
       user_options: {
-        current_user_is_member: current_user.member_of?(@organization.id),
-        current_user_is_admin: @organization.admin_id == current_user.id,
+        current_user_is_member: current_user.present? && current_user.member_of?(@organization.id),
+        current_user_is_admin: current_user.present? && @organization.admin_id == current_user.id,
       }
     )
   end
