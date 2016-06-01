@@ -22,5 +22,9 @@ class SpaceRepresenter < Roar::Decorator
     property :picture
   end
 
-  property :organization, embedded: true, class: Organization, decorator: OrganizationRepresenter
+  property :organization, embedded: true, class: Organization do
+    property :id
+    property :name
+    property :picture
+  end
 end
