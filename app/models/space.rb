@@ -50,6 +50,10 @@ class Space < ActiveRecord::Base
     end
   end
 
+  def last_updated_at?(datetime_str)
+    updated_at.to_datetime.to_s == DateTime.parse(datetime_str).to_datetime.to_s
+  end
+
   def metrics
     if graph && graph['metrics'].kind_of?(Array)
       graph['metrics'].map{|m| m.slice('name')}
