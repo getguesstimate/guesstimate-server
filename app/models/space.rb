@@ -106,7 +106,7 @@ class Space < ActiveRecord::Base
   end
 
   def organization_info
-    organization ? OrganizationRepresenter.new(organization).to_hash : {}
+    organization ? OrganizationRepresenter.new(organization).to_hash(user_options: {current_user_is_member: false, current_user_is_admin: false}) : {}
   end
 
   def can_create_private_models
