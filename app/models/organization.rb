@@ -14,8 +14,14 @@ class Organization < ActiveRecord::Base
   after_create :create_account
   after_create :begin_trial
 
+  enum plan: Plan.as_enum
+
   def prefers_private?
     true
+  end
+
+  def plan_details
+    Plan.find(plan)
   end
 
   private

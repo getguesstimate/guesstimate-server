@@ -30,8 +30,8 @@ plans:
     monthly_cost: 0
     private_model_limit: 0
   -
-    name: 'Organization Premium'
-    id: 'organization_premium'
+    name: 'Organization Basic'
+    id: 'organization_basic'
     enum_id: 6
     monthly_cost: 1200
     private_model_limit: 1000
