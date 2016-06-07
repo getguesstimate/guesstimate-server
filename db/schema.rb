@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160531232042) do
+ActiveRecord::Schema.define(version: 20160607000757) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,12 +21,18 @@ ActiveRecord::Schema.define(version: 20160531232042) do
     t.boolean "has_payment_account"
   end
 
+  create_table "organization_accounts", force: :cascade do |t|
+    t.integer "organization_id"
+    t.boolean "has_payment_account"
+  end
+
   create_table "organizations", force: :cascade do |t|
     t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
     t.string   "picture"
     t.integer  "admin_id"
+    t.integer  "plan",       default: 6
   end
 
   add_index "organizations", ["admin_id"], name: "index_organizations_on_admin_id", using: :btree
