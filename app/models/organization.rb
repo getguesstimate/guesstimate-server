@@ -12,7 +12,6 @@ class Organization < ActiveRecord::Base
 
   after_create :make_admin_member
   after_create :create_account
-  after_create :begin_trial
 
   enum plan: Plan.as_enum
 
