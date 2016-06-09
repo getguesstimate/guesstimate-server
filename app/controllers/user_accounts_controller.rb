@@ -1,4 +1,4 @@
-class AccountsController < ApplicationController
+class UserAccountsController < ApplicationController
   #GET /new_checkout_iframe
   def new_subscription_iframe
     user = User.find(params['user_id'])
