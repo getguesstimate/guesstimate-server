@@ -23,6 +23,6 @@ class UserRepresenter < Roar::Decorator
 
   property :account,
     decorator: AccountRepresenter,
-    class: Account,
+    class: UserAccount,
     if: ->(user_options:, **) { user_options[:is_current_user] }
 end

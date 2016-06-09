@@ -11,22 +11,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160531232042) do
+ActiveRecord::Schema.define(version: 20160609065715) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "accounts", force: :cascade do |t|
-    t.integer "user_id"
+  create_table "organization_accounts", force: :cascade do |t|
+    t.integer "organization_id"
     t.boolean "has_payment_account"
+    t.string  "chargebee_id"
   end
 
   create_table "organizations", force: :cascade do |t|
     t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
     t.string   "picture"
     t.integer  "admin_id"
+    t.integer  "plan",       default: 6
   end
 
   add_index "organizations", ["admin_id"], name: "index_organizations_on_admin_id", using: :btree
@@ -61,6 +63,11 @@ ActiveRecord::Schema.define(version: 20160531232042) do
     t.boolean  "categorized"
     t.datetime "snapshot_timestamp"
     t.string   "big_screenshot"
+  end
+
+  create_table "user_accounts", force: :cascade do |t|
+    t.integer "user_id"
+    t.boolean "has_payment_account"
   end
 
   create_table "user_organization_invitations", force: :cascade do |t|
