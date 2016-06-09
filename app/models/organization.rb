@@ -27,8 +27,4 @@ class Organization < ActiveRecord::Base
   def make_admin_member
     memberships.create user: admin
   end
-
-  def ensure_account
-    account || create_account
-  end
 end
