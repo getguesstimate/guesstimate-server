@@ -15,6 +15,24 @@ class OrganizationRepresenter < Roar::Decorator
     property :picture
   end
 
-  collection :invitations, class: UserOrganizationInvitation, decorator: OrganizationInvitationRepresenter, if: ->(user_options:, **) { user_options[:current_user_is_admin] }
-  collection :memberships, class: UserOrganizationMembership, decorator: OrganizationMembershipRepresenter, if: ->(user_options:, **) { user_options[:current_user_is_member] }
+  collection :invitations,
+    class: UserOrganizationInvitation,
+    decorator: OrganizationInvitationRepresenter,
+    if: ->(user_options:, **) { user_options[:current_user_is_admin] }
+
+  collection :memberships,
+    class: UserOrganizationMembership,
+    decorator: OrganizationMembershipRepresenter,
+    if: ->(user_options:, **) { user_options[:current_user_is_member] }
+
+  property :plan_details,
+    decorator: PlanRepresenter,
+    class: Plan,
+    as: 'plan',
+    if: ->(user_options:, **) { user_options[:current_user_is_member] }
+
+  property :account,
+    decorator: AccountRepresenter,
+    class: OrganizationAccount,
+    if: ->(user_options:, **) { user_options[:current_user_is_admin] }
 end
