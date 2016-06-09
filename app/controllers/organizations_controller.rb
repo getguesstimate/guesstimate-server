@@ -4,7 +4,12 @@ class OrganizationsController < ApplicationController
   def create
     @organization = Organization.new organization_params.merge(admin_id: current_user.id)
     if @organization.save
-      render json: OrganizationRepresenter.new(@organization).to_json
+      render json: OrganizationRepresenter.new(@organization).to_json(
+        user_options: {
+          current_user_is_member: true,
+          current_user_is_admin: true,
+        }
+      )
     else
       render json: @organization.errors, status: :unprocessable_entity
     end
