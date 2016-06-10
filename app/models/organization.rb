@@ -9,6 +9,9 @@ class Organization < ActiveRecord::Base
   belongs_to :admin, class_name: 'User'
 
   validates_presence_of :admin
+  validates_presence_of :name
+  validates_presence_of :plan
+  validates_uniqueness_of :name
 
   after_create :make_admin_member
   after_create :create_account
