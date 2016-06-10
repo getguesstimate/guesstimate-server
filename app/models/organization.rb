@@ -12,6 +12,7 @@ class Organization < ActiveRecord::Base
 
   after_create :make_admin_member
   after_create :create_account
+  after_create :create_trial
 
   enum plan: Plan.as_enum
 
@@ -21,6 +22,12 @@ class Organization < ActiveRecord::Base
 
   def plan_details
     Plan.find(plan)
+  end
+
+  def create_trial
+    if self[:plan] == 6
+      account.create_subscription(plan)
+    end
   end
 
   private
