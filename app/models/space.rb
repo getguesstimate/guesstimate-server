@@ -229,7 +229,7 @@ class Space < ActiveRecord::Base
 
   # Validations
   def owner_can_create_private_models
-    unless owner.can_create_private_models
+    unless owner.can_create_private_models?
       errors.add(:user_id, 'can not make more private models with current plan')
     end
   end

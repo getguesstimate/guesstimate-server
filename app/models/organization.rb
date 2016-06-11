@@ -14,30 +14,33 @@ class Organization < ActiveRecord::Base
 
   after_create :make_admin_member
   after_create :create_account
-  after_create :create_trial
+  after_create :create_trial, if: :needs_trial?
 
   enum plan: Plan.as_enum
-
-  def prefers_private?
-    can_create_private_models
-  end
 
   def plan_details
     Plan.find(plan)
   end
 
-  def create_trial
-    if self[:plan] == 6
-      account.create_subscription(plan)
-    end
+  def prefers_private?
+    can_create_private_models?
   end
 
-  def can_create_private_models
+  def can_create_private_models?
     plan == 'organization_basic'
   end
 
   private
+
+  def create_trial
+    account.create_subscription(plan)
+  end
+
   def make_admin_member
     memberships.create user: admin
+  end
+
+  def needs_trial?
+    plan == 'organization_basic'
   end
 end
