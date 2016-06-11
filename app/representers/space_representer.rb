@@ -27,5 +27,11 @@ class SpaceRepresenter < Roar::Decorator
     property :admin_id
     property :name
     property :picture
+
+    property :plan_details,
+      decorator: PlanRepresenter,
+      class: Plan,
+      as: 'plan',
+      if: ->(user_options:, **) { user_options[:current_user_is_member] }
   end
 end

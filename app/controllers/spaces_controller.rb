@@ -34,7 +34,15 @@ class SpacesController < ApplicationController
     if @space.is_public? || (current_user && @space.editable_by_user?(current_user))
       newSpace = @space
       newSpace.graph = @space.cleaned_graph
-      render json: SpaceRepresenter.new(newSpace).to_json
+
+      options = {}
+      if @space.belongs_to_organization?
+        options[:user_options] = {
+          current_user_is_member: current_user.present? && current_user.member_of?(@space.organization.id),
+        }
+      end
+
+      render json: SpaceRepresenter.new(newSpace).to_json(options)
     else
       head :unauthorized
     end
