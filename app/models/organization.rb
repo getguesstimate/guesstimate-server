@@ -19,7 +19,7 @@ class Organization < ActiveRecord::Base
   enum plan: Plan.as_enum
 
   def prefers_private?
-    true
+    can_create_private_models
   end
 
   def plan_details
@@ -30,6 +30,10 @@ class Organization < ActiveRecord::Base
     if self[:plan] == 6
       account.create_subscription(plan)
     end
+  end
+
+  def can_create_private_models
+    plan == 'organization_basic'
   end
 
   private
