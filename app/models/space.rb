@@ -220,6 +220,6 @@ class Space < ActiveRecord::Base
   end
 
   def identify_user
-    user.identify
+    user && user.identify
   end
 end
