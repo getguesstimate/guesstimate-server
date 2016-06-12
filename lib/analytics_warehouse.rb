@@ -16,7 +16,7 @@ class AnalyticsWarehouse
       space_count = view_counts[space.id]
       if space_count
         puts "UPDATING SPACE #{space.id} with count #{space_count}"
-        space.update_attribute(:viewcount, space_count)
+        space.update_columns(viewcount: space_count)
       end
     end
   end
