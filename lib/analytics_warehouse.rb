@@ -29,9 +29,6 @@ class AnalyticsWarehouse
     @connection.close()
   end
 
-  def update_view_counts
-  end
-
   def view_count(limit)
     counts = @connection.exec(view_count_SQL(limit))
     counts.to_a.map{|e| [e['substring'].to_i, e['views'].to_i]}.to_h
