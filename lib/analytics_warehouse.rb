@@ -29,21 +29,27 @@ class AnalyticsWarehouse
     @connection.close()
   end
 
+  #The select below filters for integers only
+  #As opposed to faulty urls like '%3CA%20href='
   def view_count(limit)
     counts = @connection.exec(view_count_SQL(limit))
-    counts.to_a.map{|e| [e['substring'].to_i, e['views'].to_i]}.to_h
+    counts.to_a
+      .select{|e| e['substring'].to_i.to_s == e['substring'].to_s}
+      .map{|e| [e['substring'].to_i, e['views'].to_i]}
+      .to_h
   end
 
   def view_count_SQL(limit)
     "
       SELECT
-      SUBSTRING(path, 9, 20),
-      COUNT(*) AS Views
+        SUBSTRING(path, 9, 20),
+        COUNT(*) AS Views
       FROM guesstimate_production.pages
       WHERE path LIKE '%models/%'
       AND path NOT LIKE '%/embed'
       AND path NOT LIKE '%/models/new'
       GROUP BY path
+      ORDER BY views DESC
       LIMIT #{limit};
     "
   end
