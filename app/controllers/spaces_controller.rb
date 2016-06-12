@@ -35,13 +35,6 @@ class SpacesController < ApplicationController
       newSpace = @space
       newSpace.graph = @space.cleaned_graph
 
-      options = {}
-      if @space.belongs_to_organization?
-        options[:user_options] = {
-          current_user_is_member: current_user.present? && current_user.member_of?(@space.organization.id),
-        }
-      end
-
       render json: represented(newSpace)
     else
       head :unauthorized
