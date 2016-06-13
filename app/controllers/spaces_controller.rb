@@ -34,8 +34,7 @@ class SpacesController < ApplicationController
     if @space.is_public? || (current_user && @space.editable_by_user?(current_user))
       newSpace = @space
       newSpace.graph = @space.cleaned_graph
-
-      render json: represented(newSpace)
+      render json: SpaceRepresenter.new(newSpace).to_json
     else
       head :unauthorized
     end
@@ -55,7 +54,7 @@ class SpacesController < ApplicationController
     end
 
     if @space.save
-      render json: represented(@space)
+      render json: SpaceRepresenter.new(@space).to_json
     else
       render json: @space.errors, status: :unprocessable_entity
     end
@@ -67,7 +66,7 @@ class SpacesController < ApplicationController
     filtered_params = space_params.reject { |k,v| k == 'previous_updated_at' }
     if @space.update(filtered_params)
       @space.take_checkpoint(current_user) if @space.needs_checkpoint?
-      render json: represented(@space), status: :ok
+      render json: SpaceRepresenter.new(@space).to_json, status: :ok
     else
       render json: @space.errors, status: :unprocessable_entity
     end
@@ -81,18 +80,6 @@ class SpacesController < ApplicationController
   end
 
   private
-
-  def represented(space)
-      options = {}
-
-      if space.belongs_to_organization?
-        options[:user_options] = {
-          current_user_is_member: current_user.present? && current_user.member_of?(space.organization.id),
-        }
-      end
-
-      return SpaceRepresenter.new(space).to_json(options)
-  end
 
   def check_authorization
     head :unauthorized unless @space.editable_by_user? current_user
