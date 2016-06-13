@@ -1,3 +1,10 @@
+class AdapterMock
+    class << self
+      def create_subscription(entity_id, plan_id)
+      end
+    end
+end
+
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
@@ -20,5 +27,9 @@ RSpec.configure do |config|
     # a real object. This is generally recommended, and will default to
     # `true` in RSpec 4.
     mocks.verify_partial_doubles = true
+  end
+
+  config.before(:each) do
+    stub_const('ExternalSubscriptions::Adapter', AdapterMock)
   end
 end

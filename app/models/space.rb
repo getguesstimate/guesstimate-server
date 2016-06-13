@@ -12,7 +12,7 @@ class Space < ActiveRecord::Base
   belongs_to :organization
 
   validates :user_id, presence: true
-  validate :can_create_private_models
+  validate :owner_can_create_private_models, if: :is_private
   validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
 
   after_initialize :init
@@ -109,10 +109,12 @@ class Space < ActiveRecord::Base
     organization ? OrganizationRepresenter.new(organization).to_hash(user_options: {current_user_is_member: false, current_user_is_admin: false}) : {}
   end
 
-  def can_create_private_models
-    unless is_public? || organization_id || user.try(:can_create_private_models)
-      errors.add(:user_id, 'can not make more private models with current plan')
-    end
+  def owner
+    belongs_to_organization? ? organization : user
+  end
+
+  def belongs_to_organization?
+    !!organization_id
   end
 
   def clean_graph!
@@ -221,5 +223,14 @@ class Space < ActiveRecord::Base
 
   def identify_user
     user && user.identify
+  end
+
+  private
+
+  # Validations
+  def owner_can_create_private_models
+    unless owner.can_create_private_models?
+      errors.add(:user_id, 'can not make more private models with current plan')
+    end
   end
 end

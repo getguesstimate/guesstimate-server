@@ -108,13 +108,13 @@ class User < ActiveRecord::Base
     plan_details.private_model_limit || 0
   end
 
-  def can_create_private_models
+  def can_create_private_models?
     private_model_limit > private_model_count
   end
 
   def prefers_private?
     # TODO(matthew): What happens when a free user joins a paid organization?
-    can_create_private_models
+    can_create_private_models?
   end
 
   def ensure_account

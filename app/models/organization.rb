@@ -9,22 +9,38 @@ class Organization < ActiveRecord::Base
   belongs_to :admin, class_name: 'User'
 
   validates_presence_of :admin
+  validates_presence_of :name
+  validates_presence_of :plan
 
   after_create :make_admin_member
   after_create :create_account
+  after_create :create_trial, if: :needs_trial?
 
   enum plan: Plan.as_enum
-
-  def prefers_private?
-    true
-  end
 
   def plan_details
     Plan.find(plan)
   end
 
+  def prefers_private?
+    can_create_private_models?
+  end
+
+  def can_create_private_models?
+    plan == 'organization_basic'
+  end
+
   private
+
+  def create_trial
+    account.create_subscription(plan)
+  end
+
   def make_admin_member
     memberships.create user: admin
+  end
+
+  def needs_trial?
+    plan == 'organization_basic'
   end
 end

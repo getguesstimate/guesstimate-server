@@ -9,7 +9,7 @@ class UserOrganizationMembershipsController < ApplicationController
     # TODO(matthew): This representer embeds the user's organizations. In getting them, it runs a sql query for every
     # membership in @memberships; which is expensive. We should grab the memberships alone, then all the users
     # organizations alone, and render them to json separately, rather than processing the memberships one at a time.
-    render json: UserMembershipsRepresenter.new(@memberships).to_json
+    render json: UserMembershipsRepresenter.new(@memberships).to_json({user_options: {current_user: current_user}})
   end
 
   def organization_memberships
