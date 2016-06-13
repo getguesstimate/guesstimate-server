@@ -31,19 +31,17 @@ class AnalyticsWarehouse
 
   def view_count(limit)
     counts = @connection.exec(view_count_SQL(limit))
-    counts.to_a.map{|e| [e['substring'].to_i, e['views'].to_i]}.to_h
+    counts.to_a.map{|e| [e['model_id'].to_i, e['views'].to_i]}.to_h
   end
 
   def view_count_SQL(limit)
     "
       SELECT
-      SUBSTRING(path, 9, 20),
-      COUNT(*) AS Views
+        substring(path from 9) AS model_id,
+        SUM(1) AS views
       FROM guesstimate_production.pages
-      WHERE path LIKE '%models/%'
-      AND path NOT LIKE '%/embed'
-      AND path NOT LIKE '%/models/new'
-      GROUP BY path
+      WHERE path SIMILAR TO '/models/\\d+' AND user_id != '240' AND user_id != '1'
+      GROUP BY model_id
       LIMIT #{limit};
     "
   end
