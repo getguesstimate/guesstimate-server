@@ -17,6 +17,6 @@ class UserMembershipRepresenter < Roar::Decorator
       decorator: PlanRepresenter,
       class: Plan,
       as: 'plan',
-      if: ->(user_options:, **) { user_options[:current_user].member_of?(self.id) }
+      if: ->(user_options:, **) { user_options[:current_user].try(:member_of?, self.id) }
   end
 end
