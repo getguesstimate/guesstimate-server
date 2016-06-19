@@ -7,4 +7,12 @@ class CalculatorRepresenter < Roar::Decorator
   property :id
   property :space_id
   property :content
+
+  property :space, embedded: true do
+    property :id
+    property :name
+    property :description
+    property :graph
+    property :is_private
+  end
 end
