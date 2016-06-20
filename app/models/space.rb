@@ -133,12 +133,13 @@ class Space < ActiveRecord::Base
     space = Space.new(self.attributes.slice('name', 'description', 'graph'))
     space.user = user
     space.copied_from_id = self.id
-    space.is_private = user.prefers_private?
 
     # This space should be retained within the organization if it is being copied within the organization.
-    if organization_id && user.member_of?(organization_id)
+    if belongs_to_organization? && user.member_of?(organization_id)
       space.organization_id = organization_id
       space.is_private = space.organization.prefers_private?
+    else
+      space.is_private = user.prefers_private?
     end
 
     space.save
