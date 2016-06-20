@@ -78,9 +78,9 @@ RSpec.describe Space, type: :model do
   end
 
   describe '#copy' do
-    # We hardcode the id to make the graph valid.
-    let(:base_user) { FactoryGirl.create(:user, username: 'base_user') }
-    let(:copying_user) { FactoryGirl.create(:user, username: 'copying_user') }
+    let(:base_user) { FactoryGirl.create(:user) }
+    let(:base_organization) { nil }
+    let(:copying_user) { FactoryGirl.create(:user) }
     let(:graph) {
       {'metrics'=>
         [{'id'=>'3', 'readableId'=>'AR', 'name'=>'Point', 'location'=>{'row'=>1, 'column'=>0}},
@@ -93,35 +93,63 @@ RSpec.describe Space, type: :model do
          {'metric'=>'5', 'input'=>'=lognormal(AR,QK)', 'guesstimateType'=>'FUNCTION', 'description'=>''},
          {'metric'=>'6', 'input'=>'[1,3]', 'guesstimateType'=>'NORMAL', 'description'=>''}]}
     }
-    let(:space) { FactoryGirl.create(:space, user: base_user, graph: graph) }
+    let(:space) { FactoryGirl.create(:space, user: base_user, organization: base_organization, graph: graph) }
+    let(:should_copy_be_private) { false }
 
     subject(:copy) {space.copy(copying_user)}
 
-    it 'should copy properly' do
-      expect(copy.copied_from).to eq space
-
-      expect(space.copies.count).to eq 1
-      expect(space.copies.first).to eq copy
-
-      expect(copy.name).to eq space.name
-      expect(copy.user).to be copying_user
-
-      copy.save!
-
-      # After saving, we should have new id and graph.
-      expect(copy.id).not_to eq space.id
-      expect(copy.graph).to eq graph
-    end
-
-    context 'with nil graph' do
-      let(:graph) { nil }
-
+    shared_examples 'copies properly' do
       it 'should copy properly' do
+        expect(copy.copied_from).to eq space
+        expect(space.copies.count).to eq 1
+        expect(space.copies.first).to eq copy
         expect(copy.name).to eq space.name
         expect(copy.user).to be copying_user
         expect(copy.id).not_to eq space.id
-        expect(copy.graph).to be nil
+        expect(copy.graph).to eq graph
+        expect(copy.is_private).to eq should_copy_be_private
       end
+    end
+
+    include_examples('copies properly')
+
+    context 'with nil graph' do
+      let(:graph) { nil }
+      include_examples('copies properly')
+    end
+
+    context 'with user who prefers private' do
+      let (:copying_user) { FactoryGirl.create(:user, :lite_plan) }
+      let (:should_copy_be_private) { true }
+
+      include_examples('copies properly')
+    end
+
+    context 'with non-membered base organization' do
+      let (:base_organization) { FactoryGirl.create(:organization) }
+      include_examples('copies properly')
+    end
+
+    context 'with membered free base organization' do
+      let (:base_organization) {
+        organization = FactoryGirl.create(:organization, plan: :organization_free)
+        FactoryGirl.create(:user_organization_membership, user: copying_user, organization: organization)
+        organization
+      }
+      let (:should_copy_be_private) { false }
+
+      include_examples('copies properly')
+    end
+
+    context 'with membered base organization' do
+      let (:base_organization) {
+        organization = FactoryGirl.create(:organization, plan: :organization_basic)
+        FactoryGirl.create(:user_organization_membership, user: copying_user, organization: organization)
+        organization
+      }
+      let (:should_copy_be_private) { true }
+
+      include_examples('copies properly')
     end
   end
 end
