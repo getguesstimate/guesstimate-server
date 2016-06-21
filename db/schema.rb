@@ -11,10 +11,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160609065715) do
+ActiveRecord::Schema.define(version: 20160618003305) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "calculators", force: :cascade do |t|
+    t.integer  "space_id"
+    t.string   "title"
+    t.text     "content"
+    t.string   "input_ids",               array: true
+    t.string   "output_ids",              array: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "calculators", ["space_id"], name: "index_calculators_on_space_id", using: :btree
 
   create_table "organization_accounts", force: :cascade do |t|
     t.integer "organization_id"

@@ -8,6 +8,7 @@ class Space < ActiveRecord::Base
   belongs_to :copied_from, class_name: 'Space', foreign_key: 'copied_from_id'
   has_many :copies, class_name: 'Space', foreign_key: 'copied_from_id'
   has_many :checkpoints, class_name: 'SpaceCheckpoint', dependent: :destroy
+  has_many :calculators, dependent: :destroy
 
   belongs_to :organization
 
