@@ -20,8 +20,8 @@ ActiveRecord::Schema.define(version: 20160618003305) do
     t.integer  "space_id"
     t.string   "title"
     t.text     "content"
-    t.string   "inputs",                  array: true
-    t.string   "outputs",                 array: true
+    t.string   "input_ids",               array: true
+    t.string   "output_ids",              array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
