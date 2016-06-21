@@ -18,7 +18,10 @@ ActiveRecord::Schema.define(version: 20160618003305) do
 
   create_table "calculators", force: :cascade do |t|
     t.integer  "space_id"
+    t.string   "title"
     t.text     "content"
+    t.string   "inputs",                  array: true
+    t.string   "outputs",                 array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

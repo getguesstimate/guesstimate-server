@@ -6,7 +6,10 @@ class CalculatorRepresenter < Roar::Decorator
 
   property :id
   property :space_id
+  property :title
   property :content
+  property :inputs
+  property :outputs
 
   property :space, embedded: true do
     property :user_id
