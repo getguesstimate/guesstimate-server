@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   resources :spaces, only: [:show, :create, :update, :destroy]
   resources :spaces do
+    resources :calculators, only: [:create]
     resources :copies, only: [:create]
   end
 
