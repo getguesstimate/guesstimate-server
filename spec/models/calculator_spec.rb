@@ -1,11 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe Calculator, type: :model do
-  describe '#Create' do
+  describe '#create' do
     let (:space) { FactoryGirl.build(:space) }
-    let (:title) { "title" }
-    let (:input_ids) { ["1"] }
-    let (:output_ids) { ["1"] }
+    let (:title) { 'title' }
+    let (:input_ids) { ['1'] }
+    let (:output_ids) { ['1'] }
     subject (:calculator) { FactoryGirl.build(:calculator, space: space, title: title, input_ids: input_ids, output_ids: output_ids) }
 
     it { is_expected.to be_valid }
