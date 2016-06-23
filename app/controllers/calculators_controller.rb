@@ -26,6 +26,6 @@ class CalculatorsController < ApplicationController
   end
 
   def calculator_params
-    params.require(:calculator).permit(:title, :content, input_ids: [], output_ids: [])
+    params.require(:calculator).permit(:title, :content, :share_image, input_ids: [], output_ids: [])
   end
 end
