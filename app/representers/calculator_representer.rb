@@ -7,6 +7,7 @@ class CalculatorRepresenter < Roar::Decorator
   property :id
   property :space_id
   property :title
+  property :share_image
   property :content
   property :input_ids
   property :output_ids
