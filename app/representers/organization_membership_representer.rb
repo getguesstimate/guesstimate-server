@@ -13,6 +13,5 @@ class OrganizationMembershipRepresenter < Roar::Decorator
     property :id
     property :username, as: "name"
     property :picture
-    property :sign_in_count
   end
 end

@@ -12,8 +12,6 @@ class UsersRepresenter < Roar::Decorator
     property :updated_at
     property :public_model_count
     property :private_model_count
-    property :has_private_access
-    property :sign_in_count
 
     nested :plan do
       property :private_model_limit

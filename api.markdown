@@ -24,7 +24,6 @@
       “id”: "personal_small",
       “private_model_limit”: 20
     },
-    "has_private_access": true,
     "account": {
       "has_payment_account": true,
       _links: {
