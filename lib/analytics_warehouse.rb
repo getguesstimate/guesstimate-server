@@ -2,12 +2,14 @@ require 'pg'
 
 PARAMS = Rails.application.secrets.analytics_database
 
-class DimensionTableGenerator
+class TableGenerator
   attr_accessor :schema, :columns
 
-  def initialize(schema, columns, model = nil, sql_fn = false)
-    @schema = schema
-    @columns = columns
+  def initialize(params)
+    @schema = params[:schema]
+    @columns = params[:columns]
+    @model = params[:model]
+    @sqlFn = params[:sqlFn]
   end
 
   def getData(prev_updated_at_date)
@@ -16,9 +18,9 @@ class DimensionTableGenerator
 
   private
   def getSql(prev_updated_at_date)
-    return sql_fn(prev_updated_at_date) if (sql_fn)
+    return @sqlFn.call prev_updated_at_date if @sqlFn.present?
 
-    return model\
+    return @model\
       .where('updated_at > ?', prev_updated_at_date)\
       .select(@columns)\
       .to_sql
@@ -33,52 +35,101 @@ class AnalyticsWarehouse
   ORGANIZATION_DIMS = ['id', 'name', 'plan', 'admin_id', 'created_at']
   ORGANIZATION_MEMBERSHIP_DIMS = ['member_ids']
 
-  def user_dimensions_table_select
+  def self.user_dimensions_table_select
     user_dims = USER_DIMS.collect { |dim| "users.#{dim} AS #{dim}" }.join(',')
     membership_dims = USER_MEMBERSHIP_DIMS.collect { |dim| "memberships.#{dim} AS #{dim}" }.join(',')
     return "#{user_dims},#{membership_dims},GREATEST(users.updated_at, memberships.updated_at) AS updated_at"
   end
 
-  def user_memberships_query
+  def self.user_memberships_query
     UserOrganizationMembership\
       .select('user_id, MAX(updated_at) AS updated_at, ARRAY_AGG(organization_id) AS organization_ids')\
       .group(:user_id)
   end
 
-  def local_user_dimensions_table(prev_updated_at_date = DateTime.new(2015))
-    ActiveRecord::Base.connection.execute(
-      User\
-        .joins("LEFT OUTER JOIN (#{user_memberships_query.to_sql}) AS memberships ON memberships.user_id = users.id")\
-        .where('users.updated_at > ? OR memberships.updated_at > ?', prev_updated_at_date, prev_updated_at_date)\
-        .select(user_dimensions_table_select)\
-        .to_sql
-    )
+  def self.local_user_dimensions_table_sql(prev_updated_at_date = DateTime.new(2015))
+    User\
+      .joins("LEFT OUTER JOIN (#{user_memberships_query.to_sql}) AS memberships ON memberships.user_id = users.id")\
+      .where('users.updated_at > ? OR memberships.updated_at > ?', prev_updated_at_date, prev_updated_at_date)\
+      .select(user_dimensions_table_select)\
+      .to_sql
   end
 
-  def organization_dimensions_table_select
+  def self.organization_dimensions_table_select
     organization_dims = ORGANIZATION_DIMS.collect { |dim| "organizations.#{dim} AS #{dim}" }.join(',')
     membership_dims = ORGANIZATION_MEMBERSHIP_DIMS.collect { |dim| "memberships.#{dim} AS #{dim}" }.join(',')
     return "#{organization_dims},#{membership_dims},GREATEST(organizations.updated_at, memberships.updated_at) AS updated_at"
   end
 
-  def organization_memberships_query
+  def self.organization_memberships_query
     UserOrganizationMembership\
-      .select('organization_id, MAX(updated_at) AS updated_at, ARRAY_AGG(user_id) AS user_ids')\
+      .select('organization_id, MAX(updated_at) AS updated_at, ARRAY_AGG(user_id) AS member_ids')\
       .group(:organization_id)
   end
 
-  def local_organization_dimensions_table(prev_updated_at_date = DateTime.new(2015))
-    ActiveRecord::Base.connection.execute(
-      Organization\
-        .joins("LEFT OUTER JOIN (#{organization_memberships_query.to_sql}) AS memberships ON memberships.organization_id = organizations.id")\
-        .where('organizations.updated_at > ? OR memberships.updated_at > ?', prev_updated_at_date, prev_updated_at_date)\
-        .select(organization_dimensions_table_select)\
-        .to_sql
-    )
+  def self.local_organization_dimensions_table_sql(prev_updated_at_date = DateTime.new(2015))
+    Organization\
+      .joins("LEFT OUTER JOIN (#{organization_memberships_query.to_sql}) AS memberships ON memberships.organization_id = organizations.id")\
+      .where('organizations.updated_at > ? OR memberships.updated_at > ?', prev_updated_at_date, prev_updated_at_date)\
+      .select(organization_dimensions_table_select)\
+      .to_sql
+  end
+
+  # TODO(matthew): SQL Injection worries?
+  def self.edits_table_sql(prev_updated_at_date = DateTime.new(2015))
+    "
+      CREATE OR REPLACE FUNCTION array_sort (ANYARRAY)
+      RETURNS ANYARRAY LANGUAGE SQL
+      AS $$
+        SELECT ARRAY(SELECT unnest($1) ORDER BY 1 ASC)
+      $$;
+
+      CREATE OR REPLACE FUNCTION time_windows(timestamp[]) RETURNS tsrange[] AS $$
+        DECLARE
+          s tsrange[] := ARRAY[]::tsrange[];
+          running_start timestamp;
+          prev timestamp;
+          curr timestamp;
+        BEGIN
+
+          running_start := $1[1];
+          prev := $1[1];
+          curr := $1[1];
+
+          FOREACH curr IN ARRAY $1 LOOP
+            IF (curr - prev > INTERVAL '15 minutes') THEN
+              s := s || tsrange(running_start, prev, '[]');
+              running_start := curr;
+            END IF;
+
+            prev := curr;
+          END LOOP;
+
+          s := s || tsrange(running_start, curr, '[]');
+
+          RETURN s;
+        END;
+      $$ LANGUAGE plpgsql;
+
+      SELECT
+        author_id,
+        space_id,
+        UNNEST(time_windows(array_sort(created_ats))) AS duration
+      FROM (
+        SELECT
+          author_id,
+          space_id,
+          ARRAY_AGG(created_at) AS created_ats
+        FROM
+          space_checkpoints
+        WHERE created_at > TIMESTAMP '#{prev_updated_at_date}'
+        GROUP BY author_id, space_id
+      ) AS t1
+    "
   end
 
   TABLES = {
-    user_dimensions: {
+    user_dimensions: TableGenerator.new(
       schema: "
         id int,
         organization_ids int[],
@@ -95,9 +146,9 @@ class AnalyticsWarehouse
         PRIMARY KEY(id)
       ",
       columns: "#{USER_DIMS.join(',')},#{USER_MEMBERSHIP_DIMS.join(',')},updated_at",
-      sql: '',
-    },
-    organization_dimensions: {
+      sqlFn: lambda { |prev_updated_at_date| AnalyticsWarehouse::local_user_dimensions_table_sql(prev_updated_at_date) }
+    ),
+    organization_dimensions: TableGenerator.new(
       schema: "
         id int,
         member_ids int[],
@@ -109,10 +160,10 @@ class AnalyticsWarehouse
         PRIMARY KEY(id)
       ",
       columns: "#{ORGANIZATION_DIMS.join(',')},#{ORGANIZATION_MEMBERSHIP_DIMS.join(',')},updated_at",
-      sql: ''
-    },
-    space_dimensions: DimensionTableGenerator.new(
-      "
+      sqlFn: lambda { |prev_updated_at_date| AnalyticsWarehouse::local_organization_dimensions_table_sql(prev_updated_at_date) }
+    ),
+    space_dimensions: TableGenerator.new(
+      schema: "
         id int,
         organization_id int,
         user_id int,
@@ -122,27 +173,27 @@ class AnalyticsWarehouse
         updated_at timestamp,
         PRIMARY KEY(id)
       ",
-      'id,organization_id,user_id,category,categorized,created_at,updated_at',
-      Space
+      columns: 'id,organization_id,user_id,category,categorized,created_at,updated_at',
+      model: Space
     ),
-    edits: {
+    edits: TableGenerator.new(
       schema: "
-        user_id int,
+        author_id int,
         space_id int,
-        duration tstzrange,
-        PRIMARY KEY (user_id, space_id, duration)
+        duration tsrange,
+        PRIMARY KEY (author_id, space_id, duration)
       ",
-      columns: '',
-      sql: ''
-    }
+      columns: 'author_id, space_id, duration',
+      sqlFn: lambda { |prev_updated_at_date| AnalyticsWarehouse::edits_table_sql(prev_updated_at_date) }
+    )
   }
 
   def self.local_sql(query)
-    query)
+    ActiveRecord::Base.connection.execute(query)
   end
 
   def self.to_pg_csv(res)
-    res.to_a.collect {|e| e[1].to_s}.collect {|e| e.starts_with?('{') ? "\"#{e}\"" : e}.join(',') + "\n"
+    res.to_a.collect {|e| e[1].to_s}.collect {|e| e.starts_with?('{') || e.starts_with?('[') || e.starts_with?('(') ? "\"#{e}\"" : e}.join(',') + "\n"
   end
 
   def self.update_view_counts!
@@ -186,20 +237,23 @@ class AnalyticsWarehouse
     "
   end
 
-  def create_table_sql(name, schema)
+  def self.create_table_sql(name, schema)
     "CREATE TABLE guesstimate_#{Rails.env}.#{name} (#{schema})"
   end
 
-  def drop_table_sql(name)
-    "DROP TABLE guesstimate_#{Rails.env}.#{name}"
+  def self.drop_table_sql(name)
+    "DROP TABLE IF EXISTS guesstimate_#{Rails.env}.#{name}"
   end
 
   def reset_table(name)
-    @connection.exec "#{drop_table_sql name}; #{create_table_sql name, AnalyticsWarehouse::TABLES[name].schema};"
+    @connection.exec "
+      #{AnalyticsWarehouse::drop_table_sql name};
+      #{AnalyticsWarehouse::create_table_sql name, AnalyticsWarehouse::TABLES[name].schema};
+    "
   end
 
-  def update_dimension_table(name, prev_updated_at_date=DateTime.new(2015))
-    copy_cmd = "COPY guesstimate_development.#{name}(#{AnalyticsWarehouse::TABLES[name].columns}) FROM STDIN CSV"
+  def update_table(name, prev_updated_at_date=DateTime.new(2015))
+    copy_cmd = "COPY guesstimate_#{Rails.env}.#{name}(#{AnalyticsWarehouse::TABLES[name].columns}) FROM STDIN CSV"
     data = AnalyticsWarehouse::TABLES[name].getData(prev_updated_at_date)
     @connection.copy_data copy_cmd do
       data.each { |row| @connection.put_copy_data(AnalyticsWarehouse.to_pg_csv(row)) }
