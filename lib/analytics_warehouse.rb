@@ -261,7 +261,7 @@ class AnalyticsWarehouse
   def update_table(name, prev_updated_at_date=DateTime.new(2015))
     return unless AnalyticsWarehouse::TABLES.include? name
 
-    copy_cmd = "COPY guesstimate_#{Rails.env}.#{name}(#{AnalyticsWarehouse::TABLES[name].columns}) FROM STDIN CSV"
+    copy_cmd = "COPY #{AnalyticsWarehouse::full_table_name name}(#{AnalyticsWarehouse::TABLES[name].columns}) FROM STDIN CSV"
     data = AnalyticsWarehouse::TABLES[name].getData(prev_updated_at_date)
     @connection.copy_data copy_cmd do
       data.each { |row| @connection.put_copy_data(AnalyticsWarehouse.to_pg_csv(row)) }
