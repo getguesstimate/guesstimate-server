@@ -237,15 +237,21 @@ class AnalyticsWarehouse
     "
   end
 
+  def self.full_table_name(name)
+    "guesstimate_#{Rails.env}.#{name}"
+  end
+
   def self.create_table_sql(name, schema)
-    "CREATE TABLE guesstimate_#{Rails.env}.#{name} (#{schema})"
+    "CREATE TABLE #{AnalyticsWarehouse::full_table_name name} (#{schema})"
   end
 
   def self.drop_table_sql(name)
-    "DROP TABLE IF EXISTS guesstimate_#{Rails.env}.#{name}"
+    "DROP TABLE IF EXISTS #{AnalyticsWarehouse::full_table_name name}"
   end
 
   def reset_table(name)
+    return unless AnalyticsWarehouse::TABLES.include? name
+
     @connection.exec "
       #{AnalyticsWarehouse::drop_table_sql name};
       #{AnalyticsWarehouse::create_table_sql name, AnalyticsWarehouse::TABLES[name].schema};
@@ -253,6 +259,8 @@ class AnalyticsWarehouse
   end
 
   def update_table(name, prev_updated_at_date=DateTime.new(2015))
+    return unless AnalyticsWarehouse::TABLES.include? name
+
     copy_cmd = "COPY guesstimate_#{Rails.env}.#{name}(#{AnalyticsWarehouse::TABLES[name].columns}) FROM STDIN CSV"
     data = AnalyticsWarehouse::TABLES[name].getData(prev_updated_at_date)
     @connection.copy_data copy_cmd do
