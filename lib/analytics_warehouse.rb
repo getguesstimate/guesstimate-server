@@ -122,7 +122,7 @@ class AnalyticsWarehouse
           ARRAY_AGG(created_at) AS created_ats
         FROM
           space_checkpoints
-        WHERE created_at > TIMESTAMP '#{prev_updated_at_date}'
+        WHERE created_at > TIMESTAMP '#{prev_updated_at_date}' AND author_id IS NOT NULL
         GROUP BY author_id, space_id
       ) AS t1
     "
@@ -192,8 +192,12 @@ class AnalyticsWarehouse
     ActiveRecord::Base.connection.execute(query)
   end
 
+  def self.needs_escaping?(str)
+    str.starts_with?('{') || str.starts_with?('[') || str.include?(',')
+  end
+
   def self.to_pg_csv(res)
-    res.to_a.collect {|e| e[1].to_s}.collect {|e| e.starts_with?('{') || e.starts_with?('[') || e.starts_with?('(') ? "\"#{e}\"" : e}.join(',') + "\n"
+    res.to_a.collect {|e| e[1].to_s}.collect {|e| AnalyticsWarehouse::needs_escaping?(e) ? "\"#{e}\"" : e}.join(',') + "\n"
   end
 
   def self.update_view_counts!
