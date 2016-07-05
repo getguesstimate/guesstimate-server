@@ -204,12 +204,11 @@ class AnalyticsWarehouse
     instance = self.new()
     view_counts = instance.view_count(10000)
     instance.close()
-    puts 'got view_counts'
-    puts view_counts
+    puts 'Got view_counts'
 
     Space.find_each(batch_size: 100) do |space|
       space_count = view_counts[space.id]
-      if space_count
+      if space_count && space.viewcount != space_count
         puts "UPDATING SPACE #{space.id} with count #{space_count}"
         space.update_columns(viewcount: space_count)
       end
