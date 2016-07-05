@@ -23,3 +23,10 @@ task update_tables: :environment do
 
   puts 'Done'
 end
+
+desc 'This task updates the space view counts.'
+task update_view_counts: :environment do
+  puts 'Updating view counts...'
+  AnalyticsWarehouse::update_view_counts!
+  puts 'Done'
+end
