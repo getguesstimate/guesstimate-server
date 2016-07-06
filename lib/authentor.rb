@@ -20,7 +20,9 @@ class Authentor
   def fetch_users
     find_user_count = @auth0.get_users({per_page: 0, page: 0, include_totals: true})
     total = find_user_count["total"]
-    go_to_page = total / 100
+
+    #If total is 5400, the page should be 53, because the first page is 0.
+    go_to_page = (total - 1) / 100
 
     @auth0_users = @auth0.get_users({per_page: 100, page: go_to_page})
 
