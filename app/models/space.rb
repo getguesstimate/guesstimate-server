@@ -211,7 +211,29 @@ class Space < ActiveRecord::Base
     end
   end
 
+  def to_text
+    return "#{name}
+      #{description}
+      #{metrics.zip(guesstimates).map {|m, g| "Metric #{m['name']}: #{g['description']}"}.join("\n")}
+    "
+  end
+
   private
+  def guesstimates
+    if graph && graph['guesstimates']
+      return graph['guesstimates']
+    else
+      return []
+    end
+  end
+  def metrics
+    if graph && graph['metrics']
+      return graph['metrics']
+    else
+      return []
+    end
+  end
+
   def clean_items(key, uniqKey)
     graph && graph[key] && graph[key].reverse.uniq{|m| m[uniqKey]}.reverse
   end
@@ -227,8 +249,6 @@ class Space < ActiveRecord::Base
   def identify_user
     user && user.identify
   end
-
-  private
 
   # Validations
   def owner_can_create_private_models
