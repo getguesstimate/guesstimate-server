@@ -39,6 +39,7 @@ gem 'analytics-ruby', '~> 2.0.0', require: 'segment/analytics'
 gem 'actionpack-action_caching'
 
 # Space Categorization
+gem 'rseg'
 gem 'stuff-classifier', git: 'https://github.com/alexandru/stuff-classifier'
 
 group :development, :test do
