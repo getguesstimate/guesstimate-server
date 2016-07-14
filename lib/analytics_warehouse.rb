@@ -18,12 +18,7 @@ class TableGenerator
 
   private
   def getSql(prev_updated_at_date)
-    return @sqlFn.call prev_updated_at_date if @sqlFn.present?
-
-    return @model\
-      .where('updated_at > ?', prev_updated_at_date)\
-      .select(@columns)\
-      .to_sql
+    return @sqlFn.call prev_updated_at_date
   end
 end
 
@@ -34,6 +29,23 @@ class AnalyticsWarehouse
   USER_MEMBERSHIP_DIMS = ['organization_ids']
   ORGANIZATION_DIMS = ['id', 'name', 'plan', 'admin_id', 'created_at']
   ORGANIZATION_MEMBERSHIP_DIMS = ['member_ids']
+
+  def self.space_dimensions_table_sql(prev_updated_at_date = DateTime.new(2015))
+    # This list of columns must be kept in sync with the list below, in the space dimension table creator.
+    return Space\
+      .where('updated_at > ?', prev_updated_at_date)\
+      .select("
+        id,
+        organization_id,
+        user_id,
+        category,
+        categorized,
+        JSON_ARRAY_LENGTH(JSON_EXTRACT_PATH(graph, 'metrics')) AS node_count,
+        created_at,
+        updated_at
+      ")\
+      .to_sql
+  end
 
   def self.user_dimensions_table_select
     user_dims = USER_DIMS.collect { |dim| "users.#{dim} AS #{dim}" }.join(',')
@@ -169,12 +181,13 @@ class AnalyticsWarehouse
         user_id int,
         category text,
         categorized bool,
+        node_count int,
         created_at timestamp,
         updated_at timestamp,
         PRIMARY KEY(id)
       ",
-      columns: 'id,organization_id,user_id,category,categorized,created_at,updated_at',
-      model: Space
+      columns: 'id,organization_id,user_id,category,categorized,node_count,created_at,updated_at',
+      sqlFn: lambda { |prev_updated_at_date| AnalyticsWarehouse::space_dimensions_table_sql(prev_updated_at_date) }
     ),
     edits: TableGenerator.new(
       schema: "
@@ -208,7 +221,7 @@ class AnalyticsWarehouse
 
     Space.find_each(batch_size: 100) do |space|
       space_count = view_counts[space.id]
-      if space_count && space.viewcount != space_count
+      if space_count
         puts "UPDATING SPACE #{space.id} with count #{space_count}"
         space.update_columns(viewcount: space_count)
       end
