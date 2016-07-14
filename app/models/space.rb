@@ -94,6 +94,10 @@ class Space < ActiveRecord::Base
     metrics.length > 3
   end
 
+  def viewable_by_user?(user)
+    is_public? || (user.present? && editable_by_user?(user))
+  end
+
   def editable_by_user?(user)
     if organization
       user.member_of?(organization)

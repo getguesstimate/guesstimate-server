@@ -1,9 +1,9 @@
 class CalculatorsController < ApplicationController
-  before_action :authenticate, :set_space, :check_authorization, only: [:create]
+  before_action :authenticate, :set_space, :check_create_authorization, only: [:create]
+  before_action :set_calculator, :check_show_authorization, only: [:show]
 
   # GET /calculators/:id
   def show
-    @calculator = Calculator.find(params[:id])
     render json: CalculatorRepresenter.new(@calculator).to_json
   end
 
@@ -21,7 +21,15 @@ class CalculatorsController < ApplicationController
     @space = Space.find(params[:space_id])
   end
 
-  def check_authorization
+  def set_calculator
+    @calculator = Calculator.find(params[:id])
+  end
+
+  def check_show_authorization
+    head :unauthorized unless @calculator.space.viewable_by_user? current_user
+  end
+
+  def check_create_authorization
     head :unauthorized unless @space.editable_by_user? current_user
   end
 
