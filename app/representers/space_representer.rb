@@ -28,4 +28,14 @@ class SpaceRepresenter < Roar::Decorator
     property :name
     property :picture
   end
+
+  collection :calculators, embedded: true, class: Calculator do
+    property :id
+    property :space_id
+    property :title
+    property :share_image
+    property :content
+    property :input_ids
+    property :output_ids
+  end
 end
