@@ -4,8 +4,8 @@ class CreateFacts < ActiveRecord::Migration
       t.integer :organization_id
       t.integer :user_id
       t.string :name
-      t.string :input
-      t.string :readableId
+      t.string :variable_name
+      t.string :value
     end
   end
 end

@@ -33,8 +33,8 @@ ActiveRecord::Schema.define(version: 20160720184708) do
     t.integer "organization_id"
     t.integer "user_id"
     t.string  "name"
-    t.string  "input"
-    t.string  "readableId"
+    t.string  "variable_name"
+    t.string  "value"
   end
 
   create_table "organization_accounts", force: :cascade do |t|
