@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160628010547) do
+ActiveRecord::Schema.define(version: 20160720184708) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,6 +28,14 @@ ActiveRecord::Schema.define(version: 20160628010547) do
   end
 
   add_index "calculators", ["space_id"], name: "index_calculators_on_space_id", using: :btree
+
+  create_table "facts", force: :cascade do |t|
+    t.integer "organization_id"
+    t.integer "user_id"
+    t.string  "name"
+    t.string  "input"
+    t.string  "readableId"
+  end
 
   create_table "organization_accounts", force: :cascade do |t|
     t.integer "organization_id"
@@ -76,6 +84,7 @@ ActiveRecord::Schema.define(version: 20160628010547) do
     t.boolean  "categorized"
     t.datetime "snapshot_timestamp"
     t.string   "big_screenshot"
+    t.integer  "view_count"
   end
 
   create_table "user_accounts", force: :cascade do |t|
