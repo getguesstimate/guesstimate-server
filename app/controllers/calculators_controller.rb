@@ -25,6 +25,11 @@ class CalculatorsController < ApplicationController
     end
   end
 
+  def destroy
+    @calculator.destroy
+    head :no_content
+  end
+
   private
   def set_variables
     if (params[:id].present?)
