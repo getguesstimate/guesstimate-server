@@ -37,7 +37,7 @@ task take_snapshots: :environment do
   puts "Taking snapshots of #{spaces.count} #{'space'.pluralize spaces.count}"
   spaces.find_each do |space|
     space.take_snapshot
-    while (Thread.list.select {|thread| thread.status == "run"}.count > 10)
+    while (Thread.list.count > 10)
       sleep 0.01
     end
   end
