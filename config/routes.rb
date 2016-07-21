@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   mount Knock::Engine => '/knock'
 
-  resources :calculators, only: [:show, :update]
+  resources :calculators, only: [:show, :update, :destroy]
 
   resources :spaces, only: [:show, :create, :update, :destroy]
   resources :spaces do
