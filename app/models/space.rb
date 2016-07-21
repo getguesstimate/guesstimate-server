@@ -18,7 +18,6 @@ class Space < ActiveRecord::Base
 
   after_initialize :init
   after_save :identify_user
-  after_save :take_snapshot, if: :needs_new_snapshot?
   after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
@@ -160,15 +159,6 @@ class Space < ActiveRecord::Base
     if checkpoints.count > 1000
       checkpoints.order('created_at').first.delete
     end
-  end
-
-  def needs_new_snapshot?
-    Rails.env == 'production' && is_public? && has_old_snapshot?
-  end
-
-  def has_old_snapshot?
-    return true unless snapshot_timestamp
-    5.minutes.ago >= snapshot_timestamp
   end
 
   def get_screenshot_url(thumb, force = false)
