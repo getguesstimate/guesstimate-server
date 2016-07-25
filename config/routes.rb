@@ -3,6 +3,8 @@ Rails.application.routes.draw do
 
   resources :calculators, only: [:show]
 
+  resources :facts, only: [:create, :update, :destroy]
+
   resources :spaces, only: [:show, :create, :update, :destroy]
   resources :spaces do
     resources :calculators, only: [:create]
