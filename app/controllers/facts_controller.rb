@@ -10,9 +10,6 @@ class FactsController < ApplicationController
   # POST /facts
   # POST /facts.json
   def create
-    @fact = Fact.new(fact_params)
-    @fact.user = current_user
-
     if @fact.save
       render json: FactRepresenter.new(@fact).to_json
     else
@@ -39,20 +36,23 @@ class FactsController < ApplicationController
 
   private
   def check_authorization
-    head :unauthorized unless current_user.member_of? @organization.id
+    head :unauthorized unless @organization.present? && current_user.member_of?(@organization.id)
   end
 
   def set_variables
     if params[:id].present?
       @fact = Fact.find(params[:id])
       @organization = @fact.organization
-    else if params[:organization_id].present?
+    elsif params[:organization_id].present?
       @organization = Organization.find(params[:organization_id])
+    elsif params[:fact].present?
+      @fact = Fact.new(fact_params)
+      @organization = Organization.find(params[:fact][:organization_id])
     end
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def fact_params
-    params.require(:fact).permit(:title, :expression, :variable_name, :organization_id)
+    params.require(:fact).permit(:name, :expression, :variable_name, :organization_id)
   end
 end
