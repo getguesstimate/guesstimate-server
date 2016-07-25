@@ -30,12 +30,15 @@ ActiveRecord::Schema.define(version: 20160720184708) do
   add_index "calculators", ["space_id"], name: "index_calculators_on_space_id", using: :btree
 
   create_table "facts", force: :cascade do |t|
-    t.integer "organization_id"
-    t.integer "user_id"
-    t.string  "name"
-    t.string  "variable_name"
-    t.string  "value"
+    t.integer  "organization_id"
+    t.string   "name"
+    t.string   "variable_name"
+    t.string   "expression"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
+
+  add_index "facts", ["organization_id"], name: "index_facts_on_organization_id", using: :btree
 
   create_table "organization_accounts", force: :cascade do |t|
     t.integer "organization_id"
@@ -84,7 +87,6 @@ ActiveRecord::Schema.define(version: 20160720184708) do
     t.boolean  "categorized"
     t.datetime "snapshot_timestamp"
     t.string   "big_screenshot"
-    t.integer  "view_count"
   end
 
   create_table "user_accounts", force: :cascade do |t|

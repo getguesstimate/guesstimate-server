@@ -1,16 +1,16 @@
 class FactsController < ApplicationController
-  before_action :authenticate, only: [:create, :update, :destroy]
+  before_action :authenticate, :set_variables, :check_authorization
 
-  #GET /spaces
-  #GET /spaces.json
+  #GET /organizations/:organization_id/facts
+  #GET /organizations/:organization_id/facts.json
   def index
-    render json: FactsRepresenter.new(Fact.all).to_json
+    render json: FactsRepresenter.new(@organization.facts).to_json
   end
 
-  # POST /spaces
-  # POST /spaces.json
+  # POST /facts
+  # POST /facts.json
   def create
-    @fact = Fact.new(space_params)
+    @fact = Fact.new(fact_params)
     @fact.user = current_user
 
     if @fact.save
@@ -20,33 +20,40 @@ class FactsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /spaces/1
-  # PATCH/PUT /spaces/1.json
+  # PATCH/PUT /facts/1
+  # PATCH/PUT /facts/1.json
   def update
     if @fact.update(fact_params)
-      @fact.take_checkpoint(current_user) if @space.needs_checkpoint?
+      @fact.take_checkpoint(current_user) if @fact.needs_checkpoint?
       render json: FactRepresenter.new(@fact).to_json, status: :ok
     else
       render json: @fact.errors, status: :unprocessable_entity
     end
   end
 
-  # DELETE /spaces/1
-  # DELETE /spaces/1.json
+  # DELETE /facts/1
+  # DELETE /facts/1.json
   def destroy
     @fact.destroy
     head :no_content
   end
 
   private
+  def check_authorization
+    head :unauthorized unless current_user.member_of? @organization.id
+  end
 
-  # Use callbacks to share common setup or constraints between actions.
-  def set_fact
-    @fact = Fact.find(params[:id])
+  def set_variables
+    if params[:id].present?
+      @fact = Fact.find(params[:id])
+      @organization = @fact.organization
+    else
+      @organization = Organization.find(params[:organization_id]) if params[:organization_id].present?
+    end
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def fact_params
-    params.require(:fact).permit(:title, :value, :variable_name, :organization_id)
+    params.require(:fact).permit(:title, :expression, :variable_name, :organization_id)
   end
 end
