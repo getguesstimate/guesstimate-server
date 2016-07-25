@@ -25,6 +25,11 @@ class OrganizationRepresenter < Roar::Decorator
     decorator: OrganizationMembershipRepresenter,
     if: ->(user_options:, **) { user_options[:current_user_is_member] }
 
+  collection :facts,
+    class: Fact,
+    decorator: FactsRepresenter,
+    if: ->(user_options:, **) { user_options[:current_user_is_member] }
+
   property :plan_details,
     decorator: PlanRepresenter,
     class: Plan,

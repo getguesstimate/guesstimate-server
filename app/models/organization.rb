@@ -5,6 +5,7 @@ class Organization < ActiveRecord::Base
   has_one :account, class_name: 'OrganizationAccount', dependent: :destroy
 
   has_many :spaces, dependent: :destroy
+  has_many :facts, dependent: :destroy
 
   belongs_to :admin, class_name: 'User'
 
