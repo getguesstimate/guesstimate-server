@@ -14,7 +14,7 @@ RSpec.describe FactsController, type: :controller do
   describe 'POST create' do
     let (:organization) { FactoryGirl.create(:organization) }
 
-    let (:fact_params) { {name: 'name', expression: '100', variable_name: 'var_1', organization_id: organization.id} }
+    let (:fact_params) { {name: 'name', expression: '100', variable_name: 'var_1'} }
 
     shared_examples 'it successfully creates the fact' do
       it 'should successfully create the fact' do
@@ -22,14 +22,14 @@ RSpec.describe FactsController, type: :controller do
         expect(JSON.parse(response.body)['name']).to eq fact_params[:name]
         expect(JSON.parse(response.body)['expression']).to eq fact_params[:expression]
         expect(JSON.parse(response.body)['variable_name']).to eq fact_params[:variable_name]
-        expect(JSON.parse(response.body)['organization_id']).to eq fact_params[:organization_id]
+        expect(JSON.parse(response.body)['organization_id']).to eq organization.id
       end
     end
 
     let (:creating_user) { nil }
     before do
       setup_knock(creating_user) if creating_user.present?
-      post :create, fact: fact_params
+      post :create, fact: fact_params, organization_id: organization.id
     end
 
     context 'for a logged out creator' do
