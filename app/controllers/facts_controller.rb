@@ -24,7 +24,6 @@ class FactsController < ApplicationController
   # PATCH/PUT /facts/1.json
   def update
     if @fact.update(fact_params)
-      @fact.take_checkpoint(current_user) if @fact.needs_checkpoint?
       render json: FactRepresenter.new(@fact).to_json, status: :ok
     else
       render json: @fact.errors, status: :unprocessable_entity
@@ -47,8 +46,8 @@ class FactsController < ApplicationController
     if params[:id].present?
       @fact = Fact.find(params[:id])
       @organization = @fact.organization
-    else
-      @organization = Organization.find(params[:organization_id]) if params[:organization_id].present?
+    else if params[:organization_id].present?
+      @organization = Organization.find(params[:organization_id])
     end
   end
 

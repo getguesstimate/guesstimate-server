@@ -6,8 +6,11 @@ class FactsRepresenter < Roar::Decorator
 
   collection :to_a, as: 'items', class: Fact do
     property :id
+    property :organization_id
     property :name
-    property :value
+    property :expression
     property :variable_name
+    property :created_at
+    property :updated_at
   end
 end
