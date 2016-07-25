@@ -3,8 +3,6 @@ Rails.application.routes.draw do
 
   resources :calculators, only: [:show]
 
-  resources :facts, only: [:create, :update, :destroy]
-
   resources :spaces, only: [:show, :create, :update, :destroy]
   resources :spaces do
     resources :calculators, only: [:create]
@@ -20,8 +18,8 @@ Rails.application.routes.draw do
 
   resources :organization, only: [:show, :create]
   resources :organizations do
+    resources :facts, only: [:index, :create, :update, :destroy]
     get :spaces, to: 'spaces#index'
-    get :facts, to: 'facts#index'
     get :members, to: 'user_organization_memberships#organization_memberships'
     get :invitees, to: 'user_organization_invitations#organization_invitations'
     post :members, to: 'user_organization_invitations#invite_by_email'

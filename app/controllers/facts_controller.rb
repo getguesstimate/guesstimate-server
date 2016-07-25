@@ -40,19 +40,16 @@ class FactsController < ApplicationController
   end
 
   def set_variables
+    @organization = Organization.find(params[:organization_id])
     if params[:id].present?
-      @fact = Fact.find(params[:id])
-      @organization = @fact.organization
-    elsif params[:organization_id].present?
-      @organization = Organization.find(params[:organization_id])
+      @fact = @organization.facts.find(params[:id])
     elsif params[:fact].present?
-      @fact = Fact.new(fact_params)
-      @organization = Organization.find(params[:fact][:organization_id])
+      @fact = @organization.facts.new(fact_params)
     end
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def fact_params
-    params.require(:fact).permit(:name, :expression, :variable_name, :organization_id)
+    params.require(:fact).permit(:name, :expression, :variable_name)
   end
 end
