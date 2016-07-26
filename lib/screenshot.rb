@@ -18,7 +18,6 @@ def urlbox(url, options={}, format='png')
     :height      => options[:height], # optional - number - set viewport height to use (in pixels)
     :quality     => options[:quality], # optional - number (0-100) - set quality of the screenshot
     :delay       => options[:delay], # optional - number (0-100) - set quality of the screenshot
-    :renderer    => 'beta'
   }
 
   query_string = query.
