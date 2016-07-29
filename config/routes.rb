@@ -18,6 +18,7 @@ Rails.application.routes.draw do
 
   resources :organization, only: [:show, :create]
   resources :organizations do
+    resources :facts, only: [:index, :create, :update, :destroy]
     get :spaces, to: 'spaces#index'
     get :members, to: 'user_organization_memberships#organization_memberships'
     get :invitees, to: 'user_organization_invitations#organization_invitations'
