@@ -55,7 +55,7 @@ class SpacesController < ApplicationController
     end
 
     if @space.save
-      render json: SpaceRepresenter.new(@space).to_json
+      render json: SpaceRepresenter.new(@space).to_json(user_options: {current_user_can_edit: true})
     else
       render json: @space.errors, status: :unprocessable_entity
     end
@@ -67,7 +67,7 @@ class SpacesController < ApplicationController
     filtered_params = space_params.reject { |k,v| k == 'previous_updated_at' }
     if @space.update(filtered_params)
       @space.take_checkpoint(current_user) if @space.needs_checkpoint?
-      render json: SpaceRepresenter.new(@space).to_json, status: :ok
+      render json: SpaceRepresenter.new(@space).to_json(user_options: {current_user_can_edit: true}), status: :ok
     else
       render json: @space.errors, status: :unprocessable_entity
     end
@@ -93,7 +93,7 @@ class SpacesController < ApplicationController
 
   def check_previous_author
     if space_params[:previous_updated_at].present? && @space.someone_else_editing?(current_user, space_params[:previous_updated_at])
-      render json: SpaceRepresenter.new(@space).to_json, status: :conflict
+      render json: SpaceRepresenter.new(@space).to_json(user_options: {current_user_can_edit: true}), status: :conflict
     end
   end
 
