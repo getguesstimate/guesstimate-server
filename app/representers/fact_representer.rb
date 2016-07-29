@@ -9,6 +9,7 @@ class FactRepresenter < Roar::Decorator
   property :name
   property :expression
   property :variable_name
+  property :values
   property :created_at
   property :updated_at
 end
