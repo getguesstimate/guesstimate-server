@@ -44,8 +44,6 @@ class FactsController < ApplicationController
     if params[:id].present?
       @fact = @organization.facts.find(params[:id])
     elsif params[:fact].present?
-      puts fact_params
-      puts params
       @fact = @organization.facts.new(fact_params)
     end
   end
