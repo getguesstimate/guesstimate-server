@@ -10,7 +10,7 @@ class FactsRepresenter < Roar::Decorator
     property :name
     property :expression
     property :variable_name
-    property :values
+    property :simulation
     property :created_at
     property :updated_at
   end

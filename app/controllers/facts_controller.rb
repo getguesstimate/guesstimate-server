@@ -48,8 +48,12 @@ class FactsController < ApplicationController
     end
   end
 
+  def simulation_structure
+    {sample: {values: []}, stats: [:length, :mean, :stdev, percentiles: ['5', '50', '95'], adjustedConfidenceInterval: []]}
+  end
+
   # Never trust parameters from the scary internet, only allow the white list through.
   def fact_params
-    params.require(:fact).permit(:name, :expression, :variable_name, values: [])
+    params.require(:fact).permit(:name, :expression, :variable_name, simulation: simulation_structure)
   end
 end
