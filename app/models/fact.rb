@@ -10,11 +10,11 @@ class Fact < ActiveRecord::Base
   private
 
   def fact_has_values
-    values_present = simulation && simulation["sample"] && simulation["sample"]["values"] && simulation["sample"]["values"].length > 0
+    values_present = simulation && simulation['sample'] && simulation['sample']['values'] && simulation['sample']['values'].length > 0
     errors[:base] << 'must have values' unless values_present
   end
   def fact_has_no_errors
-    errors_present = simulation && simulation["sample"] && simulation["sample"]["errors"] && simulation["sample"]["errors"].length > 0
+    errors_present = simulation && simulation['sample'] && simulation['sample']['errors'] && simulation['sample']['errors'].length > 0
     errors[:base] << 'can not have errors' if errors_present
   end
 end
