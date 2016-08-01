@@ -14,7 +14,15 @@ RSpec.describe FactsController, type: :controller do
   describe 'POST create' do
     let (:organization) { FactoryGirl.create(:organization) }
 
-    let (:fact_params) { {name: 'name', expression: '100', variable_name: 'var_1'} }
+    let (:fact_params) {{
+      name: 'name',
+      expression: '100',
+      variable_name: 'var_1',
+      simulation: {
+        "sample" => {"values" => [100], "errors" => []},
+        "stats" => {"mean" => 100, "stdev" => 0, "length" => 0}
+      }
+    }}
 
     shared_examples 'it successfully creates the fact' do
       it 'should successfully create the fact' do
