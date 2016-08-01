@@ -6,7 +6,17 @@ RSpec.describe Fact, type: :model do
     let (:name) { 'name' }
     let (:expression) { '199' }
     let (:variable_name) { 'var_1' }
-    subject (:fact) { FactoryGirl.build(:fact, organization: organization, name: name, expression: expression, variable_name: variable_name) }
+    let (:simulation) { {"sample" => { "values" => [1], "errors" => [] }, "stats" => { "mean" => 1, "stdev" => 0, "length" => 1 }} }
+    subject (:fact) {
+      FactoryGirl.build(
+        :fact,
+        organization: organization,
+        name: name,
+        expression: expression,
+        variable_name: variable_name,
+        simulation: simulation,
+      )
+    }
 
     it { is_expected.to be_valid }
 
@@ -32,6 +42,30 @@ RSpec.describe Fact, type: :model do
 
     context 'improper variable_name' do
       let (:variable_name) { 'this is not allowed.' }
+      it { is_expected.to_not be_valid }
+    end
+
+    context 'non-unique variable_name' do
+      let (:variable_name) {
+        name = 'foo'
+        FactoryGirl.create(:fact, organization: organization, variable_name: name)
+        name
+      }
+      it { is_expected.to_not be_valid }
+    end
+
+    context 'no simulation' do
+      let (:simulation) { nil }
+      it { is_expected.to_not be_valid }
+    end
+
+    context 'simulation with no values' do
+      let (:simulation) { {"sample" => {}} }
+      it { is_expected.to_not be_valid }
+    end
+
+    context 'simulation with errors' do
+      let (:simulation) { {"sample" => {"values" => [1], "errors" => [{"type" => "Math Error", "msg" => "Invalid Sample"}]}} }
       it { is_expected.to_not be_valid }
     end
   end
