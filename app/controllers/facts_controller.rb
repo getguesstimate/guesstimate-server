@@ -7,8 +7,8 @@ class FactsController < ApplicationController
     render json: FactsRepresenter.new(@organization.facts).to_json
   end
 
-  # POST /facts
-  # POST /facts.json
+  # POST /organizations/:organization_id/facts
+  # POST /organizations/:organization_id/facts.json
   def create
     if @fact.save
       render json: FactRepresenter.new(@fact).to_json
@@ -17,8 +17,8 @@ class FactsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /facts/1
-  # PATCH/PUT /facts/1.json
+  # PATCH/PUT /organizations/:organization_id/facts/1
+  # PATCH/PUT /organizations/:organization_id/facts/1.json
   def update
     if @fact.update(fact_params)
       render json: FactRepresenter.new(@fact).to_json, status: :ok
@@ -27,8 +27,8 @@ class FactsController < ApplicationController
     end
   end
 
-  # DELETE /facts/1
-  # DELETE /facts/1.json
+  # DELETE /organizations/:organization_id/facts/1
+  # DELETE /organizations/:organization_id/facts/1.json
   def destroy
     @fact.destroy
     head :no_content
@@ -50,6 +50,6 @@ class FactsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def fact_params
-    params.require(:fact).permit(:name, :expression, :variable_name)
+    params.require(:fact).permit(:name, :expression, :variable_name, values: [])
   end
 end
