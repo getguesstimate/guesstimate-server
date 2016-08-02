@@ -67,6 +67,19 @@ class Space < ActiveRecord::Base
     end
   end
 
+  def readableIdsToIds
+    idMap = {}
+    graph['metrics'].each{|m| idMap[m['readableId']] = m['id']} if graph && graph['metrics'].kind_of?(Array)
+    idMap
+  end
+
+  def transformGuesstimateInputsToExpressions
+    idRe = Regexp.new(readableIdsToIds.keys.join('|'))
+    idMap = readableIdsToIds.transform_values {|v| "${#{v}}"}
+    graph['guesstimates'].each { |g| g.merge!({'input' => nil, 'expression' => g['input'].gsub(idRe, idMap)}) }
+    save!
+  end
+
   def guesstimates_not_of_type(types)
     return [] if graph.nil? || graph['guesstimates'].nil?
     graph['guesstimates'].select {|guesstimate| types.exclude? guesstimate['guesstimateType']}
