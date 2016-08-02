@@ -67,15 +67,15 @@ class Space < ActiveRecord::Base
     end
   end
 
-  def readableIdsToIds
+  def metric_readable_ids_to_ids_map
     idMap = {}
     graph['metrics'].each{|m| idMap[m['readableId']] = m['id']} if graph && graph['metrics'].kind_of?(Array)
     idMap
   end
 
-  def transformGuesstimateInputsToExpressions
+  def match_guesstimate_ids
     idRe = Regexp.new(readableIdsToIds.keys.join('|'))
-    idMap = readableIdsToIds.transform_values {|v| "${#{v}}"}
+    idMap = metric_readable_ids_to_ids_map.transform_values {|v| "${#{v}}"}
     graph['guesstimates'].each { |g| g.merge!({'input' => nil, 'expression' => g['input'].gsub(idRe, idMap)}) }
     save!
   end
