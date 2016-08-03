@@ -75,7 +75,7 @@ class Space < ActiveRecord::Base
 
   def match_guesstimate_ids
     idRe = Regexp.new(readableIdsToIds.keys.join('|'))
-    idMap = metric_readable_ids_to_ids_map.transform_values {|v| "${#{v}}"}
+    idMap = metric_readable_ids_to_ids_map.transform_values {|v| "${metric:#{v}}"}
     graph['guesstimates'].each { |g| g.merge!({'input' => nil, 'expression' => g['input'].gsub(idRe, idMap)}) }
     save!
   end
