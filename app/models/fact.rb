@@ -1,7 +1,7 @@
 class Fact < ActiveRecord::Base
   belongs_to :organization
 
-  validates_presence_of :organization, :name, :variable_name, :expression, :simulation
+  validates_presence_of :organization, :variable_name, :expression, :simulation
   validates :variable_name,
     uniqueness: {scope: :organization_id},
     format: {with: /\A\w+\Z/}
