@@ -27,7 +27,7 @@ RSpec.describe Fact, type: :model do
 
     context 'no name' do
       let (:name) { nil }
-      it { is_expected.to_not be_valid }
+      it { is_expected.to be_valid }
     end
 
     context 'no expression' do
