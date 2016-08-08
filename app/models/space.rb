@@ -73,7 +73,12 @@ class Space < ActiveRecord::Base
     idMap
   end
 
+  def has_been_migrated?
+    graph.present? && graph['guesstimates'].kind_of?(Array) && graph['guesstimates'].any? {|g| g['expression'].present?}
+  end
+
   def migrate_inputs_to_expressions
+    return if has_been_migrated?
     idRe = Regexp.new(metric_readable_ids_to_ids_map.keys.join('|'))
     idMap = metric_readable_ids_to_ids_map.transform_values {|v| "${metric:#{v}}"}
     graph['guesstimates'].each { |g| g.merge!({'input' => nil, 'expression' => g['input'].gsub(idRe, idMap)}) }
