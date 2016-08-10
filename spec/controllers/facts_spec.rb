@@ -4,7 +4,7 @@ require 'rspec/collection_matchers'
 
 def setup_knock(user)
   request.headers['authorization'] = 'Bearer JWTTOKEN'
-  knock = double("Knock")
+  knock = double('Knock')
   allow(knock).to receive(:current_user).and_return(user)
   allow(knock).to receive(:validate!).and_return(true)
   allow(Knock::AuthToken).to receive(:new).and_return(knock)
@@ -19,8 +19,8 @@ RSpec.describe FactsController, type: :controller do
       expression: '100',
       variable_name: 'var_1',
       simulation: {
-        "sample" => {"values" => [100], "errors" => []},
-        "stats" => {"mean" => 100, "stdev" => 0, "length" => 0}
+        'sample' => {'values' => [100], 'errors' => []},
+        'stats' => {'mean' => 100, 'stdev' => 0, 'length' => 1}
       }
     }}
 
@@ -71,8 +71,8 @@ RSpec.describe FactsController, type: :controller do
       expression: '100',
       variable_name: 'var_1',
       simulation: {
-        "sample" => {"values" => [100], "errors" => []},
-        "stats" => {"mean" => 100, "stdev" => 0, "length" => 0}
+        'sample' => {'values' => [100], 'errors' => []},
+        'stats' => {'mean' => 100, 'stdev' => 0, 'length' => 1}
       }
     }}
 

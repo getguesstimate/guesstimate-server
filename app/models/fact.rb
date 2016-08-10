@@ -30,7 +30,7 @@ class Fact < ActiveRecord::Base
   def fact_has_stats
     stats = simulation && simulation['stats']
     stats_present_and_valid = stats && (
-      stats['length'] == 1 || (stats['percentiles'] && stats['percentiles']['5'] && stats['percentiles']['95'])
+      stats['length'].to_i == 1 || (stats['percentiles'] && stats['percentiles']['5'] && stats['percentiles']['95'])
     )
     errors[:base] << 'must have stats' unless stats_present_and_valid
   end
