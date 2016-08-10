@@ -69,4 +69,56 @@ RSpec.describe Fact, type: :model do
       it { is_expected.to_not be_valid }
     end
   end
+
+  describe 'take_checkpoint' do
+    let (:author) { FactoryGirl.create(:user) }
+    let (:first_checkpoint) { FactoryGirl.create(:fact_checkpoint, fact: fact, created_at: 0) }
+    let (:checkpoint) { fact.take_checkpoint(author) }
+    let (:num_other_facts) { 0 }
+    let (:checkpoint_limit) { 5 }
+    subject (:fact) { FactoryGirl.create(:fact) }
+
+    before do
+      first_checkpoint
+
+      stub_const "Fact::CHECKPOINT_LIMIT", checkpoint_limit # We want to reach the history cutoff with little work.
+      num_other_facts.times { FactoryGirl.create(:fact_checkpoint, fact: fact) }
+
+      checkpoint
+    end
+
+    shared_examples 'the new checkpoint matches the fact and is not deleted' do
+      it 'should match the fact' do
+        expect(checkpoint).to be_valid
+        expect(checkpoint.fact_id).to eq fact.id
+        expect(checkpoint.author_id).to eq author.id
+        expect(checkpoint.simulation).to eq fact.simulation
+        expect(checkpoint.name).to eq fact.name
+        expect(checkpoint.variable_name).to eq fact.variable_name
+        expect(checkpoint.expression).to eq fact.expression
+      end
+
+      it 'should have the new checkpoint as a checkpoint' do
+        expect(fact.checkpoints.where(id: checkpoint.id).count).to be 1
+      end
+    end
+
+    context 'with fewer checkpoints than the history cutoff' do
+      include_examples 'the new checkpoint matches the fact and is not deleted'
+      it 'should still have the first_checkpoint' do
+        expect(fact.checkpoints.count).to be 2
+        expect(fact.checkpoints.where(id: first_checkpoint.id).count).to be 1
+      end
+    end
+
+    context 'with more checkpoints than the history cutoff' do
+      include_examples 'the new checkpoint matches the fact and is not deleted'
+      let (:num_other_facts) { checkpoint_limit }
+
+      it 'should delete the oldest checkpoint if it has more checkpoints than the history cutoff' do
+        expect(fact.checkpoints.count).to be checkpoint_limit
+        expect(fact.checkpoints.where(id: first_checkpoint.id).count).to be 0
+      end
+    end
+  end
 end
