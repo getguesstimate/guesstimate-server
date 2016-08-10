@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160809220951) do
+ActiveRecord::Schema.define(version: 20160810230432) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -148,6 +148,7 @@ ActiveRecord::Schema.define(version: 20160809220951) do
     t.string   "industry"
     t.string   "role"
     t.boolean  "categorized"
+    t.boolean  "needs_tutorial",       default: true
   end
 
 end

@@ -1,8 +1,13 @@
 class UsersController < ApplicationController
+  before_action :set_variables, only: [:show, :finished_tutorial]
+  before_action :authenticate, :verify_is_current_user, only: [:finished_tutorial]
 
   def show
-    @user = User.find(params[:id])
     render json: user_representation(@user)
+  end
+
+  def finished_tutorial
+    @user.update_attributes needs_tutorial: false
   end
 
   def create
@@ -48,5 +53,13 @@ class UsersController < ApplicationController
 
   def is_current_user?(user)
     current_user.present? && (current_user.id == user.id)
+  end
+
+  def set_variables
+    @user = User.find(params[:id])
+  end
+
+  def verify_is_current_user
+    head :unauthorized unless is_current_user? @user
   end
 end
