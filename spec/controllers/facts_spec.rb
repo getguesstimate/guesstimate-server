@@ -58,4 +58,49 @@ RSpec.describe FactsController, type: :controller do
       include_examples 'it successfully creates the fact'
     end
   end
+
+  describe 'PATCH update' do
+    let (:fact) { FactoryGirl.create(:fact) }
+    let (:author) {
+      user = FactoryGirl.create(:user)
+      FactoryGirl.create(:user_organization_membership, user: user, organization: fact.organization)
+      user
+    }
+    let (:fact_params) {{
+      name: 'name',
+      expression: '100',
+      variable_name: 'var_1',
+      simulation: {
+        "sample" => {"values" => [100], "errors" => []},
+        "stats" => {"mean" => 100, "stdev" => 0, "length" => 0}
+      }
+    }}
+
+    before do
+      setup_knock(author)
+    end
+
+    it 'should successfully update the fact' do
+      patch :update, fact: fact_params, organization_id: fact.organization.id, id: fact.id
+
+      expect(subject).to respond_with :ok
+      expect(JSON.parse(response.body)['name']).to eq fact_params[:name]
+      expect(JSON.parse(response.body)['expression']).to eq fact_params[:expression]
+      expect(JSON.parse(response.body)['variable_name']).to eq fact_params[:variable_name]
+      expect(JSON.parse(response.body)['organization_id']).to eq fact.organization.id
+    end
+
+    it 'should successfully take a checkpoint' do
+      # TODO(Ozzie): If you know of a (quick) way to get this to check if the `take_checkpoint` method is called,
+      # that'd be preferrable, but my attempts to do so haven't worked.
+
+      # It should start with no checkpoints
+      expect(fact.checkpoints.count).to be 0
+
+      patch :update, fact: fact_params, organization_id: fact.organization.id, id: fact.id
+
+      # Now it should have a checkpoint
+      expect(fact.checkpoints.count).to be 1
+    end
+  end
 end

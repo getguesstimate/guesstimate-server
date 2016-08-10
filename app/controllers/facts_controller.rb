@@ -17,18 +17,19 @@ class FactsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /organizations/:organization_id/facts/1
-  # PATCH/PUT /organizations/:organization_id/facts/1.json
+  # PATCH/PUT /organizations/:organization_id/facts/:id
+  # PATCH/PUT /organizations/:organization_id/facts/:id.json
   def update
     if @fact.update(fact_params)
+      @fact.take_checkpoint(current_user)
       render json: FactRepresenter.new(@fact).to_json, status: :ok
     else
       render json: @fact.errors, status: :unprocessable_entity
     end
   end
 
-  # DELETE /organizations/:organization_id/facts/1
-  # DELETE /organizations/:organization_id/facts/1.json
+  # DELETE /organizations/:organization_id/facts/:id
+  # DELETE /organizations/:organization_id/facts/:id.json
   def destroy
     @fact.destroy
     head :no_content
