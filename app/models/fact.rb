@@ -1,5 +1,6 @@
 class Fact < ActiveRecord::Base
   belongs_to :organization
+  has_many :checkpoints, class_name: 'FactCheckpoint', dependent: :destroy
 
   validates_presence_of :organization, :variable_name, :expression, :simulation
   validates :variable_name,
