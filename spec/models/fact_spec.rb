@@ -6,7 +6,10 @@ RSpec.describe Fact, type: :model do
     let (:name) { 'name' }
     let (:expression) { '199' }
     let (:variable_name) { 'var_1' }
-    let (:simulation) { {"sample" => { "values" => [1], "errors" => [] }, "stats" => { "mean" => 1, "stdev" => 0, "length" => 1 }} }
+    let (:stats) { {"mean" => 1, "stdev" => 0, "length" => 1} }
+    let (:values) { [1] }
+    let (:errors) { [] }
+    let (:simulation) { {"sample" => {"values" => values, "errors" => errors}, "stats" => stats} }
     subject (:fact) {
       FactoryGirl.build(
         :fact,
@@ -60,12 +63,23 @@ RSpec.describe Fact, type: :model do
     end
 
     context 'simulation with no values' do
-      let (:simulation) { {"sample" => {}} }
+      let (:values) { nil }
       it { is_expected.to_not be_valid }
     end
 
     context 'simulation with errors' do
-      let (:simulation) { {"sample" => {"values" => [1], "errors" => [{"type" => "Math Error", "msg" => "Invalid Sample"}]}} }
+      let (:errors) { [{"type" => "Math Error", "msg" => "Invalid Sample"}] }
+      it { is_expected.to_not be_valid }
+    end
+
+    context 'simulation with no stats' do
+      let (:stats) { nil }
+      it { is_expected.to_not be_valid }
+    end
+
+    context 'simulation with multiple samples and no percentiles' do
+      let (:values) { [1,2,3] }
+      let (:stats) { {"mean" => 0.5, "length" => 3, "stdev" => 1} }
       it { is_expected.to_not be_valid }
     end
   end

@@ -6,7 +6,7 @@ class Fact < ActiveRecord::Base
   validates :variable_name,
     uniqueness: {scope: :organization_id},
     format: {with: /\A\w+\Z/}
-  validate :fact_has_values, :fact_has_no_errors
+  validate :fact_has_values, :fact_has_no_errors, :fact_has_stats
 
   CHECKPOINT_LIMIT = 1000
 
@@ -27,6 +27,13 @@ class Fact < ActiveRecord::Base
 
   private
 
+  def fact_has_stats
+    stats = simulation && simulation['stats']
+    stats_present_and_valid = stats && (
+      stats['length'] == 1 || (stats['percentiles'] && stats['percentiles']['5'] && stats['percentiles']['95'])
+    )
+    errors[:base] << 'must have stats' unless stats_present_and_valid
+  end
   def fact_has_values
     values_present = simulation && simulation['sample'] && simulation['sample']['values'] && simulation['sample']['values'].length > 0
     errors[:base] << 'must have values' unless values_present

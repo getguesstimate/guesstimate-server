@@ -91,9 +91,6 @@ RSpec.describe FactsController, type: :controller do
     end
 
     it 'should successfully take a checkpoint' do
-      # TODO(Ozzie): If you know of a (quick) way to get this to check if the `take_checkpoint` method is called,
-      # that'd be preferrable, but my attempts to do so haven't worked.
-
       # It should start with no checkpoints
       expect(fact.checkpoints.count).to be 0
 
