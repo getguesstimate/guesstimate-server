@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160801183442) do
+ActiveRecord::Schema.define(version: 20160809220951) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,6 +28,21 @@ ActiveRecord::Schema.define(version: 20160801183442) do
   end
 
   add_index "calculators", ["space_id"], name: "index_calculators_on_space_id", using: :btree
+
+  create_table "fact_checkpoints", force: :cascade do |t|
+    t.integer  "fact_id"
+    t.integer  "author_id"
+    t.json     "simulation"
+    t.string   "name"
+    t.string   "variable_name"
+    t.string   "expression"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "fact_checkpoints", ["author_id"], name: "index_fact_checkpoints_on_author_id", using: :btree
+  add_index "fact_checkpoints", ["created_at"], name: "index_fact_checkpoints_on_created_at", using: :btree
+  add_index "fact_checkpoints", ["fact_id"], name: "index_fact_checkpoints_on_fact_id", using: :btree
 
   create_table "facts", force: :cascade do |t|
     t.integer  "organization_id"
