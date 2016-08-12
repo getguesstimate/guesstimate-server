@@ -12,6 +12,7 @@ class UserRepresenter < Roar::Decorator
   property :updated_at
   property :public_model_count, if: ->(user_options:, **) { user_options[:is_current_user] }
   property :private_model_count, if: ->(user_options:, **) { user_options[:is_current_user] }
+  property :needs_tutorial, if: ->(user_options:, **) { user_options[:is_current_user] }
 
   property :plan_details,
     decorator: PlanRepresenter,

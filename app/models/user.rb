@@ -9,6 +9,7 @@ class User < ActiveRecord::Base
 
   after_create :create_account
   after_create :accept_invitations
+  after_create :set_needs_tutorial
   after_save :identify
 
   validates_presence_of :username
@@ -120,5 +121,9 @@ class User < ActiveRecord::Base
     UserOrganizationInvitation.for_email(email).find_each do |invitation|
       UserOrganizationMembership.create user: self, organization_id: invitation.organization_id, invitation: invitation
     end
+  end
+
+  def set_needs_tutorial
+    update_columns needs_tutorial: true
   end
 end

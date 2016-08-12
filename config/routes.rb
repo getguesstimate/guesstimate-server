@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     resources :spaces, only: [:index]
     get :memberships, to: 'user_organization_memberships#user_memberships'
     post '/account/synchronization', to: 'user_accounts#synchronization'
+    patch '/finished_tutorial', to: 'users#finished_tutorial'
     get '/account/new_subscription_iframe', to: 'user_accounts#new_subscription_iframe'
   end
 
