@@ -37,8 +37,7 @@ class FactsController < ApplicationController
 
   private
   def check_authorization
-    feature_enabled = (Rails.env != 'production' || @organization.id == 1) # Feature Flag
-    head :unauthorized unless @organization.present? && current_user.member_of?(@organization.id) && feature_enabled
+    head :unauthorized unless @organization.present? && current_user.member_of?(@organization.id)
   end
 
   def set_variables
