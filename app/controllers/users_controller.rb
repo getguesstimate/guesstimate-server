@@ -8,6 +8,7 @@ class UsersController < ApplicationController
 
   def finished_tutorial
     @user.update_attributes needs_tutorial: false
+    render json: user_representation(@user)
   end
 
   def create
@@ -56,7 +57,7 @@ class UsersController < ApplicationController
   end
 
   def set_variables
-    @user = User.find(params[:id])
+    @user = params[:id].present? ? User.find(params[:id]) : User.find(params[:user_id])
   end
 
   def verify_is_current_user

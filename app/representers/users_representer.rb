@@ -12,6 +12,7 @@ class UsersRepresenter < Roar::Decorator
     property :updated_at
     property :public_model_count
     property :private_model_count
+    property :needs_tutorial
 
     nested :plan do
       property :private_model_limit

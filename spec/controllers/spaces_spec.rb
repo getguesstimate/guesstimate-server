@@ -97,8 +97,6 @@ RSpec.describe SpacesController, type: :controller do
       secondary_private_org: FactoryGirl.create(:space, organization: organization_creator_member, user: secondary, is_private: true, name: 'private org secondary user'),
     }}
 
-    #TODO(matthew): I want to just parse this via the spaces representer but that seems impossible.
-    #let (:rendered_spaces) { SpacesRepresenter.new([]).from_json(response.body) }
     let (:rendered_space_ids) { JSON.parse(response.body)['items'].map {|s| s['id']} }
     let (:viewing_user) { nil }
 
