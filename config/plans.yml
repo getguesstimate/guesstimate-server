@@ -4,7 +4,7 @@ plans:
     id: 'personal_free'
     enum_id: 1
     monthly_cost: 0
-    private_model_limit: 0
+    private_model_limit: 3
   -
     name: 'Lite'
     id: 'personal_lite'
