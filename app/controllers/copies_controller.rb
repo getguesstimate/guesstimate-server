@@ -13,7 +13,7 @@ class CopiesController < ApplicationController
     space_copy = space.copy(current_user)
 
     if space_copy.save
-      render json: SpaceRepresenter.new(space_copy).to_json
+      render json: SpaceRepresenter.new(space_copy).to_json(user_options: {current_user_can_edit: true})
     else
       render json: space_copy.errors, status: :unprocessable_entity
     end
