@@ -29,7 +29,7 @@ class Organization < ActiveRecord::Base
   end
 
   def can_create_private_models?
-    plan == 'organization_basic'
+    plan == 'organization_basic_30'
   end
 
   private
@@ -43,6 +43,6 @@ class Organization < ActiveRecord::Base
   end
 
   def needs_trial?
-    plan == 'organization_basic'
+    plan == 'organization_basic_30'
   end
 end
