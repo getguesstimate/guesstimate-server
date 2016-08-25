@@ -143,7 +143,7 @@ RSpec.describe Space, type: :model do
 
     context 'with membered base organization' do
       let (:base_organization) {
-        organization = FactoryGirl.create(:organization, plan: :organization_basic)
+        organization = FactoryGirl.create(:organization, plan: :organization_basic_30)
         FactoryGirl.create(:user_organization_membership, user: copying_user, organization: organization)
         organization
       }
