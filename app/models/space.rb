@@ -29,7 +29,7 @@ class Space < ActiveRecord::Base
   end
 
   algoliasearch if: :is_searchable?, per_environment: true, disable_indexing: Rails.env.test? do
-    attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private, :viewcount, :screenshot, :big_screenshot
+    attribute :id, :name, :description, :user_id, :created_at, :updated_at, :is_private, :viewcount, :screenshot, :big_screenshot, :is_recommended
     add_attribute :user_info
     add_attribute :organization_info
 
@@ -137,6 +137,10 @@ class Space < ActiveRecord::Base
 
   def belongs_to_organization?
     !!organization_id
+  end
+
+  def recommend!
+    update_columns is_recommended: true
   end
 
   def clean_graph!
