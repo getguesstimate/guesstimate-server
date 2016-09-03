@@ -152,4 +152,26 @@ RSpec.describe Space, type: :model do
       include_examples('copies properly')
     end
   end
+
+  describe '#get_fact_ids_used' do
+    let(:guesstimates) { [] }
+    let(:space) { FactoryGirl.build(:space, graph: guesstimates.empty? ? nil : {'guesstimates' => guesstimates}) }
+    subject(:fact_ids) { space.get_fact_ids_used }
+
+    it 'should return an empty array with no graph' do
+      expect(fact_ids).to be_empty
+    end
+
+    context 'graph with facts' do
+      let(:guesstimates) {[
+        {'expression'=>'=${fact:1} + ${fact:2} + ${fact:1}'},
+        {'expression'=>'=${fact:2} + ${fact:3} + ${fact:40}'},
+        {'expression'=>'=${fact:1} + ${fact:2} + fact:77'}
+      ]}
+      it 'should contain the referenced fact' do
+        expect(fact_ids).to contain_exactly('1', '2', '3', '40')
+      end
+    end
+  end
+
 end

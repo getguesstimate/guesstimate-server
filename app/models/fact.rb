@@ -1,12 +1,18 @@
 class Fact < ActiveRecord::Base
   belongs_to :organization
+  belongs_to :defining_space, class_name: 'Space'
+
   has_many :checkpoints, class_name: 'FactCheckpoint', dependent: :destroy
 
-  validates_presence_of :organization, :variable_name, :expression, :simulation
+  validates_presence_of :organization, :variable_name, :simulation
   validates :variable_name,
     uniqueness: {scope: :organization_id},
     format: {with: /\A\w+\Z/}
-  validate :fact_has_values, :fact_has_no_errors, :fact_has_stats
+  validate :fact_has_values, :fact_has_no_errors, :fact_has_stats, unless: :defined_by_space?
+  validates_presence_of :expression, unless: :defined_by_space?
+  validates_presence_of :metric_id, if: :defined_by_space?
+
+  scope :defined_by_space, -> { where.not(defining_space_id: nil) }
 
   CHECKPOINT_LIMIT = 1000
 
@@ -25,7 +31,15 @@ class Fact < ActiveRecord::Base
     return checkpoint
   end
 
+  def dependent_fact_defining_spaces
+    organization.spaces.defines_fact.uses_fact(self)
+  end
+
   private
+
+  def defined_by_space?
+    return defining_space_id.present?
+  end
 
   def fact_has_stats
     stats = simulation && simulation['stats']

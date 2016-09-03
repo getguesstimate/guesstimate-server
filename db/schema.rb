@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160810230432) do
+ActiveRecord::Schema.define(version: 20160902231302) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -49,11 +49,14 @@ ActiveRecord::Schema.define(version: 20160810230432) do
     t.string   "name"
     t.string   "variable_name"
     t.string   "expression"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
     t.json     "simulation"
+    t.integer  "defining_space_id"
+    t.integer  "metric_id"
   end
 
+  add_index "facts", ["defining_space_id"], name: "index_facts_on_defining_space_id", using: :btree
   add_index "facts", ["organization_id"], name: "index_facts_on_organization_id", using: :btree
 
   create_table "organization_accounts", force: :cascade do |t|
@@ -90,8 +93,8 @@ ActiveRecord::Schema.define(version: 20160810230432) do
   create_table "spaces", force: :cascade do |t|
     t.string   "name"
     t.text     "description"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
     t.json     "graph"
     t.integer  "user_id"
     t.boolean  "is_private"
@@ -103,7 +106,11 @@ ActiveRecord::Schema.define(version: 20160810230432) do
     t.boolean  "categorized"
     t.datetime "snapshot_timestamp"
     t.string   "big_screenshot"
+    t.integer  "defined_facts_count"
+    t.integer  "facts_used",                       array: true
   end
+
+  add_index "spaces", ["facts_used"], name: "index_spaces_on_facts_used", using: :btree
 
   create_table "user_accounts", force: :cascade do |t|
     t.integer "user_id"
@@ -148,7 +155,7 @@ ActiveRecord::Schema.define(version: 20160810230432) do
     t.string   "industry"
     t.string   "role"
     t.boolean  "categorized"
-    t.boolean  "needs_tutorial",       default: true
+    t.boolean  "needs_tutorial",       default: false
   end
 
 end

@@ -9,6 +9,7 @@ class Space < ActiveRecord::Base
   has_many :copies, class_name: 'Space', foreign_key: 'copied_from_id'
   has_many :checkpoints, class_name: 'SpaceCheckpoint', dependent: :destroy
   has_many :calculators, dependent: :destroy
+  has_many :defined_facts, foreign_key: 'defining_space_id', class_name: 'Fact', dependent: :destroy
 
   belongs_to :organization
 
@@ -17,12 +18,14 @@ class Space < ActiveRecord::Base
   validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
 
   after_initialize :init
-  after_save :identify_user
+  after_save :identify_user, :update_facts_used!
   after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
   scope :is_public, -> { where(is_private: false) }
   scope :uncategorized_since, -> (date) { where 'categorized IS NOT true AND DATE(created_at) >= ?', date }
+  scope :defines_fact, -> { where('defined_facts_count > 0') }
+  scope :uses_fact, -> (fact) { where('? = ANY(facts_used)', fact.id) }
 
   def init
     self.is_private ||= false
@@ -57,6 +60,19 @@ class Space < ActiveRecord::Base
     return false if last_updated_at?(previous_updated_at_str) || checkpoints.last.nil?
 
     checkpoints.last.author_id != current_user.id
+  end
+
+  def guesstimate_expressions
+    return [] unless graph.present? && graph["guesstimates"].present?
+    graph["guesstimates"].map { |g| g["expression"] }
+  end
+
+  def get_fact_ids_used()
+    guesstimate_expressions.map {|e| e.scan(/\$\{fact:(\d+)/) unless e.blank? }.flatten.uniq.keep_if { |e| e.present? }
+  end
+
+  def update_facts_used!()
+    update_columns(facts_used: get_fact_ids_used)
   end
 
   def metrics
