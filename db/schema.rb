@@ -93,8 +93,8 @@ ActiveRecord::Schema.define(version: 20160902231302) do
   create_table "spaces", force: :cascade do |t|
     t.string   "name"
     t.text     "description"
-    t.datetime "created_at",          null: false
-    t.datetime "updated_at",          null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
     t.json     "graph"
     t.integer  "user_id"
     t.boolean  "is_private"
@@ -107,7 +107,8 @@ ActiveRecord::Schema.define(version: 20160902231302) do
     t.datetime "snapshot_timestamp"
     t.string   "big_screenshot"
     t.integer  "defined_facts_count"
-    t.integer  "facts_used",                       array: true
+    t.integer  "facts_used",                                       array: true
+    t.boolean  "is_recommended",      default: false
   end
 
   add_index "spaces", ["facts_used"], name: "index_spaces_on_facts_used", using: :btree
