@@ -18,7 +18,7 @@ class Space < ActiveRecord::Base
   validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
 
   after_initialize :init
-  after_save :identify_user, :update_facts_used!
+  after_save :identify_user, :update_imported_facts!
   after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
@@ -71,8 +71,8 @@ class Space < ActiveRecord::Base
     guesstimate_expressions.map {|e| e.scan(/\$\{fact:(\d+)/) unless e.blank? }.flatten.uniq.keep_if { |e| e.present? }
   end
 
-  def update_facts_used!()
-    update_columns(facts_used: get_fact_ids_used)
+  def update_imported_facts!()
+    update_columns(imported_facts: get_fact_ids_used)
   end
 
   def metrics
