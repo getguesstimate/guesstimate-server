@@ -13,7 +13,7 @@ class FactRepresenter < Roar::Decorator
   property :created_at
   property :updated_at
 
-  collection :dependent_fact_defining_spaces,
+  collection :dependent_fact_exported_spaces,
     class: Space,
     decorator: SpaceWithoutOrganizationRepresenter
 end

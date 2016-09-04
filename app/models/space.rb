@@ -9,7 +9,7 @@ class Space < ActiveRecord::Base
   has_many :copies, class_name: 'Space', foreign_key: 'copied_from_id'
   has_many :checkpoints, class_name: 'SpaceCheckpoint', dependent: :destroy
   has_many :calculators, dependent: :destroy
-  has_many :defined_facts, foreign_key: 'defining_space_id', class_name: 'Fact', dependent: :destroy
+  has_many :exported_facts, foreign_key: 'defining_space_id', class_name: 'Fact', dependent: :destroy
 
   belongs_to :organization
 
@@ -24,8 +24,8 @@ class Space < ActiveRecord::Base
   scope :is_private, -> { where(is_private: true) }
   scope :is_public, -> { where(is_private: false) }
   scope :uncategorized_since, -> (date) { where 'categorized IS NOT true AND DATE(created_at) >= ?', date }
-  scope :defines_fact, -> { where('defined_facts_count > 0') }
-  scope :uses_fact, -> (fact) { where('? = ANY(facts_used)', fact.id) }
+  scope :has_fact_exports, -> { where('exported_facts_count > 0') }
+  scope :imports_fact, -> (fact) { where('? = ANY(imported_facts)', fact.id) }
 
   def init
     self.is_private ||= false
