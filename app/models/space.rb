@@ -9,7 +9,7 @@ class Space < ActiveRecord::Base
   has_many :copies, class_name: 'Space', foreign_key: 'copied_from_id'
   has_many :checkpoints, class_name: 'SpaceCheckpoint', dependent: :destroy
   has_many :calculators, dependent: :destroy
-  has_many :exported_facts, foreign_key: 'defining_space_id', class_name: 'Fact', dependent: :destroy
+  has_many :exported_facts, foreign_key: 'exporting_space_id', class_name: 'Fact', dependent: :destroy
 
   belongs_to :organization
 
