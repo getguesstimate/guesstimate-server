@@ -14,6 +14,9 @@ class Fact < ActiveRecord::Base
 
   scope :exported_by_space, -> { where.not(exported_space_id: nil) }
 
+  after_create :increment_exporting_space_count, if: :exported_by_space?
+  after_destroy :decrement_exporting_space_count, if: :exported_by_space?
+
   CHECKPOINT_LIMIT = 1000
 
   def take_checkpoint(author)
@@ -39,6 +42,14 @@ class Fact < ActiveRecord::Base
 
   def exported_by_space?
     return exporting_space_id.present?
+  end
+
+  def increment_exporting_space_count
+    exporting_space.increment_exported_facts_count!
+  end
+
+  def decrement_exporting_space_count
+    exporting_space.decrement_exported_facts_count!
   end
 
   def fact_has_stats

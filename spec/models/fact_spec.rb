@@ -10,6 +10,8 @@ RSpec.describe Fact, type: :model do
     let (:values) { [1] }
     let (:errors) { [] }
     let (:simulation) { {"sample" => {"values" => values, "errors" => errors}, "stats" => stats} }
+    let (:exporting_space) { nil }
+    let (:metric_id) { nil }
     subject (:fact) {
       FactoryGirl.build(
         :fact,
@@ -18,6 +20,8 @@ RSpec.describe Fact, type: :model do
         expression: expression,
         variable_name: variable_name,
         simulation: simulation,
+        exporting_space: exporting_space.present? ? exporting_space : nil,
+        metric_id: metric_id,
       )
     }
 
@@ -81,6 +85,49 @@ RSpec.describe Fact, type: :model do
       let (:values) { [1,2,3] }
       let (:stats) { {"mean" => 0.5, "length" => 3, "stdev" => 1} }
       it { is_expected.to_not be_valid }
+    end
+
+    context 'with exported space' do
+      let (:exporting_space) { FactoryGirl.create(:space) }
+      let (:metric_id) { nil }
+
+      it { is_expected.to_not be_valid }
+
+      context 'with a metric id' do
+        let (:metric_id) { '3' }
+
+        before do
+          exporting_space
+          expect(exporting_space.exported_facts_count).to be 0
+        end
+
+        it { is_expected.to be_valid }
+
+        it 'should increment the exporting_space exported_facts_count upon creation' do
+          fact.save
+          exporting_space
+          expect(exporting_space.exported_facts_count).to be 1
+        end
+      end
+    end
+  end
+
+  describe '#destroy' do
+    let (:exporting_space) { FactoryGirl.create(:space) }
+    let (:metric_id) { '3' }
+    subject (:fact) { FactoryGirl.create(:fact, exporting_space: exporting_space, metric_id: metric_id) }
+
+    before do
+      exporting_space # To initialize the variable.
+      fact # To initialize the variable.
+
+      expect(exporting_space.exported_facts_count).to be 1
+    end
+
+    it 'should decrement exported_facts_count' do
+      fact.destroy
+
+      expect(exporting_space.exported_facts_count).to be 0
     end
   end
 

@@ -71,6 +71,10 @@ class Space < ActiveRecord::Base
     guesstimate_expressions.map {|e| e.scan(/\$\{fact:(\d+)/) unless e.blank? }.flatten.uniq.keep_if { |e| e.present? }
   end
 
+  def update_exported_facts_count!()
+    update_columns(exported_facts_count: exported_facts.count)
+  end
+
   def update_imported_facts!()
     update_columns(imported_facts: get_fact_ids_used)
   end
@@ -248,6 +252,14 @@ class Space < ActiveRecord::Base
       #{description}
       #{metrics.zip(guesstimates).map {|m, g| "Metric #{m['name']}: #{g['description']}"}.join("\n")}
     "
+  end
+
+  def increment_exported_facts_count!
+    update_columns(exported_facts_count: exported_facts_count + 1)
+  end
+
+  def decrement_exported_facts_count!
+    update_columns(exported_facts_count: exported_facts_count - 1)
   end
 
   private
