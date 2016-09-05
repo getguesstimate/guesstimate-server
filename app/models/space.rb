@@ -67,7 +67,7 @@ class Space < ActiveRecord::Base
     graph["guesstimates"].map { |g| g["expression"] }
   end
 
-  def get_fact_ids_used()
+  def get_imported_fact_ids()
     guesstimate_expressions.map {|e| e.scan(/\$\{fact:(\d+)/) unless e.blank? }.flatten.uniq.keep_if { |e| e.present? }
   end
 
@@ -76,7 +76,7 @@ class Space < ActiveRecord::Base
   end
 
   def update_imported_facts!()
-    update_columns(imported_facts: get_fact_ids_used)
+    update_columns(imported_facts: get_imported_fact_ids)
   end
 
   def metrics

@@ -32,6 +32,10 @@ class Organization < ActiveRecord::Base
     plan == 'organization_basic_30'
   end
 
+  def fact_exporting_spaces
+    spaces.has_fact_exports
+  end
+
   private
 
   def create_trial

@@ -182,4 +182,28 @@ RSpec.describe Fact, type: :model do
       end
     end
   end
+
+  describe 'dependent_fact_exporting_spaces' do
+    let (:organization) { FactoryGirl.create(:organization) }
+    let (:imported_fact) { FactoryGirl.create(:fact, organization: organization) }
+    let (:exporting_space) {
+      imported_fact
+      FactoryGirl.create(
+        :space,
+        organization: organization,
+        graph: {'guesstimates' => [ {'expression'=>"=${fact:#{imported_fact.id}}"} ]},
+        imported_facts: [imported_fact.id],
+        exported_facts_count: 1,
+      )
+    }
+    subject (:space_ids) {
+      # Initializing the variables.
+      exporting_space
+      imported_fact.dependent_fact_exporting_space_ids
+    }
+
+    it 'should yield the correct dependent fact exporting space IDs' do
+      expect(space_ids).to contain_exactly(exporting_space.id)
+    end
+  end
 end

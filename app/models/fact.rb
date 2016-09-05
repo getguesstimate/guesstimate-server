@@ -34,6 +34,10 @@ class Fact < ActiveRecord::Base
     return checkpoint
   end
 
+  def dependent_fact_exporting_space_ids
+    dependent_fact_exporting_spaces.all.map { |s| s.id }
+  end
+
   def dependent_fact_exporting_spaces
     organization.spaces.has_fact_exports.imports_fact(self)
   end

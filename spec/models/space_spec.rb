@@ -153,10 +153,10 @@ RSpec.describe Space, type: :model do
     end
   end
 
-  describe '#get_fact_ids_used' do
+  describe '#get_imported_fact_ids' do
     let(:guesstimates) { [] }
     let(:space) { FactoryGirl.build(:space, graph: guesstimates.empty? ? nil : {'guesstimates' => guesstimates}) }
-    subject(:fact_ids) { space.get_fact_ids_used }
+    subject(:fact_ids) { space.get_imported_fact_ids }
 
     it 'should return an empty array with no graph' do
       expect(fact_ids).to be_empty
