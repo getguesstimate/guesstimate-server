@@ -10,7 +10,7 @@ RSpec.describe Fact, type: :model do
     let (:values) { [1] }
     let (:errors) { [] }
     let (:simulation) { {"sample" => {"values" => values, "errors" => errors}, "stats" => stats} }
-    let (:exporting_space) { nil }
+    let (:exported_from) { nil }
     let (:metric_id) { nil }
     subject (:fact) {
       FactoryGirl.build(
@@ -20,7 +20,7 @@ RSpec.describe Fact, type: :model do
         expression: expression,
         variable_name: variable_name,
         simulation: simulation,
-        exporting_space: exporting_space.present? ? exporting_space : nil,
+        exported_from: exported_from.present? ? exported_from : nil,
         metric_id: metric_id,
       )
     }
@@ -88,46 +88,38 @@ RSpec.describe Fact, type: :model do
     end
 
     context 'with exported space' do
-      let (:exporting_space) { FactoryGirl.create(:space) }
-      let (:metric_id) { nil }
+      let (:exported_from) { FactoryGirl.create(:space) }
 
-      it { is_expected.to_not be_valid }
+      context 'without a metric id' do
+        let (:metric_id) { nil }
+        it { is_expected.to_not be_valid }
+      end
 
       context 'with a metric id' do
         let (:metric_id) { '3' }
 
-        before do
-          exporting_space
-          expect(exporting_space.exported_facts_count).to be 0
-        end
+        before { exported_from }
 
         it { is_expected.to be_valid }
-
-        it 'should increment the exporting_space exported_facts_count upon creation' do
-          fact.save
-          exporting_space
-          expect(exporting_space.exported_facts_count).to be 1
+        it 'increments the exported_from exported_facts_count upon creation' do
+          expect{fact.save}.to change{exported_from.exported_facts_count}.from(0).to(1)
         end
       end
     end
   end
 
   describe '#destroy' do
-    let (:exporting_space) { FactoryGirl.create(:space) }
+    let (:exported_from) { FactoryGirl.create(:space) }
     let (:metric_id) { '3' }
-    subject (:fact) { FactoryGirl.create(:fact, exporting_space: exporting_space, metric_id: metric_id) }
+    subject (:fact) { FactoryGirl.create(:fact, exported_from: exported_from, metric_id: metric_id) }
 
     before do
-      exporting_space # To initialize the variable.
-      fact # To initialize the variable.
-
-      expect(exporting_space.exported_facts_count).to be 1
+      exported_from
+      fact
     end
 
-    it 'should decrement exported_facts_count' do
-      fact.destroy
-
-      expect(exporting_space.exported_facts_count).to be 0
+    it 'decrements exported_facts_count' do
+      expect{fact.destroy}.to change{exported_from.exported_facts_count}.from(1).to(0)
     end
   end
 
@@ -149,7 +141,7 @@ RSpec.describe Fact, type: :model do
     end
 
     shared_examples 'the new checkpoint matches the fact and is not deleted' do
-      it 'should match the fact' do
+      it 'matches the fact' do
         expect(checkpoint).to be_valid
         expect(checkpoint.fact_id).to eq fact.id
         expect(checkpoint.author_id).to eq author.id
@@ -159,14 +151,14 @@ RSpec.describe Fact, type: :model do
         expect(checkpoint.expression).to eq fact.expression
       end
 
-      it 'should have the new checkpoint as a checkpoint' do
+      it 'has the new checkpoint as a checkpoint' do
         expect(fact.checkpoints.where(id: checkpoint.id).count).to be 1
       end
     end
 
     context 'with fewer checkpoints than the history cutoff' do
       include_examples 'the new checkpoint matches the fact and is not deleted'
-      it 'should still have the first_checkpoint' do
+      it 'still has the first_checkpoint' do
         expect(fact.checkpoints.count).to be 2
         expect(fact.checkpoints.where(id: first_checkpoint.id).count).to be 1
       end
@@ -176,34 +168,33 @@ RSpec.describe Fact, type: :model do
       include_examples 'the new checkpoint matches the fact and is not deleted'
       let (:num_other_facts) { checkpoint_limit }
 
-      it 'should delete the oldest checkpoint if it has more checkpoints than the history cutoff' do
+      it 'deletes the oldest checkpoint if it has more checkpoints than the history cutoff' do
         expect(fact.checkpoints.count).to be checkpoint_limit
         expect(fact.checkpoints.where(id: first_checkpoint.id).count).to be 0
       end
     end
   end
 
-  describe 'dependent_fact_exporting_spaces' do
+  describe '#imported_to_intermediate_spaces' do
     let (:organization) { FactoryGirl.create(:organization) }
     let (:imported_fact) { FactoryGirl.create(:fact, organization: organization) }
-    let (:exporting_space) {
+    let (:exported_from) {
       imported_fact
       FactoryGirl.create(
         :space,
         organization: organization,
         graph: {'guesstimates' => [ {'expression'=>"=${fact:#{imported_fact.id}}"} ]},
-        imported_facts: [imported_fact.id],
+        imported_fact_ids: [imported_fact.id],
         exported_facts_count: 1,
       )
     }
     subject (:space_ids) {
-      # Initializing the variables.
-      exporting_space
-      imported_fact.dependent_fact_exporting_space_ids
+      exported_from
+      imported_fact.imported_to_intermediate_space_ids
     }
 
-    it 'should yield the correct dependent fact exporting space IDs' do
-      expect(space_ids).to contain_exactly(exporting_space.id)
+    it 'yields the correct imported_to_intermediate_space_ids' do
+      expect(space_ids).to contain_exactly(exported_from.id)
     end
   end
 end

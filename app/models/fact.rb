@@ -1,6 +1,6 @@
 class Fact < ActiveRecord::Base
   belongs_to :organization
-  belongs_to :exporting_space, class_name: 'Space'
+  belongs_to :exported_from, class_name: 'Space'
 
   has_many :checkpoints, class_name: 'FactCheckpoint', dependent: :destroy
 
@@ -14,8 +14,8 @@ class Fact < ActiveRecord::Base
 
   scope :exported_by_space, -> { where.not(exported_space_id: nil) }
 
-  after_create :increment_exporting_space_count, if: :exported_by_space?
-  after_destroy :decrement_exporting_space_count, if: :exported_by_space?
+  after_create :increment_exported_from_count, if: :exported_by_space?
+  after_destroy :decrement_exported_from_count, if: :exported_by_space?
 
   CHECKPOINT_LIMIT = 1000
 
@@ -34,26 +34,26 @@ class Fact < ActiveRecord::Base
     return checkpoint
   end
 
-  def dependent_fact_exporting_space_ids
-    dependent_fact_exporting_spaces.all.map { |s| s.id }
+  def imported_to_intermediate_space_ids
+    imported_to_intermediate_spaces.all.map { |s| s.id }
   end
 
-  def dependent_fact_exporting_spaces
+  def imported_to_intermediate_spaces
     organization.spaces.has_fact_exports.imports_fact(self)
   end
 
   private
 
   def exported_by_space?
-    return exporting_space_id.present?
+    return exported_from_id.present?
   end
 
-  def increment_exporting_space_count
-    exporting_space.increment_exported_facts_count!
+  def increment_exported_from_count
+    exported_from.increment_exported_facts_count!
   end
 
-  def decrement_exporting_space_count
-    exporting_space.decrement_exported_facts_count!
+  def decrement_exported_from_count
+    exported_from.decrement_exported_facts_count!
   end
 
   def fact_has_stats

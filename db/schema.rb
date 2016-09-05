@@ -49,14 +49,14 @@ ActiveRecord::Schema.define(version: 20160902231302) do
     t.string   "name"
     t.string   "variable_name"
     t.string   "expression"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
     t.json     "simulation"
-    t.integer  "exporting_space_id"
+    t.integer  "exported_from_id"
     t.integer  "metric_id"
   end
 
-  add_index "facts", ["exporting_space_id"], name: "index_facts_on_exporting_space_id", using: :btree
+  add_index "facts", ["exported_from_id"], name: "index_facts_on_exported_from_id", using: :btree
   add_index "facts", ["organization_id"], name: "index_facts_on_organization_id", using: :btree
 
   create_table "organization_accounts", force: :cascade do |t|
@@ -107,11 +107,11 @@ ActiveRecord::Schema.define(version: 20160902231302) do
     t.datetime "snapshot_timestamp"
     t.string   "big_screenshot"
     t.boolean  "is_recommended",       default: false
-    t.integer  "exported_facts_count"
-    t.integer  "imported_facts",                                    array: true
+    t.integer  "exported_facts_count", default: 0
+    t.integer  "imported_fact_ids",                                 array: true
   end
 
-  add_index "spaces", ["imported_facts"], name: "index_spaces_on_imported_facts", using: :btree
+  add_index "spaces", ["imported_fact_ids"], name: "index_spaces_on_imported_fact_ids", using: :btree
 
   create_table "user_accounts", force: :cascade do |t|
     t.integer "user_id"

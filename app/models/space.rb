@@ -9,7 +9,7 @@ class Space < ActiveRecord::Base
   has_many :copies, class_name: 'Space', foreign_key: 'copied_from_id'
   has_many :checkpoints, class_name: 'SpaceCheckpoint', dependent: :destroy
   has_many :calculators, dependent: :destroy
-  has_many :exported_facts, foreign_key: 'exporting_space_id', class_name: 'Fact', dependent: :destroy
+  has_many :exported_facts, foreign_key: 'exported_from_id', class_name: 'Fact', dependent: :destroy
 
   belongs_to :organization
 
@@ -18,14 +18,14 @@ class Space < ActiveRecord::Base
   validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
 
   after_initialize :init
-  after_save :identify_user, :update_imported_facts!
+  after_save :identify_user, :update_imported_fact_ids!
   after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
   scope :is_public, -> { where(is_private: false) }
   scope :uncategorized_since, -> (date) { where 'categorized IS NOT true AND DATE(created_at) >= ?', date }
   scope :has_fact_exports, -> { where('exported_facts_count > 0') }
-  scope :imports_fact, -> (fact) { where('? = ANY(imported_facts)', fact.id) }
+  scope :imports_fact, -> (fact) { where('? = ANY(imported_fact_ids)', fact.id) }
 
   def init
     self.is_private ||= false
@@ -63,8 +63,8 @@ class Space < ActiveRecord::Base
   end
 
   def guesstimate_expressions
-    return [] unless graph.present? && graph["guesstimates"].present?
-    graph["guesstimates"].map { |g| g["expression"] }
+    return [] unless graph.present? && graph['guesstimates'].present?
+    graph['guesstimates'].map { |g| g['expression'] }
   end
 
   def get_imported_fact_ids()
@@ -75,8 +75,8 @@ class Space < ActiveRecord::Base
     update_columns(exported_facts_count: exported_facts.count)
   end
 
-  def update_imported_facts!()
-    update_columns(imported_facts: get_imported_fact_ids)
+  def update_imported_fact_ids!()
+    update_columns(imported_fact_ids: get_imported_fact_ids)
   end
 
   def metrics
