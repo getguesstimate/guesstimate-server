@@ -53,7 +53,7 @@ ActiveRecord::Schema.define(version: 20160902231302) do
     t.datetime "updated_at",       null: false
     t.json     "simulation"
     t.integer  "exported_from_id"
-    t.integer  "metric_id"
+    t.string   "metric_id"
   end
 
   add_index "facts", ["exported_from_id"], name: "index_facts_on_exported_from_id", using: :btree
