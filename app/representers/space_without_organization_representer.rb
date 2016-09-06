@@ -1,6 +1,6 @@
 require 'roar/decorator'
 
-class SpaceRepresenter < Roar::Decorator
+class SpaceWithoutOrganizationRepresenter < Roar::Decorator
   include Roar::JSON
   include Roar::JSON::HAL
 
@@ -21,17 +21,6 @@ class SpaceRepresenter < Roar::Decorator
     property :id
     property :username, as: "name"
     property :picture
-  end
-
-  property :organization, embedded: true, class: Organization do
-    property :id
-    property :admin_id
-    property :name
-    property :picture
-    collection :facts,
-      class: Fact,
-      decorator: FactRepresenter,
-      if: ->(user_options:, **) { user_options[:current_user_can_edit] }
   end
 
   collection :calculators, embedded: true, class: Calculator do

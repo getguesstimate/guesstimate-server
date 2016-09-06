@@ -1,12 +1,21 @@
 class Fact < ActiveRecord::Base
   belongs_to :organization
+  belongs_to :exported_from, class_name: 'Space'
+
   has_many :checkpoints, class_name: 'FactCheckpoint', dependent: :destroy
 
-  validates_presence_of :organization, :variable_name, :expression, :simulation
+  validates_presence_of :organization, :variable_name, :simulation
   validates :variable_name,
     uniqueness: {scope: :organization_id},
     format: {with: /\A\w+\Z/}
-  validate :fact_has_values, :fact_has_no_errors, :fact_has_stats
+  validate :fact_has_values, :fact_has_no_errors, :fact_has_stats, unless: :exported_by_space?
+  validates_presence_of :expression, unless: :exported_by_space?
+  validates_presence_of :metric_id, if: :exported_by_space?
+
+  scope :exported_by_space, -> { where.not(exported_space_id: nil) }
+
+  after_create :increment_exported_from_count, if: :exported_by_space?
+  after_destroy :decrement_exported_from_count, if: :exported_by_space?
 
   CHECKPOINT_LIMIT = 1000
 
@@ -25,7 +34,27 @@ class Fact < ActiveRecord::Base
     return checkpoint
   end
 
+  def imported_to_intermediate_space_ids
+    imported_to_intermediate_spaces.all.map { |s| s.id }
+  end
+
+  def imported_to_intermediate_spaces
+    organization.spaces.has_fact_exports.imports_fact(self)
+  end
+
   private
+
+  def exported_by_space?
+    return exported_from_id.present?
+  end
+
+  def increment_exported_from_count
+    exported_from.increment_exported_facts_count!
+  end
+
+  def decrement_exported_from_count
+    exported_from.decrement_exported_facts_count!
+  end
 
   def fact_has_stats
     stats = simulation && simulation['stats']

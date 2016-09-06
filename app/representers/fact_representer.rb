@@ -12,4 +12,5 @@ class FactRepresenter < Roar::Decorator
   property :simulation
   property :created_at
   property :updated_at
+  property :imported_to_intermediate_space_ids
 end

@@ -10,6 +10,8 @@ RSpec.describe Fact, type: :model do
     let (:values) { [1] }
     let (:errors) { [] }
     let (:simulation) { {"sample" => {"values" => values, "errors" => errors}, "stats" => stats} }
+    let (:exported_from) { nil }
+    let (:metric_id) { nil }
     subject (:fact) {
       FactoryGirl.build(
         :fact,
@@ -18,6 +20,8 @@ RSpec.describe Fact, type: :model do
         expression: expression,
         variable_name: variable_name,
         simulation: simulation,
+        exported_from: exported_from.present? ? exported_from : nil,
+        metric_id: metric_id,
       )
     }
 
@@ -82,6 +86,41 @@ RSpec.describe Fact, type: :model do
       let (:stats) { {"mean" => 0.5, "length" => 3, "stdev" => 1} }
       it { is_expected.to_not be_valid }
     end
+
+    context 'with exported space' do
+      let (:exported_from) { FactoryGirl.create(:space) }
+
+      context 'without a metric id' do
+        let (:metric_id) { nil }
+        it { is_expected.to_not be_valid }
+      end
+
+      context 'with a metric id' do
+        let (:metric_id) { '3' }
+
+        before { exported_from }
+
+        it { is_expected.to be_valid }
+        it 'increments the exported_from exported_facts_count upon creation' do
+          expect{fact.save}.to change{exported_from.exported_facts_count}.from(0).to(1)
+        end
+      end
+    end
+  end
+
+  describe '#destroy' do
+    let (:exported_from) { FactoryGirl.create(:space) }
+    let (:metric_id) { '3' }
+    subject (:fact) { FactoryGirl.create(:fact, exported_from: exported_from, metric_id: metric_id) }
+
+    before do
+      exported_from
+      fact
+    end
+
+    it 'decrements exported_facts_count' do
+      expect{fact.destroy}.to change{exported_from.exported_facts_count}.from(1).to(0)
+    end
   end
 
   describe 'take_checkpoint' do
@@ -102,7 +141,7 @@ RSpec.describe Fact, type: :model do
     end
 
     shared_examples 'the new checkpoint matches the fact and is not deleted' do
-      it 'should match the fact' do
+      it 'matches the fact' do
         expect(checkpoint).to be_valid
         expect(checkpoint.fact_id).to eq fact.id
         expect(checkpoint.author_id).to eq author.id
@@ -112,14 +151,14 @@ RSpec.describe Fact, type: :model do
         expect(checkpoint.expression).to eq fact.expression
       end
 
-      it 'should have the new checkpoint as a checkpoint' do
+      it 'has the new checkpoint as a checkpoint' do
         expect(fact.checkpoints.where(id: checkpoint.id).count).to be 1
       end
     end
 
     context 'with fewer checkpoints than the history cutoff' do
       include_examples 'the new checkpoint matches the fact and is not deleted'
-      it 'should still have the first_checkpoint' do
+      it 'still has the first_checkpoint' do
         expect(fact.checkpoints.count).to be 2
         expect(fact.checkpoints.where(id: first_checkpoint.id).count).to be 1
       end
@@ -129,10 +168,33 @@ RSpec.describe Fact, type: :model do
       include_examples 'the new checkpoint matches the fact and is not deleted'
       let (:num_other_facts) { checkpoint_limit }
 
-      it 'should delete the oldest checkpoint if it has more checkpoints than the history cutoff' do
+      it 'deletes the oldest checkpoint if it has more checkpoints than the history cutoff' do
         expect(fact.checkpoints.count).to be checkpoint_limit
         expect(fact.checkpoints.where(id: first_checkpoint.id).count).to be 0
       end
+    end
+  end
+
+  describe '#imported_to_intermediate_spaces' do
+    let (:organization) { FactoryGirl.create(:organization) }
+    let (:imported_fact) { FactoryGirl.create(:fact, organization: organization) }
+    let (:exported_from) {
+      imported_fact
+      FactoryGirl.create(
+        :space,
+        organization: organization,
+        graph: {'guesstimates' => [ {'expression'=>"=${fact:#{imported_fact.id}}"} ]},
+        imported_fact_ids: [imported_fact.id],
+        exported_facts_count: 1,
+      )
+    }
+    subject (:space_ids) {
+      exported_from
+      imported_fact.imported_to_intermediate_space_ids
+    }
+
+    it 'yields the correct imported_to_intermediate_space_ids' do
+      expect(space_ids).to contain_exactly(exported_from.id)
     end
   end
 end

@@ -36,7 +36,7 @@ RSpec.describe Space, type: :model do
     let(:graph) {nil}
     let(:name) {'real model'}
 
-    it 'should not be searchable with no graph' do
+    it 'is not searchable with no graph' do
       expect(space.is_searchable?).to be false
     end
 
@@ -53,7 +53,7 @@ RSpec.describe Space, type: :model do
            {'guesstimateType'=>'NORMAL'},
            {'guesstimateType'=>'FUNCTION'}]}
       }
-      it 'should be searchable with a valid graph' do
+      it 'is searchable with a valid graph' do
         expect(space.is_searchable?).to be true
       end
     end
@@ -71,7 +71,7 @@ RSpec.describe Space, type: :model do
            {'guesstimateType'=>'LOGNORMAL'},
            {'guesstimateType'=>'FUNCTION'}]}
       }
-      it 'should be searchable with a valid graph' do
+      it 'is searchable with a valid graph' do
         expect(space.is_searchable?).to be true
       end
     end
@@ -99,7 +99,7 @@ RSpec.describe Space, type: :model do
     subject(:copy) {space.copy(copying_user)}
 
     shared_examples 'copies properly' do
-      it 'should copy properly' do
+      it 'copies properly' do
         expect(copy.copied_from).to eq space
         expect(space.copies.count).to eq 1
         expect(space.copies.first).to eq copy
@@ -152,4 +152,28 @@ RSpec.describe Space, type: :model do
       include_examples('copies properly')
     end
   end
+
+  describe '#get_imported_fact_ids' do
+    let(:guesstimates) { [] }
+    let(:space) { FactoryGirl.build(:space, graph: guesstimates.empty? ? nil : {'guesstimates' => guesstimates}) }
+    subject(:fact_ids) { space.get_imported_fact_ids }
+
+    context 'without facts' do
+      it 'returns an empty array with no graph' do
+        expect(fact_ids).to be_empty
+      end
+    end
+
+    context 'with facts' do
+      let(:guesstimates) {[
+        {'expression'=>'=${fact:1} + ${fact:2} + ${fact:1}'},
+        {'expression'=>'=${fact:2} + ${fact:3} + ${fact:40}'},
+        {'expression'=>'=${fact:1} + ${fact:2} + fact:77'}
+      ]}
+      it 'contains the referenced facts' do
+        expect(fact_ids).to contain_exactly('1', '2', '3', '40')
+      end
+    end
+  end
+
 end
