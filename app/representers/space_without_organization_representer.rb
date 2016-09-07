@@ -16,6 +16,7 @@ class SpaceWithoutOrganizationRepresenter < Roar::Decorator
   property :screenshot
   property :big_screenshot
   property :exported_facts_count
+  property :imported_fact_ids
 
   property :user, class: User, embedded: true  do
     property :id
