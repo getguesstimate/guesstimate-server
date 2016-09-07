@@ -55,6 +55,6 @@ class FactsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def fact_params
-    params.require(:fact).permit(:name, :expression, :variable_name, simulation: simulation_structure)
+    params.require(:fact).permit(:name, :metric_id, :exported_from_id, :expression, :variable_name, simulation: simulation_structure)
   end
 end
