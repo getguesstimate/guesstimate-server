@@ -16,6 +16,7 @@ class Space < ActiveRecord::Base
   validates :user_id, presence: true
   validate :owner_can_create_private_models, if: :is_private
   validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
+  validates :shareable_link_token, length: { minimum: 32 }, if: :shareable_link_enabled
 
   after_initialize :init
   after_save :identify_user, :update_imported_fact_ids!

@@ -15,10 +15,30 @@ RSpec.describe SpacesController, type: :controller do
     let (:creator) { FactoryGirl.create(:user, :lite_plan) }
     let (:is_private) { false } # default context public.
     let (:organization) { nil } # default context no organization.
-    let (:space) { FactoryGirl.create(:space, user: creator, organization: organization, is_private: is_private) }
+    let (:shareable_link_token) { nil }
+    let (:shareable_link_enabled) { false }
+    let (:space) {
+      FactoryGirl.create(
+        :space,
+        user: creator,
+        organization: organization,
+        is_private: is_private,
+        shareable_link_enabled: shareable_link_enabled && shareable_link_token.present?,
+        shareable_link_token: shareable_link_token,
+      )
+    }
 
-    context 'with share by link disabled' do
+    context 'with shareable link disabled' do
       context 'with token in params' do
+        let (:shareable_link_token) { 'a' * 32 }
+        before { get :show, id: space.id, token: shareable_link_token }
+
+        it { is_expected.to respond_with :ok }
+
+        context 'for a private space' do
+          let (:is_private) { true }
+          it { is_expected.to respond_with :unauthorized }
+        end
       end
 
       context 'for a logged out viewer' do
@@ -78,7 +98,29 @@ RSpec.describe SpacesController, type: :controller do
         end
       end
     end
-    context 'with share by link enabled' do
+
+    context 'with shareable link enabled, logged out viewer, on a private space' do
+      let (:is_private) { true }
+      let (:shareable_link_enabled) { true }
+      let (:shareable_link_token) { 'a' * 32 }
+      let (:params_token) { nil }
+      before { get :show, id: space.id, token: params_token }
+
+      context 'with no token in params' do
+        it { is_expected.to respond_with :unauthorized }
+      end
+
+      context 'with token in params' do
+        context 'with invalid token' do
+          let (:params_token) { 'b' * 32 }
+          it { is_expected.to respond_with :unauthorized }
+        end
+
+        context 'with valid token' do
+          let (:params_token) { shareable_link_token }
+          it { is_expected.to respond_with :ok }
+        end
+      end
     end
   end
 

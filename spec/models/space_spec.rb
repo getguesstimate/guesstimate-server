@@ -6,11 +6,40 @@ RSpec.describe Space, type: :model do
     let (:user) { FactoryGirl.create(:user) }
     let (:viewcount) { nil } # default context unviewed.
     let (:is_private) { false } # default context public.
+    let (:shareable_link_enabled) { false }
+    let (:shareable_link_token) { nil }
 
-    subject (:space) { FactoryGirl.build(:space, user: user, is_private: is_private, viewcount: viewcount) }
+    subject (:space) {
+      FactoryGirl.build(
+        :space,
+        user: user,
+        is_private: is_private,
+        viewcount: viewcount,
+        shareable_link_enabled: shareable_link_enabled,
+        shareable_link_token: shareable_link_token,
+      )
+    }
 
     # A public, unviewed space should be valid.
-    it { is_expected.to be_valid } 
+    it { is_expected.to be_valid }
+
+    context 'with shareable link enabled' do
+      let (:shareable_link_enabled) { true }
+
+      context 'with no token' do
+        it { is_expected.not_to be_valid}
+      end
+
+      context 'with a too short token' do
+        let (:shareable_link_token) { 'a' * 31 }
+        it { is_expected.not_to be_valid}
+      end
+
+      context 'with a valid token' do
+        let (:shareable_link_token) { 'a' * 32 }
+        it { is_expected.to be_valid}
+      end
+    end
 
     context 'negative viewcount' do
       let(:viewcount) {-1}
@@ -217,9 +246,16 @@ RSpec.describe Space, type: :model do
 
   describe '#shareable_link_url' do
     context 'with shareable link enabled' do
-      subject(:space) { FactoryGirl.build :space, shareable_link_enabled: true, shareable_link_token: 'token', id: 1 }
+      subject(:space) {
+        FactoryGirl.build(
+          :space,
+          shareable_link_enabled: true,
+          shareable_link_token: 'token------------------------------', # Padded to be > 32 characters, for validation limit.
+          id: 1,
+        )
+      }
       it 'gets the correct link' do
-        expect(space.shareable_link_url).to eq 'http://localhost:3000/models/1?token=token'
+        expect(space.shareable_link_url).to eq 'http://localhost:3000/models/1?token=token------------------------------'
       end
     end
     context 'with shareable link disabled' do
