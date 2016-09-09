@@ -93,8 +93,8 @@ ActiveRecord::Schema.define(version: 20160909215125) do
   create_table "spaces", force: :cascade do |t|
     t.string   "name"
     t.text     "description"
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
     t.json     "graph"
     t.integer  "user_id"
     t.boolean  "is_private"
@@ -106,11 +106,11 @@ ActiveRecord::Schema.define(version: 20160909215125) do
     t.boolean  "categorized"
     t.datetime "snapshot_timestamp"
     t.string   "big_screenshot"
-    t.boolean  "is_recommended",        default: false
-    t.integer  "exported_facts_count",  default: 0
-    t.integer  "imported_fact_ids",                                  array: true
-    t.string   "share_by_link_token"
-    t.boolean  "share_by_link_enabled", default: false
+    t.boolean  "is_recommended",         default: false
+    t.integer  "exported_facts_count",   default: 0
+    t.integer  "imported_fact_ids",                                   array: true
+    t.string   "shareable_link_token"
+    t.boolean  "shareable_link_enabled", default: false
   end
 
   add_index "spaces", ["imported_fact_ids"], name: "index_spaces_on_imported_fact_ids", using: :btree

@@ -176,56 +176,56 @@ RSpec.describe Space, type: :model do
     end
   end
 
-  describe '#enable_share_by_link!' do
+  describe '#enable_shareable_link!' do
     subject(:space) { FactoryGirl.create :space }
 
-    it 'enables share by link' do
-      expect { space.enable_share_by_link! }
-        .to  change { space.share_by_link_enabled }.from(false).to(true)
-        .and change { space.share_by_link_token   }.from(nil)
+    it 'enables shareable link' do
+      expect { space.enable_shareable_link! }
+        .to  change { space.shareable_link_enabled }.from(false).to(true)
+        .and change { space.shareable_link_token   }.from(nil)
     end
   end
 
-  describe '#disable_share_by_link!' do
-    subject(:space) { FactoryGirl.create :space, :share_by_link_enabled }
+  describe '#disable_shareable_link!' do
+    subject(:space) { FactoryGirl.create :space, :shareable_link_enabled }
 
-    it 'disables share by link' do
-      expect { space.disable_share_by_link! }
-        .to  change { space.share_by_link_enabled }.from(true).to(false)
-        .and change { space.share_by_link_token   }.to(nil)
+    it 'disables shareable link' do
+      expect { space.disable_shareable_link! }
+        .to  change { space.shareable_link_enabled }.from(true).to(false)
+        .and change { space.shareable_link_token   }.to(nil)
     end
   end
 
-  describe '#rotate_share_by_link_token!' do
-    context 'with share by link_enabled' do
-      subject(:space) { FactoryGirl.create :space, :share_by_link_enabled }
-      it 'rotates the share by link token and does not disable share by link' do
-        expect { space.rotate_share_by_link_token! }.to change { space.share_by_link_token }
-        expect { space.rotate_share_by_link_token! }.to_not change { space.share_by_link_enabled }.from(true)
+  describe '#rotate_shareable_link_token!' do
+    context 'with shareable link_enabled' do
+      subject(:space) { FactoryGirl.create :space, :shareable_link_enabled }
+      it 'rotates the shareable link token and does not disable shareable link' do
+        expect { space.rotate_shareable_link_token! }.to change { space.shareable_link_token }
+        expect { space.rotate_shareable_link_token! }.to_not change { space.shareable_link_enabled }.from(true)
 
-        expect(space.share_by_link_token).to_not be_nil
+        expect(space.shareable_link_token).to_not be_nil
       end
     end
-    context 'with share by link disabled' do
+    context 'with shareable link disabled' do
       subject(:space) { FactoryGirl.create :space }
-      it 'does not change the share by link token' do
-        expect { space.rotate_share_by_link_token! }.to_not change { space.share_by_link_token }.from(nil)
-        expect { space.rotate_share_by_link_token! }.to_not change { space.share_by_link_enabled }.from(false)
+      it 'does not change the shareable link token' do
+        expect { space.rotate_shareable_link_token! }.to_not change { space.shareable_link_token }.from(nil)
+        expect { space.rotate_shareable_link_token! }.to_not change { space.shareable_link_enabled }.from(false)
       end
     end
   end
 
-  describe '#share_by_link_url' do
-    context 'with share by link enabled' do
-      subject(:space) { FactoryGirl.build :space, share_by_link_enabled: true, share_by_link_token: 'token', id: 1 }
+  describe '#shareable_link_url' do
+    context 'with shareable link enabled' do
+      subject(:space) { FactoryGirl.build :space, shareable_link_enabled: true, shareable_link_token: 'token', id: 1 }
       it 'gets the correct link' do
-        expect(space.share_by_link_url).to eq 'http://localhost:3000/models/1?token=token'
+        expect(space.shareable_link_url).to eq 'http://localhost:3000/models/1?token=token'
       end
     end
-    context 'with share by link disabled' do
-      subject(:space) { FactoryGirl.build :space, share_by_link_enabled: false, share_by_link_token: 'shouldNotShow', id: 1 }
+    context 'with shareable link disabled' do
+      subject(:space) { FactoryGirl.build :space, shareable_link_enabled: false, shareable_link_token: 'shouldNotShow', id: 1 }
       it 'gets the correct link' do
-        expect(space.share_by_link_url).to eq ''
+        expect(space.shareable_link_url).to eq ''
       end
     end
   end

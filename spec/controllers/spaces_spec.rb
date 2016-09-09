@@ -17,61 +17,68 @@ RSpec.describe SpacesController, type: :controller do
     let (:organization) { nil } # default context no organization.
     let (:space) { FactoryGirl.create(:space, user: creator, organization: organization, is_private: is_private) }
 
-    context 'for a logged out viewer' do
-      before { get :show, id: space.id }
-
-      it { is_expected.to respond_with :ok }
-
-      context 'for a private space' do
-        let (:is_private) { true }
-        it { is_expected.to respond_with :unauthorized }
-      end
-    end
-
-    context 'for a logged in viewer' do
-      let (:viewing_user) { FactoryGirl.create(:user) }
-
-      before do
-        setup_knock(viewing_user)
-        get :show, id: space.id
+    context 'with share by link disabled' do
+      context 'with token in params' do
       end
 
-      it { is_expected.to respond_with :ok }
-
-      context 'for a private space' do
-        let (:is_private) { true }
-        it { is_expected.to respond_with :unauthorized }
-      end
-
-      context 'for a viewing creator' do
-        let (:viewing_user) { creator }
+      context 'for a logged out viewer' do
+        before { get :show, id: space.id }
 
         it { is_expected.to respond_with :ok }
 
         context 'for a private space' do
           let (:is_private) { true }
+          it { is_expected.to respond_with :unauthorized }
+        end
+      end
 
-          context 'for a space without organization' do
-            it { is_expected.to respond_with :ok }
-          end
+      context 'for a logged in viewer' do
+        let (:viewing_user) { FactoryGirl.create(:user) }
 
-          context 'for a space with organization' do
-            context 'for a creator who is a member' do
-              let (:organization) {
-                organization = FactoryGirl.create(:organization)
-                FactoryGirl.create(:user_organization_membership, user: creator, organization: organization)
-                organization
-              }
+        before do
+          setup_knock(viewing_user)
+          get :show, id: space.id
+        end
+
+        it { is_expected.to respond_with :ok }
+
+        context 'for a private space' do
+          let (:is_private) { true }
+          it { is_expected.to respond_with :unauthorized }
+        end
+
+        context 'for a viewing creator' do
+          let (:viewing_user) { creator }
+
+          it { is_expected.to respond_with :ok }
+
+          context 'for a private space' do
+            let (:is_private) { true }
+
+            context 'for a space without organization' do
               it { is_expected.to respond_with :ok }
             end
 
-            context 'for a non-membered creator' do
-              let (:organization) { FactoryGirl.create(:organization) }
-              it { is_expected.to respond_with :unauthorized }
+            context 'for a space with organization' do
+              context 'for a creator who is a member' do
+                let (:organization) {
+                  organization = FactoryGirl.create(:organization)
+                  FactoryGirl.create(:user_organization_membership, user: creator, organization: organization)
+                  organization
+                }
+                it { is_expected.to respond_with :ok }
+              end
+
+              context 'for a non-membered creator' do
+                let (:organization) { FactoryGirl.create(:organization) }
+                it { is_expected.to respond_with :unauthorized }
+              end
             end
           end
         end
       end
+    end
+    context 'with share by link enabled' do
     end
   end
 
