@@ -204,7 +204,7 @@ class Space < ActiveRecord::Base
   end
 
   def get_screenshot_url(thumb, force = false)
-    url = BASE_URL + "/models/#{id}/embed"
+    url = "#{client_url}/embed"
 
     column_count = [max_columns, 5].max
     width = 212 * (column_count + 1) + 10
@@ -218,15 +218,13 @@ class Space < ActiveRecord::Base
   end
 
   def recache_html
-    url = BASE_URL + "models/#{id}"
-
     uri = URI.parse('http://api.prerender.io')
     http = Net::HTTP.new(uri.host, uri.port)
     req = Net::HTTP::Post.new(
       'http://api.prerender.io/recache',
       initHeader = {'Content-Type' => 'application/json'}
     )
-    req.body = JSON.generate prerenderToken: Rails.application.secrets.prerender_token, url: url
+    req.body = JSON.generate prerenderToken: Rails.application.secrets.prerender_token, url: client_url
     http.request req
   end
 
@@ -262,7 +260,34 @@ class Space < ActiveRecord::Base
     update_columns(exported_facts_count: exported_facts_count - 1)
   end
 
+  def enable_share_by_link!
+    update_attributes(
+      share_by_link_token: SecureRandom.urlsafe_base64(64, false),
+      share_by_link_enabled: true,
+    )
+  end
+
+  def disable_share_by_link!
+    update_attributes(
+      share_by_link_token: nil,
+      share_by_link_enabled: false,
+    )
+  end
+
+  def rotate_share_by_link_token!
+    update_attributes( share_by_link_token: SecureRandom.urlsafe_base64(64, false) ) if share_by_link_enabled
+  end
+
+  def share_by_link_url
+    share_by_link_enabled ? "#{client_url}?token=#{share_by_link_token}" : ''
+  end
+
   private
+
+  def client_url
+    BASE_URL + "models/#{id}"
+  end
+
   def guesstimates
     if graph && graph['guesstimates']
       return graph['guesstimates']
