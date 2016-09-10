@@ -261,13 +261,9 @@ class Space < ActiveRecord::Base
     update_columns(exported_facts_count: exported_facts_count - 1)
   end
 
-  def getSecureToken
-    SecureRandom.urlsafe_base64(64, false)
-  end
-
   def enable_shareable_link!
     update_attributes(
-      shareable_link_token: getSecureToken,
+      shareable_link_token: get_secure_token,
       shareable_link_enabled: true,
     )
   end
@@ -280,7 +276,7 @@ class Space < ActiveRecord::Base
   end
 
   def rotate_shareable_link_token!
-    update_attributes( shareable_link_token: getSecureToken ) if shareable_link_enabled
+    update_attributes( shareable_link_token: get_secure_token ) if shareable_link_enabled
   end
 
   def shareable_link_url
@@ -288,6 +284,10 @@ class Space < ActiveRecord::Base
   end
 
   private
+
+  def get_secure_token
+    SecureRandom.urlsafe_base64(64, false)
+  end
 
   def client_url
     BASE_URL + "models/#{id}"
