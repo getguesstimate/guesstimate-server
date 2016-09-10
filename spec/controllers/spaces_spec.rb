@@ -15,61 +15,110 @@ RSpec.describe SpacesController, type: :controller do
     let (:creator) { FactoryGirl.create(:user, :lite_plan) }
     let (:is_private) { false } # default context public.
     let (:organization) { nil } # default context no organization.
-    let (:space) { FactoryGirl.create(:space, user: creator, organization: organization, is_private: is_private) }
+    let (:shareable_link_token) { nil }
+    let (:shareable_link_enabled) { false }
+    let (:space) {
+      FactoryGirl.create(
+        :space,
+        user: creator,
+        organization: organization,
+        is_private: is_private,
+        shareable_link_enabled: shareable_link_enabled && shareable_link_token.present?,
+        shareable_link_token: shareable_link_token,
+      )
+    }
 
-    context 'for a logged out viewer' do
-      before { get :show, id: space.id }
-
-      it { is_expected.to respond_with :ok }
-
-      context 'for a private space' do
-        let (:is_private) { true }
-        it { is_expected.to respond_with :unauthorized }
-      end
-    end
-
-    context 'for a logged in viewer' do
-      let (:viewing_user) { FactoryGirl.create(:user) }
-
-      before do
-        setup_knock(viewing_user)
-        get :show, id: space.id
-      end
-
-      it { is_expected.to respond_with :ok }
-
-      context 'for a private space' do
-        let (:is_private) { true }
-        it { is_expected.to respond_with :unauthorized }
-      end
-
-      context 'for a viewing creator' do
-        let (:viewing_user) { creator }
+    context 'with shareable link disabled' do
+      context 'with token in params' do
+        let (:shareable_link_token) { 'a' * 32 }
+        before { get :show, id: space.id, token: shareable_link_token }
 
         it { is_expected.to respond_with :ok }
 
         context 'for a private space' do
           let (:is_private) { true }
+          it { is_expected.to respond_with :unauthorized }
+        end
+      end
 
-          context 'for a space without organization' do
-            it { is_expected.to respond_with :ok }
-          end
+      context 'for a logged out viewer' do
+        before { get :show, id: space.id }
 
-          context 'for a space with organization' do
-            context 'for a creator who is a member' do
-              let (:organization) {
-                organization = FactoryGirl.create(:organization)
-                FactoryGirl.create(:user_organization_membership, user: creator, organization: organization)
-                organization
-              }
+        it { is_expected.to respond_with :ok }
+
+        context 'for a private space' do
+          let (:is_private) { true }
+          it { is_expected.to respond_with :unauthorized }
+        end
+      end
+
+      context 'for a logged in viewer' do
+        let (:viewing_user) { FactoryGirl.create(:user) }
+
+        before do
+          setup_knock(viewing_user)
+          get :show, id: space.id
+        end
+
+        it { is_expected.to respond_with :ok }
+
+        context 'for a private space' do
+          let (:is_private) { true }
+          it { is_expected.to respond_with :unauthorized }
+        end
+
+        context 'for a viewing creator' do
+          let (:viewing_user) { creator }
+
+          it { is_expected.to respond_with :ok }
+
+          context 'for a private space' do
+            let (:is_private) { true }
+
+            context 'for a space without organization' do
               it { is_expected.to respond_with :ok }
             end
 
-            context 'for a non-membered creator' do
-              let (:organization) { FactoryGirl.create(:organization) }
-              it { is_expected.to respond_with :unauthorized }
+            context 'for a space with organization' do
+              context 'for a creator who is a member' do
+                let (:organization) {
+                  organization = FactoryGirl.create(:organization)
+                  FactoryGirl.create(:user_organization_membership, user: creator, organization: organization)
+                  organization
+                }
+                it { is_expected.to respond_with :ok }
+              end
+
+              context 'for a non-membered creator' do
+                let (:organization) { FactoryGirl.create(:organization) }
+                it { is_expected.to respond_with :unauthorized }
+              end
             end
           end
+        end
+      end
+    end
+
+    context 'with shareable link enabled, logged out viewer, on a private space' do
+      let (:is_private) { true }
+      let (:shareable_link_enabled) { true }
+      let (:shareable_link_token) { 'a' * 32 }
+      let (:params_token) { nil }
+      before { get :show, id: space.id, token: params_token }
+
+      context 'with no token in params' do
+        it { is_expected.to respond_with :unauthorized }
+      end
+
+      context 'with token in params' do
+        context 'with invalid token' do
+          let (:params_token) { 'b' * 32 }
+          it { is_expected.to respond_with :unauthorized }
+        end
+
+        context 'with valid token' do
+          let (:params_token) { shareable_link_token }
+          it { is_expected.to respond_with :ok }
         end
       end
     end

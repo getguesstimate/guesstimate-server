@@ -32,7 +32,8 @@ class SpacesController < ApplicationController
   # GET /spaces/1.json
   def show
     can_edit = current_user && @space.editable_by_user?(current_user)
-    if @space.is_public? || can_edit
+    has_proper_token = @space.shareable_link_enabled && @space.shareable_link_token == params[:token]
+    if @space.is_public? || can_edit || has_proper_token
       newSpace = @space
       newSpace.graph = @space.cleaned_graph
       render json: SpaceRepresenter.new(newSpace).to_json(user_options: {current_user_can_edit: can_edit})
