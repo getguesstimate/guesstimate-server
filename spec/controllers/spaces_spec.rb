@@ -218,4 +218,354 @@ RSpec.describe SpacesController, type: :controller do
       end
     end
   end
+
+  describe 'PATCH enable_shareable_link' do
+    # Server Variables:
+    let (:creator) { FactoryGirl.create(:user) }
+    let (:organization) { nil }
+    let (:is_private) { true }
+    let (:shareable_link_enabled) { false }
+    let (:shareable_link_token) { nil }
+    let (:space) {
+      FactoryGirl.create(
+        :space,
+        user: creator,
+        organization: organization,
+        is_private: is_private,
+        shareable_link_enabled: shareable_link_enabled && shareable_link_token.present?,
+        shareable_link_token: shareable_link_token,
+      )
+    }
+
+    # Client Variables:
+    let (:viewing_user) { nil }
+
+    # Shared Contextes:
+    shared_context 'shareable_link enabled', enabled: true do
+      let (:shareable_link_enabled) { true }
+      let (:shareable_link_token) { 'a' * 32 }
+    end
+
+    shared_context 'shareable_link disabled', enabled: false do
+      let (:shareable_link_enabled) { false }
+      let (:shareable_link_token) { nil }
+    end
+
+    shared_context 'private space', is_private: true do
+      let (:is_private) { true }
+    end
+    shared_context 'public space', is_private: false do
+      let (:is_private) { false }
+    end
+
+    # Shared Examples:
+    shared_examples 'responds with enabled shareable_link' do
+      it { is_expected.to respond_with :ok }
+
+      it 'renders a space with shareable_link enabled' do
+        rendered_space = SpaceRepresenter.new(Space.new).from_json response.body, user_options: {current_user_can_edit: true}
+
+        expect(rendered_space.shareable_link_enabled).to be true
+
+        if shareable_link_token.present?
+          expect(rendered_space.shareable_link_token).to eq shareable_link_token
+        else
+          expect(rendered_space.shareable_link_token).to be_truthy
+          expect(rendered_space.shareable_link_token.length).to be > 20
+        end
+      end
+    end
+
+    before do
+      space
+      setup_knock(viewing_user) if viewing_user.present?
+      patch :enable_shareable_link, id: space.id
+    end
+
+    context 'logged out viewer' do
+      let (:viewing_user) { nil }
+      it { is_expected.to respond_with :unauthorized }
+    end
+
+    context 'logged in viewer who is not creator' do
+      let (:viewing_user) { FactoryGirl.create(:user) }
+      it { is_expected.to respond_with :unauthorized }
+    end
+
+    context 'viewer is also creator' do
+      let (:viewing_user) { creator }
+
+      context 'on a public space', is_private: false do
+        it { is_expected.to respond_with :unprocessable_entity }
+      end
+
+      context 'with shareable_link disabled on a private space', enabled: false, is_private: true do
+        include_examples 'responds with enabled shareable_link'
+      end
+
+      context 'with shareable_link enabled on a private space', enabled: true, is_private: true do
+        include_examples 'responds with enabled shareable_link'
+      end
+    end
+
+    context 'space has organization' do
+      let (:organization) { FactoryGirl.create(:organization) }
+
+      context 'viewer is not a member' do
+        let (:viewing_user) { FactoryGirl.create(:user) }
+        it { is_expected.to respond_with :unauthorized }
+      end
+
+      context 'viewer is a member' do
+        let (:viewing_user) do
+          user = FactoryGirl.create(:user)
+          FactoryGirl.create(:user_organization_membership, user: user, organization: organization)
+          user
+        end
+
+        context 'on a public space', is_private: false do
+          it { is_expected.to respond_with :unprocessable_entity }
+        end
+
+        context 'with shareable_link disabled on a private space', enabled: false, is_private: true do
+          include_examples 'responds with enabled shareable_link'
+        end
+
+        context 'with shareable_link enabled on a private space', enabled: true, is_private: true do
+          include_examples 'responds with enabled shareable_link'
+        end
+      end
+    end
+  end
+
+  describe 'PATCH disable_shareable_link' do
+    # Server Variables:
+    let (:creator) { FactoryGirl.create(:user) }
+    let (:organization) { nil }
+    let (:is_private) { true }
+    let (:shareable_link_enabled) { false }
+    let (:shareable_link_token) { nil }
+    let (:space) {
+      FactoryGirl.create(
+        :space,
+        user: creator,
+        organization: organization,
+        is_private: is_private,
+        shareable_link_enabled: shareable_link_enabled && shareable_link_token.present?,
+        shareable_link_token: shareable_link_token,
+      )
+    }
+
+    # Client Variables:
+    let (:viewing_user) { nil }
+
+    # Shared Contextes:
+    shared_context 'shareable_link enabled', enabled: true do
+      let (:shareable_link_enabled) { true }
+      let (:shareable_link_token) { 'a' * 32 }
+    end
+
+    shared_context 'shareable_link disabled', enabled: false do
+      let (:shareable_link_enabled) { false }
+      let (:shareable_link_token) { nil }
+    end
+
+    shared_context 'private space', is_private: true do
+      let (:is_private) { true }
+    end
+    shared_context 'public space', is_private: false do
+      let (:is_private) { false }
+    end
+
+    # Shared Examples:
+    shared_examples 'responds with disabled shareable_link' do
+      it { is_expected.to respond_with :ok }
+
+      it 'renders a space with shareable_link disabled' do
+        rendered_space = SpaceRepresenter.new(Space.new).from_json response.body, user_options: {current_user_can_edit: true}
+
+        expect(rendered_space.shareable_link_enabled).to be false
+        expect(rendered_space.shareable_link_token).to be_nil
+      end
+    end
+
+    before do
+      space
+      setup_knock(viewing_user) if viewing_user.present?
+      patch :enable_shareable_link, id: space.id
+    end
+
+    context 'logged out viewer' do
+      let (:viewing_user) { nil }
+      it { is_expected.to respond_with :unauthorized }
+    end
+
+    context 'logged in viewer who is not creator' do
+      let (:viewing_user) { FactoryGirl.create(:user) }
+      it { is_expected.to respond_with :unauthorized }
+    end
+
+    context 'viewer is also creator' do
+      let (:viewing_user) { creator }
+
+      context 'on a public space', is_private: false do
+        include_examples 'responds with disabled shareable_link'
+      end
+
+      context 'with shareable_link disabled on a private space', enabled: false, is_private: true do
+        include_examples 'responds with disabled shareable_link'
+      end
+
+      context 'with shareable_link enabled on a private space', enabled: true, is_private: true do
+        include_examples 'responds with disabled shareable_link'
+      end
+    end
+
+    context 'space has organization' do
+      let (:organization) { FactoryGirl.create(:organization) }
+
+      context 'viewer is not a member' do
+        let (:viewing_user) { FactoryGirl.create(:user) }
+        it { is_expected.to respond_with :unauthorized }
+      end
+
+      context 'viewer is a member' do
+        let (:viewing_user) do
+          user = FactoryGirl.create(:user)
+          FactoryGirl.create(:user_organization_membership, user: user, organization: organization)
+          user
+        end
+
+        context 'on a public space', is_private: false do
+          include_examples 'responds with disabled shareable_link'
+        end
+
+        context 'with shareable_link disabled on a private space', enabled: false, is_private: true do
+          include_examples 'responds with disabled shareable_link'
+        end
+
+        context 'with shareable_link enabled on a private space', enabled: true, is_private: true do
+          include_examples 'responds with disabled shareable_link'
+        end
+      end
+    end
+  end
+
+  describe 'PATCH rotate_shareable_link' do
+    # Server Variables:
+    let (:creator) { FactoryGirl.create(:user) }
+    let (:organization) { nil }
+    let (:is_private) { true }
+    let (:shareable_link_enabled) { false }
+    let (:shareable_link_token) { nil }
+    let (:space) {
+      FactoryGirl.create(
+        :space,
+        user: creator,
+        organization: organization,
+        is_private: is_private,
+        shareable_link_enabled: shareable_link_enabled && shareable_link_token.present?,
+        shareable_link_token: shareable_link_token,
+      )
+    }
+
+    # Client Variables:
+    let (:viewing_user) { nil }
+
+    # Shared Contextes:
+    shared_context 'shareable_link enabled', enabled: true do
+      let (:shareable_link_enabled) { true }
+      let (:shareable_link_token) { 'a' * 32 }
+    end
+
+    shared_context 'shareable_link disabled', enabled: false do
+      let (:shareable_link_enabled) { false }
+      let (:shareable_link_token) { nil }
+    end
+
+    shared_context 'private space', is_private: true do
+      let (:is_private) { true }
+    end
+    shared_context 'public space', is_private: false do
+      let (:is_private) { false }
+    end
+
+    # Shared Examples:
+    shared_examples 'responds with rotated shareable_link' do
+      it { is_expected.to respond_with :ok }
+
+      it 'renders a space with shareable_link rotated' do
+        rendered_space = SpaceRepresenter.new(Space.new).from_json response.body, user_options: {current_user_can_edit: true}
+
+        expect(rendered_space.shareable_link_enabled).to be true
+
+        if shareable_link_token.present?
+          expect(rendered_space.shareable_link_token).to be_truthy
+          expect(rendered_space.shareable_link_token.length).to be > 20
+          expect(rendered_space.shareable_link_token).not_to eq shareable_link_token
+        end
+      end
+    end
+
+    before do
+      space
+      setup_knock(viewing_user) if viewing_user.present?
+      patch :enable_shareable_link, id: space.id
+    end
+
+    context 'logged out viewer' do
+      let (:viewing_user) { nil }
+      it { is_expected.to respond_with :unauthorized }
+    end
+
+    context 'logged in viewer who is not creator' do
+      let (:viewing_user) { FactoryGirl.create(:user) }
+      it { is_expected.to respond_with :unauthorized }
+    end
+
+    context 'viewer is also creator' do
+      let (:viewing_user) { creator }
+
+      context 'with shareable_link enabled on a public space', enabled: true, is_private: false do
+        it { is_expected.to respond_with :unprocessable_entity }
+      end
+
+      context 'with shareable_link disabled on a private space', enabled: false, is_private: true do
+        it { is_expected.to respond_with :unprocessable_entity }
+      end
+
+      context 'with shareable_link enabled on a private space', enabled: true, is_private: true do
+        include_examples 'responds with rotated shareable_link'
+      end
+    end
+
+    context 'space has organization' do
+      let (:organization) { FactoryGirl.create(:organization) }
+
+      context 'viewer is not a member' do
+        let (:viewing_user) { FactoryGirl.create(:user) }
+        it { is_expected.to respond_with :unauthorized }
+      end
+
+      context 'viewer is a member' do
+        let (:viewing_user) do
+          user = FactoryGirl.create(:user)
+          FactoryGirl.create(:user_organization_membership, user: user, organization: organization)
+          user
+        end
+
+        context 'with shareable_link enabled on a public space', enabled: true, is_private: false do
+          it { is_expected.to respond_with :unprocessable_entity }
+        end
+
+        context 'with shareable_link disabled on a private space', enabled: false, is_private: true do
+          it { is_expected.to respond_with :unprocessable_entity }
+        end
+
+        context 'with shareable_link enabled on a private space', enabled: true, is_private: true do
+          include_examples 'responds with rotated shareable_link'
+        end
+      end
+    end
+  end
 end
