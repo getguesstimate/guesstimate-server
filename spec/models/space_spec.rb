@@ -217,12 +217,21 @@ RSpec.describe Space, type: :model do
   end
 
   describe '#enable_shareable_link!' do
-    subject(:space) { FactoryGirl.create :space }
+    context 'with shareable_link disabled' do
+      subject(:space) { FactoryGirl.create :space }
+      it 'enables shareable link' do
+        expect { space.enable_shareable_link! }
+          .to  change { space.shareable_link_enabled }.from(false).to(true)
+          .and change { space.shareable_link_token   }.from(nil)
+      end
+    end
 
-    it 'enables shareable link' do
-      expect { space.enable_shareable_link! }
-        .to  change { space.shareable_link_enabled }.from(false).to(true)
-        .and change { space.shareable_link_token   }.from(nil)
+    context 'with shareable link_enabled' do
+      subject(:space) { FactoryGirl.create :space, :shareable_link_enabled }
+      it 'does not modify the shareable link token and does not disable shareable link' do
+        expect { space.enable_shareable_link! }.to_not change { space.shareable_link_token }
+        expect { space.enable_shareable_link! }.to_not change { space.shareable_link_enabled }.from(true)
+      end
     end
   end
 
@@ -236,12 +245,12 @@ RSpec.describe Space, type: :model do
     end
   end
 
-  describe '#rotate_shareable_link_token!' do
+  describe '#rotate_shareable_link!' do
     context 'with shareable link_enabled' do
       subject(:space) { FactoryGirl.create :space, :shareable_link_enabled }
       it 'rotates the shareable link token and does not disable shareable link' do
-        expect { space.rotate_shareable_link_token! }.to change { space.shareable_link_token }
-        expect { space.rotate_shareable_link_token! }.to_not change { space.shareable_link_enabled }.from(true)
+        expect { space.rotate_shareable_link! }.to change { space.shareable_link_token }
+        expect { space.rotate_shareable_link! }.to_not change { space.shareable_link_enabled }.from(true)
 
         expect(space.shareable_link_token).to_not be_nil
       end
@@ -249,8 +258,8 @@ RSpec.describe Space, type: :model do
     context 'with shareable link disabled' do
       subject(:space) { FactoryGirl.create :space }
       it 'does not change the shareable link token' do
-        expect { space.rotate_shareable_link_token! }.to_not change { space.shareable_link_token }.from(nil)
-        expect { space.rotate_shareable_link_token! }.to_not change { space.shareable_link_enabled }.from(false)
+        expect { space.rotate_shareable_link! }.to_not change { space.shareable_link_token }.from(nil)
+        expect { space.rotate_shareable_link! }.to_not change { space.shareable_link_enabled }.from(false)
       end
     end
   end

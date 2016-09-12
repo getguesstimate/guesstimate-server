@@ -263,21 +263,17 @@ class Space < ActiveRecord::Base
   end
 
   def enable_shareable_link!
-    update_attributes(
-      shareable_link_token: get_secure_token,
-      shareable_link_enabled: true,
-    )
+    return true if shareable_link_enabled
+    update_attributes shareable_link_token: get_secure_token, shareable_link_enabled: true
   end
 
   def disable_shareable_link!
-    update_attributes(
-      shareable_link_token: nil,
-      shareable_link_enabled: false,
-    )
+    return true unless shareable_link_enabled
+    update_attributes shareable_link_token: nil, shareable_link_enabled: false
   end
 
-  def rotate_shareable_link_token!
-    update_attributes( shareable_link_token: get_secure_token ) if shareable_link_enabled
+  def rotate_shareable_link!
+    update_attributes shareable_link_token: get_secure_token if shareable_link_enabled
   end
 
   def shareable_link_url
