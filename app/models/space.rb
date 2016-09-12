@@ -17,6 +17,7 @@ class Space < ActiveRecord::Base
   validate :owner_can_create_private_models, if: :is_private
   validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
   validates :shareable_link_token, length: { minimum: 32 }, if: :shareable_link_enabled
+  validates_presence_of :is_private, if: :shareable_link_enabled # Booleans are only considered 'present' on 'true'
 
   after_initialize :init
   after_save :identify_user, :update_imported_fact_ids!
@@ -262,21 +263,17 @@ class Space < ActiveRecord::Base
   end
 
   def enable_shareable_link!
-    update_attributes(
-      shareable_link_token: get_secure_token,
-      shareable_link_enabled: true,
-    )
+    return true if shareable_link_enabled
+    update_attributes shareable_link_token: get_secure_token, shareable_link_enabled: true
   end
 
   def disable_shareable_link!
-    update_attributes(
-      shareable_link_token: nil,
-      shareable_link_enabled: false,
-    )
+    return true unless shareable_link_enabled
+    update_attributes shareable_link_token: nil, shareable_link_enabled: false
   end
 
-  def rotate_shareable_link_token!
-    update_attributes( shareable_link_token: get_secure_token ) if shareable_link_enabled
+  def rotate_shareable_link!
+    update_attributes shareable_link_token: get_secure_token if shareable_link_enabled
   end
 
   def shareable_link_url

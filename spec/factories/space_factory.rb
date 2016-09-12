@@ -6,7 +6,10 @@ FactoryGirl.define do
   end
 
   trait :shareable_link_enabled do
+    is_private true
     shareable_link_enabled true
     shareable_link_token 'fakeSecureToken--------------------' # Padded to be > 32 characters, for validation limit.
+
+    association :user, :lite_plan
   end
 end
