@@ -46,4 +46,10 @@ class SpaceRepresenter < Roar::Decorator
     property :input_ids
     property :output_ids
   end
+
+  collection :imported_facts,
+    embedded: true,
+    class: Fact,
+    decorator: FactRepresenter,
+    if: ->(user_options:, **) {!user_options[:current_user_can_edit] && user_options[:rendered_using_token] }
 end

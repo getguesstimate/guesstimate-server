@@ -69,6 +69,10 @@ class Space < ActiveRecord::Base
     graph['guesstimates'].map { |g| g['expression'] }
   end
 
+  def imported_facts
+    imported_fact_ids.any? ? organization.facts.imported_by_space(self) : Fact.none
+  end
+
   def get_imported_fact_ids()
     guesstimate_expressions.map {|e| e.scan(/\$\{fact:(\d+)/) unless e.blank? }.flatten.uniq.keep_if { |e| e.present? }
   end
