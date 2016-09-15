@@ -32,7 +32,8 @@ class OrganizationRepresenter < Roar::Decorator
 
   collection :intermediate_spaces,
     class: Space,
-    decorator: SpaceWithoutOrganizationRepresenter
+    decorator: SpaceWithoutOrganizationRepresenter,
+    if: ->(user_options:, **) { user_options[:current_user_is_member] }
 
   property :plan_details,
     decorator: PlanRepresenter,
