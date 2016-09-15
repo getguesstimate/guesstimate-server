@@ -31,7 +31,7 @@ RSpec.describe SpacesController, type: :controller do
     context 'with shareable link disabled' do
       context 'with token in params' do
         let (:shareable_link_token) { 'a' * 32 }
-        before { get :show, id: space.id, token: shareable_link_token }
+        before { get :show, id: space.id, shareable_link_token: shareable_link_token }
 
         it { is_expected.to respond_with :ok }
 
@@ -104,7 +104,7 @@ RSpec.describe SpacesController, type: :controller do
       let (:shareable_link_enabled) { true }
       let (:shareable_link_token) { 'a' * 32 }
       let (:params_token) { nil }
-      before { get :show, id: space.id, token: params_token }
+      before { get :show, id: space.id, shareable_link_token: params_token }
 
       context 'with no token in params' do
         it { is_expected.to respond_with :unauthorized }

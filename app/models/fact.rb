@@ -13,6 +13,7 @@ class Fact < ActiveRecord::Base
   validates_presence_of :metric_id, if: :exported_by_space?
 
   scope :exported_by_space, -> { where.not(exported_space_id: nil) }
+  scope :imported_by_space, -> (space) { where('id IN (?)', space.imported_fact_ids) }
 
   after_create :increment_exported_from_count, if: :exported_by_space?
   after_destroy :decrement_exported_from_count, if: :exported_by_space?
