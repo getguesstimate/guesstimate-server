@@ -5,4 +5,6 @@ class FactCategory < ActiveRecord::Base
 
   validates_presence_of :name, :organization
   validates_uniqueness_of :name, scope: :organization_id
+
+  before_destroy { |category| category.facts.update_all category_id: nil }
 end

@@ -32,4 +32,17 @@ RSpec.describe FactCategory, type: :model do
       end
     end
   end
+
+  describe '#destroy' do
+    let (:organization) { FactoryGirl.create :organization }
+    subject (:category) { FactoryGirl.create :fact_category, organization: organization }
+    let (:fact) { FactoryGirl.create :fact, category_id: category.id, organization: organization }
+
+    it 'uncategorizes associated facts upon destruction' do
+      category
+      fact
+
+      expect {category.destroy!}.to change{fact.reload.category_id}.from(category.id).to(nil)
+    end
+  end
 end
