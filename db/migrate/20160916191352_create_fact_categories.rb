@@ -8,6 +8,5 @@ class CreateFactCategories < ActiveRecord::Migration
     end
 
     add_index :fact_categories, :organization_id
-    add_index :fact_categories, :name
   end
 end

@@ -36,7 +36,6 @@ ActiveRecord::Schema.define(version: 20160916191543) do
     t.datetime "updated_at",      null: false
   end
 
-  add_index "fact_categories", ["name"], name: "index_fact_categories_on_name", using: :btree
   add_index "fact_categories", ["organization_id"], name: "index_fact_categories_on_organization_id", using: :btree
 
   create_table "fact_checkpoints", force: :cascade do |t|
