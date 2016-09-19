@@ -32,7 +32,7 @@ class SpacesController < ApplicationController
   # GET /spaces/1.json
   def show
     can_edit = current_user && @space.editable_by_user?(current_user)
-    has_proper_token = @space.shareable_link_enabled && @space.shareable_link_token == params[:shareable_link_token]
+    has_proper_token = @space.shareable_link_enabled && @space.shareable_link_token == request.headers['HTTP_SHAREABLE_LINK_TOKEN']
     if @space.is_public? || can_edit || has_proper_token
       newSpace = @space
       newSpace.graph = @space.cleaned_graph
