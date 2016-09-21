@@ -1,9 +1,7 @@
 class FactCategoriesController < ApplicationController
   before_action :authenticate, :set_variables, :check_authorization
 
-  # TODO(Ozzie): Should the api be .../fact_categories or .../categories ?
   # POST /organizations/:organization_id/fact_categories
-  # POST /organizations/:organization_id/fact_categories.json
   def create
     if @fact_category.save
       render json: FactCategoryRepresenter.new(@fact_category).to_json
@@ -13,7 +11,6 @@ class FactCategoriesController < ApplicationController
   end
 
   # PATCH/PUT /organizations/:organization_id/fact_categories/:id
-  # PATCH/PUT /organizations/:organization_id/fact_categories/:id.json
   def update
     if @fact_category.update(fact_category_params)
       render json: FactCategoryRepresenter.new(@fact_category).to_json, status: :ok
@@ -23,7 +20,6 @@ class FactCategoriesController < ApplicationController
   end
 
   # DELETE /organizations/:organization_id/fact_categories/:id
-  # DELETE /organizations/:organization_id/fact_categories/:id.json
   def destroy
     @fact_category.destroy
     head :no_content
