@@ -6,15 +6,55 @@ RSpec.describe Space, type: :model do
     let (:user) { FactoryGirl.create(:user) }
     let (:viewcount) { nil } # default context unviewed.
     let (:is_private) { false } # default context public.
+    let (:shareable_link_enabled) { false }
+    let (:shareable_link_token) { nil }
 
-    subject (:space) { FactoryGirl.build(:space, user: user, is_private: is_private, viewcount: viewcount) }
+    subject (:space) {
+      FactoryGirl.build(
+        :space,
+        user: user,
+        is_private: is_private,
+        viewcount: viewcount,
+        shareable_link_enabled: shareable_link_enabled,
+        shareable_link_token: shareable_link_token,
+      )
+    }
 
     # A public, unviewed space should be valid.
-    it { is_expected.to be_valid } 
+    it { is_expected.to be_valid }
+
+    context 'with shareable link enabled' do
+      let (:shareable_link_enabled) { true }
+
+      context 'with no token on a private space' do
+        let (:is_private) { true }
+        it { is_expected.not_to be_valid }
+      end
+
+      context 'with a too short token on a private space' do
+        let (:is_private) { true }
+        let (:shareable_link_token) { 'a' * 31 }
+        let (:user) { FactoryGirl.create(:user, :lite_plan) }
+        it { is_expected.not_to be_valid }
+      end
+
+      context 'with a valid token on a public space' do
+        let (:is_private) { false }
+        let (:shareable_link_token) { 'a' * 32 }
+        it { is_expected.not_to be_valid }
+      end
+
+      context 'with a valid token on a private space' do
+        let (:is_private) { true }
+        let (:shareable_link_token) { 'a' * 32 }
+        let (:user) { FactoryGirl.create(:user, :lite_plan) }
+        it { is_expected.to be_valid }
+      end
+    end
 
     context 'negative viewcount' do
       let(:viewcount) {-1}
-      it { is_expected.not_to be_valid}
+      it { is_expected.not_to be_valid }
     end
 
     context 'private space' do
@@ -176,4 +216,73 @@ RSpec.describe Space, type: :model do
     end
   end
 
+  describe '#enable_shareable_link!' do
+    context 'with shareable_link disabled' do
+      subject(:space) { FactoryGirl.create :space }
+      it 'enables shareable link' do
+        expect { space.enable_shareable_link! }
+          .to  change { space.shareable_link_enabled }.from(false).to(true)
+          .and change { space.shareable_link_token   }.from(nil)
+      end
+    end
+
+    context 'with shareable link_enabled' do
+      subject(:space) { FactoryGirl.create :space, :shareable_link_enabled }
+      it 'does not modify the shareable link token and does not disable shareable link' do
+        expect { space.enable_shareable_link! }.to_not change { space.shareable_link_token }
+        expect { space.enable_shareable_link! }.to_not change { space.shareable_link_enabled }.from(true)
+      end
+    end
+  end
+
+  describe '#disable_shareable_link!' do
+    subject(:space) { FactoryGirl.create :space, :shareable_link_enabled }
+
+    it 'disables shareable link' do
+      expect { space.disable_shareable_link! }
+        .to  change { space.shareable_link_enabled }.from(true).to(false)
+        .and change { space.shareable_link_token   }.to(nil)
+    end
+  end
+
+  describe '#rotate_shareable_link!' do
+    context 'with shareable link_enabled' do
+      subject(:space) { FactoryGirl.create :space, :shareable_link_enabled }
+      it 'rotates the shareable link token and does not disable shareable link' do
+        expect { space.rotate_shareable_link! }.to change { space.shareable_link_token }
+        expect { space.rotate_shareable_link! }.to_not change { space.shareable_link_enabled }.from(true)
+
+        expect(space.shareable_link_token).to_not be_nil
+      end
+    end
+    context 'with shareable link disabled' do
+      subject(:space) { FactoryGirl.create :space }
+      it 'does not change the shareable link token' do
+        expect { space.rotate_shareable_link! }.to_not change { space.shareable_link_token }.from(nil)
+        expect { space.rotate_shareable_link! }.to_not change { space.shareable_link_enabled }.from(false)
+      end
+    end
+  end
+
+  describe '#shareable_link_url' do
+    context 'with shareable link enabled' do
+      subject(:space) {
+        FactoryGirl.build(
+          :space,
+          shareable_link_enabled: true,
+          shareable_link_token: 'token------------------------------', # Padded to be > 32 characters, for validation limit.
+          id: 1,
+        )
+      }
+      it 'gets the correct link' do
+        expect(space.shareable_link_url).to eq 'http://localhost:3000/models/1?token=token------------------------------'
+      end
+    end
+    context 'with shareable link disabled' do
+      subject(:space) { FactoryGirl.build :space, shareable_link_enabled: false, shareable_link_token: 'shouldNotShow', id: 1 }
+      it 'gets the correct link' do
+        expect(space.shareable_link_url).to eq ''
+      end
+    end
+  end
 end

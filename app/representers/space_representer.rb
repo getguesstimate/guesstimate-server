@@ -17,6 +17,8 @@ class SpaceRepresenter < Roar::Decorator
   property :big_screenshot
   property :exported_facts_count
   property :imported_fact_ids
+  property :shareable_link_token, if: ->(user_options:, **) { user_options[:current_user_can_edit] }
+  property :shareable_link_enabled, if: ->(user_options:, **) { user_options[:current_user_can_edit] }
 
   property :user, class: User, embedded: true  do
     property :id
@@ -44,4 +46,10 @@ class SpaceRepresenter < Roar::Decorator
     property :input_ids
     property :output_ids
   end
+
+  collection :imported_facts,
+    embedded: true,
+    class: Fact,
+    decorator: FactRepresenter,
+    if: ->(user_options:, **) {!user_options[:current_user_can_edit] && user_options[:rendered_using_token] }
 end

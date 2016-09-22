@@ -16,6 +16,8 @@ class Space < ActiveRecord::Base
   validates :user_id, presence: true
   validate :owner_can_create_private_models, if: :is_private
   validates :viewcount, numericality: {allow_nil: true, greater_than_or_equal_to: 0}
+  validates :shareable_link_token, length: { minimum: 32 }, if: :shareable_link_enabled
+  validates_presence_of :is_private, if: :shareable_link_enabled # Booleans are only considered 'present' on 'true'
 
   after_initialize :init
   after_save :identify_user, :update_imported_fact_ids!
@@ -65,6 +67,10 @@ class Space < ActiveRecord::Base
   def guesstimate_expressions
     return [] unless graph.present? && graph['guesstimates'].present?
     graph['guesstimates'].map { |g| g['expression'] }
+  end
+
+  def imported_facts
+    imported_fact_ids.any? ? organization.facts.imported_by_space(self) : Fact.none
   end
 
   def get_imported_fact_ids()
@@ -204,7 +210,7 @@ class Space < ActiveRecord::Base
   end
 
   def get_screenshot_url(thumb, force = false)
-    url = BASE_URL + "/models/#{id}/embed"
+    url = "#{client_url}/embed"
 
     column_count = [max_columns, 5].max
     width = 212 * (column_count + 1) + 10
@@ -218,15 +224,13 @@ class Space < ActiveRecord::Base
   end
 
   def recache_html
-    url = BASE_URL + "models/#{id}"
-
     uri = URI.parse('http://api.prerender.io')
     http = Net::HTTP.new(uri.host, uri.port)
     req = Net::HTTP::Post.new(
       'http://api.prerender.io/recache',
       initHeader = {'Content-Type' => 'application/json'}
     )
-    req.body = JSON.generate prerenderToken: Rails.application.secrets.prerender_token, url: url
+    req.body = JSON.generate prerenderToken: Rails.application.secrets.prerender_token, url: client_url
     http.request req
   end
 
@@ -262,7 +266,34 @@ class Space < ActiveRecord::Base
     update_columns(exported_facts_count: exported_facts_count - 1)
   end
 
+  def enable_shareable_link!
+    return true if shareable_link_enabled
+    update_attributes shareable_link_token: get_secure_token, shareable_link_enabled: true
+  end
+
+  def disable_shareable_link!
+    return true unless shareable_link_enabled
+    update_attributes shareable_link_token: nil, shareable_link_enabled: false
+  end
+
+  def rotate_shareable_link!
+    update_attributes shareable_link_token: get_secure_token if shareable_link_enabled
+  end
+
+  def shareable_link_url
+    shareable_link_enabled ? "#{client_url}?token=#{shareable_link_token}" : ''
+  end
+
   private
+
+  def get_secure_token
+    SecureRandom.urlsafe_base64(64, false)
+  end
+
+  def client_url
+    BASE_URL + "models/#{id}"
+  end
+
   def guesstimates
     if graph && graph['guesstimates']
       return graph['guesstimates']

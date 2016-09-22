@@ -1,7 +1,7 @@
 class SpacesController < ApplicationController
-  before_action :authenticate, only: [:create, :update, :destroy]
-  before_action :set_space, only: [:show, :update, :destroy]
-  before_action :check_authorization, only: [:update, :destroy]
+  before_action :authenticate, only: [:create, :update, :destroy, :enable_shareable_link, :disable_shareable_link, :rotate_shareable_link]
+  before_action :set_space, only: [:show, :update, :destroy, :enable_shareable_link, :disable_shareable_link, :rotate_shareable_link]
+  before_action :check_authorization, only: [:update, :destroy, :enable_shareable_link, :disable_shareable_link, :rotate_shareable_link]
   before_action :check_previous_author, only: [:update]
 
   #caches_action :show
@@ -32,10 +32,13 @@ class SpacesController < ApplicationController
   # GET /spaces/1.json
   def show
     can_edit = current_user && @space.editable_by_user?(current_user)
-    if @space.is_public? || can_edit
+    has_proper_token = @space.shareable_link_enabled && @space.shareable_link_token == request.headers['HTTP_SHAREABLE_LINK_TOKEN']
+    if @space.is_public? || can_edit || has_proper_token
       newSpace = @space
       newSpace.graph = @space.cleaned_graph
-      render json: SpaceRepresenter.new(newSpace).to_json(user_options: {current_user_can_edit: can_edit})
+      render json: SpaceRepresenter.new(newSpace).to_json(
+        user_options: {current_user_can_edit: can_edit, rendered_using_token: has_proper_token}
+      )
     else
       head :unauthorized
     end
@@ -78,6 +81,36 @@ class SpacesController < ApplicationController
   def destroy
     @space.destroy
     head :no_content
+  end
+
+  # PATCH /spaces/1/enable_shareable_link
+  def enable_shareable_link
+    if @space.enable_shareable_link!
+      can_edit = @space.editable_by_user?(current_user)
+      render json: SpaceRepresenter.new(@space).to_json(user_options: {current_user_can_edit: can_edit}), status: :ok
+    else
+      render json: @space.errors, status: :unprocessable_entity
+    end
+  end
+
+  # PATCH /spaces/1/disable_shareable_link
+  def disable_shareable_link
+    if @space.disable_shareable_link!
+      can_edit = @space.editable_by_user?(current_user)
+      render json: SpaceRepresenter.new(@space).to_json(user_options: {current_user_can_edit: can_edit}), status: :ok
+    else
+      render json: @space.errors, status: :unprocessable_entity
+    end
+  end
+
+  # PATCH /spaces/1/rotate_shareable_link
+  def rotate_shareable_link
+    if @space.rotate_shareable_link!
+      can_edit = @space.editable_by_user?(current_user)
+      render json: SpaceRepresenter.new(@space).to_json(user_options: {current_user_can_edit: can_edit}), status: :ok
+    else
+      render json: @space.errors, status: :unprocessable_entity
+    end
   end
 
   private

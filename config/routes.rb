@@ -7,6 +7,12 @@ Rails.application.routes.draw do
   resources :spaces do
     resources :calculators, only: [:create]
     resources :copies, only: [:create]
+
+    member do
+      patch '/enable_shareable_link', to: 'spaces#enable_shareable_link'
+      patch '/disable_shareable_link', to: 'spaces#disable_shareable_link'
+      patch '/rotate_shareable_link', to: 'spaces#rotate_shareable_link'
+    end
   end
 
   resources :users do
