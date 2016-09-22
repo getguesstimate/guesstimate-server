@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160916191352) do
+ActiveRecord::Schema.define(version: 20160916191543) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -63,8 +63,10 @@ ActiveRecord::Schema.define(version: 20160916191352) do
     t.json     "simulation"
     t.integer  "exported_from_id"
     t.string   "metric_id"
+    t.integer  "category_id"
   end
 
+  add_index "facts", ["category_id"], name: "index_facts_on_category_id", using: :btree
   add_index "facts", ["exported_from_id"], name: "index_facts_on_exported_from_id", using: :btree
   add_index "facts", ["organization_id"], name: "index_facts_on_organization_id", using: :btree
 
