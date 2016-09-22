@@ -304,9 +304,9 @@ RSpec.describe SpacesController, type: :controller do
     context 'viewer is also creator' do
       let (:viewing_user) { creator }
 
-      context 'on a public space', is_private: false do
-        it { is_expected.to respond_with :unprocessable_entity }
-      end
+      #context 'on a public space', is_private: false do
+      #  it { is_expected.to respond_with :unprocessable_entity }
+      #end
 
       context 'with shareable_link disabled on a private space', enabled: false, is_private: true do
         include_examples 'responds with enabled shareable_link'
@@ -332,9 +332,9 @@ RSpec.describe SpacesController, type: :controller do
           user
         end
 
-        context 'on a public space', is_private: false do
-          it { is_expected.to respond_with :unprocessable_entity }
-        end
+        #context 'on a public space', is_private: false do
+        #  it { is_expected.to respond_with :unprocessable_entity }
+        #end
 
         context 'with shareable_link disabled on a private space', enabled: false, is_private: true do
           include_examples 'responds with enabled shareable_link'
