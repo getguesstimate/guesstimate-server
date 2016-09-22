@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160909215125) do
+ActiveRecord::Schema.define(version: 20160916191543) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,6 +28,15 @@ ActiveRecord::Schema.define(version: 20160909215125) do
   end
 
   add_index "calculators", ["space_id"], name: "index_calculators_on_space_id", using: :btree
+
+  create_table "fact_categories", force: :cascade do |t|
+    t.integer  "organization_id"
+    t.string   "name"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "fact_categories", ["organization_id"], name: "index_fact_categories_on_organization_id", using: :btree
 
   create_table "fact_checkpoints", force: :cascade do |t|
     t.integer  "fact_id"
@@ -54,8 +63,10 @@ ActiveRecord::Schema.define(version: 20160909215125) do
     t.json     "simulation"
     t.integer  "exported_from_id"
     t.string   "metric_id"
+    t.integer  "category_id"
   end
 
+  add_index "facts", ["category_id"], name: "index_facts_on_category_id", using: :btree
   add_index "facts", ["exported_from_id"], name: "index_facts_on_exported_from_id", using: :btree
   add_index "facts", ["organization_id"], name: "index_facts_on_organization_id", using: :btree
 

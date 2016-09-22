@@ -1,6 +1,7 @@
 class Fact < ActiveRecord::Base
   belongs_to :organization
   belongs_to :exported_from, class_name: 'Space'
+  belongs_to :category, class_name: 'FactCategory'
 
   has_many :checkpoints, class_name: 'FactCheckpoint', dependent: :destroy
 

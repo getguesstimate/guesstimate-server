@@ -15,4 +15,5 @@ class FactRepresenter < Roar::Decorator
   property :exported_from_id
   property :metric_id
   property :imported_to_intermediate_space_ids
+  property :category_id
 end

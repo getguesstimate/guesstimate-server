@@ -30,6 +30,11 @@ class OrganizationRepresenter < Roar::Decorator
     decorator: FactRepresenter,
     if: ->(user_options:, **) { user_options[:current_user_is_member] }
 
+  collection :fact_categories,
+    class: FactCategory,
+    decorator: FactCategoryRepresenter,
+    if: ->(user_options:, **) { user_options[:current_user_is_member] }
+
   collection :intermediate_spaces,
     class: Space,
     decorator: SpaceWithoutOrganizationRepresenter,
