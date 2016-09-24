@@ -193,6 +193,24 @@ RSpec.describe Space, type: :model do
     end
   end
 
+  describe '#save' do
+    subject(:space) { FactoryGirl.create(:space) }
+    let(:new_graph) {
+      {
+        'guesstimates' => [
+          {'expression'=>'=${fact:1} + ${fact:2} + ${fact:1}'},
+          {'expression'=>'=${fact:2} + ${fact:3} + ${fact:40}'},
+          {'expression'=>'=${fact:1} + ${fact:2} + fact:77'}
+        ]
+      }
+    }
+
+    it 'updates imported_fact_ids' do
+      expect{space.update! graph: new_graph}.to change{space.imported_fact_ids}.from([])
+      expect(space.imported_fact_ids).to contain_exactly(1, 2, 3, 40)
+    end
+  end
+
   describe '#get_imported_fact_ids' do
     let(:guesstimates) { [] }
     let(:space) { FactoryGirl.build(:space, graph: guesstimates.empty? ? nil : {'guesstimates' => guesstimates}) }

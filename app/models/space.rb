@@ -20,7 +20,8 @@ class Space < ActiveRecord::Base
   validates_presence_of :is_private, if: :shareable_link_enabled # Booleans are only considered 'present' on 'true'
 
   after_initialize :init
-  after_save :identify_user, :update_imported_fact_ids!
+  after_save :identify_user
+  before_save :update_imported_fact_ids!
   after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
@@ -82,7 +83,7 @@ class Space < ActiveRecord::Base
   end
 
   def update_imported_fact_ids!()
-    update_columns(imported_fact_ids: get_imported_fact_ids)
+    self.imported_fact_ids = get_imported_fact_ids
   end
 
   def metrics
