@@ -132,7 +132,7 @@ class Space < ActiveRecord::Base
   end
 
   def has_interesting_metrics?
-    guesstimates_not_of_type(['POINT', 'FUNCTION', 'NONE']).any? &&
+    guesstimates_not_of_type(['POINT', 'NONE']).any? &&
     guesstimates_of_type(['FUNCTION']).any? &&
     metrics.length > 3
   end
