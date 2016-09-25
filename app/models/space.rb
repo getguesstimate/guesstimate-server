@@ -150,6 +150,74 @@ class Space < ActiveRecord::Base
     end
   end
 
+  def editors_by_time
+    query = "
+      CREATE OR REPLACE FUNCTION array_sort (ANYARRAY)
+      RETURNS ANYARRAY LANGUAGE SQL
+      AS $$
+        SELECT ARRAY(SELECT unnest($1) ORDER BY 1 ASC)
+      $$;
+
+      CREATE OR REPLACE FUNCTION time_windows(timestamp[]) RETURNS tsrange[] AS $$
+        DECLARE
+          s tsrange[] := ARRAY[]::tsrange[];
+          running_start timestamp;
+          prev timestamp;
+          curr timestamp;
+        BEGIN
+
+          running_start := $1[1];
+          prev := $1[1];
+          curr := $1[1];
+
+          FOREACH curr IN ARRAY $1 LOOP
+            IF (curr - prev > INTERVAL '15 minutes') THEN
+              s := s || tsrange(running_start, prev, '[]');
+              running_start := curr;
+            END IF;
+
+            prev := curr;
+          END LOOP;
+
+          s := s || tsrange(running_start, curr, '[]');
+
+          RETURN s;
+        END;
+      $$ LANGUAGE plpgsql;
+
+      SELECT
+        author_id,
+        space_id,
+        UNNEST(time_windows(array_sort(created_ats))) AS duration
+      FROM (
+        SELECT
+          author_id,
+          space_id,
+          ARRAY_AGG(created_at) AS created_ats
+        FROM
+          space_checkpoints
+        WHERE author_id IS NOT NULL AND space_id = #{id}
+        GROUP BY author_id, space_id
+      ) AS t1
+    "
+    editing_sessions = ActiveRecord::Base.connection.execute(query).to_a
+
+    editing_stats = {}
+    editing_sessions.each do |session|
+      user_id = session['author_id'].to_i
+      time_range = session['duration'].slice(1, session['duration'].length - 2).split(',').map{|s| DateTime.parse s.slice(1, s.length - 2)}
+      duration = (time_range[1] - time_range[0]).days
+      curr_data = editing_stats[user_id]
+      editing_stats[user_id] = {
+        duration: (curr_data.present? ? curr_data[:duration] : 0.seconds) + (duration > 0 ? duration : 30.seconds),
+        num_sessions: (curr_data.present? ? curr_data[:num_sessions] : 0) + 1,
+      }
+    end
+
+    editing_stats_arr = editing_stats.map { |k, v| {user_id: k, duration: v[:duration], num_sessions: v[:num_sessions] } }
+    editing_stats_arr.sort { |x, y| y[:duration] <=> x[:duration] }
+  end
+
   def user_info
     user ? UserRepresenter.new(user).to_hash(user_options: {is_current_user: false}) : {}
   end
