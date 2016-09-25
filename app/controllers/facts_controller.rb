@@ -1,12 +1,6 @@
 class FactsController < ApplicationController
   before_action :authenticate, :set_variables, :check_authorization
 
-  #GET /organizations/:organization_id/facts
-  #GET /organizations/:organization_id/facts.json
-  def index
-    render json: FactsRepresenter.new(@organization.facts).to_json
-  end
-
   # POST /organizations/:organization_id/facts
   # POST /organizations/:organization_id/facts.json
   def create
