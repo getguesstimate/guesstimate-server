@@ -105,6 +105,25 @@ RSpec.describe Fact, type: :model do
           expect{fact.save}.to change{exported_from.exported_facts_count}.from(0).to(1)
         end
       end
+
+      context 'non unique metric id' do
+        let (:other_fact_exported_from) { nil }
+        let (:metric_id) {
+          id = '3'
+          FactoryGirl.create :fact, exported_from: other_fact_exported_from, metric_id: id
+          id
+        }
+
+        context 'across different spaces' do
+          let (:other_fact_exported_from) { FactoryGirl.create :space }
+          it { is_expected.to be_valid }
+        end
+
+        context 'within one space' do
+          let (:other_fact_exported_from) { exported_from }
+          it { is_expected.to_not be_valid }
+        end
+      end
     end
   end
 
