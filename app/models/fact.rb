@@ -11,7 +11,10 @@ class Fact < ActiveRecord::Base
     format: {with: /\A\w+\Z/}
   validate :fact_has_values, :fact_has_no_errors, :fact_has_stats, unless: :exported_by_space?
   validates_presence_of :expression, unless: :exported_by_space?
-  validates_presence_of :metric_id, if: :exported_by_space?
+  validates :metric_id,
+    presence: true,
+    uniqueness: {scope: :exported_from_id},
+    if: :exported_by_space?
 
   scope :exported_by_space, -> { where.not(exported_space_id: nil) }
   scope :imported_by_space, -> (space) { where('id IN (?)', space.imported_fact_ids) }
