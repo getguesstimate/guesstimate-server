@@ -17,6 +17,7 @@ class SpaceRepresenter < Roar::Decorator
   property :big_screenshot
   property :exported_facts_count
   property :imported_fact_ids
+  property :author_contributions
   property :shareable_link_token, if: ->(user_options:, **) { user_options[:current_user_can_edit] }
   property :shareable_link_enabled, if: ->(user_options:, **) { user_options[:current_user_can_edit] }
 
