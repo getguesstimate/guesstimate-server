@@ -17,6 +17,7 @@ class SpacesRepresenter < Roar::Decorator
     property :big_screenshot
     property :exported_facts_count
     property :imported_fact_ids
+    property :author_contributions, writeable: false
 
     property :user, class: User, embedded: true do
       property :id
