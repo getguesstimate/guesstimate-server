@@ -74,6 +74,11 @@ class Space < ActiveRecord::Base
     imported_fact_ids.any? ? organization.facts.imported_by_space(self) : Fact.none
   end
 
+  # Returns all users who have contributed to this space, ordered by the number of saved checkpoints in DESC order.
+  def author_contributions
+    checkpoints.group('author_id').count.select { |key, value| key.present? }
+  end
+
   def get_imported_fact_ids()
     guesstimate_expressions.map {|e| e.scan(/\$\{fact:(\d+)/) unless e.blank? }.flatten.uniq.keep_if { |e| e.present? }
   end
