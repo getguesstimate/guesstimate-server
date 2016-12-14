@@ -1,5 +1,5 @@
 class FactsController < ApplicationController
-  before_action :authenticate, :set_variables, :check_authorization
+  before_action :set_variables, :check_authorization
 
   #GET /organizations/:organization_id/facts
   #GET /organizations/:organization_id/facts.json
@@ -21,7 +21,7 @@ class FactsController < ApplicationController
   # PATCH/PUT /organizations/:organization_id/facts/:id.json
   def update
     if @fact.update(fact_params)
-      @fact.take_checkpoint(current_user)
+      @fact.take_checkpoint(current_user, @organization.valid_api_token?(passed_api_token))
       render json: FactRepresenter.new(@fact).to_json, status: :ok
     else
       render json: @fact.errors, status: :unprocessable_entity
@@ -36,8 +36,12 @@ class FactsController < ApplicationController
   end
 
   private
+  def passed_api_token
+    request.headers['HTTP_API_TOKEN']
+  end
+
   def check_authorization
-    head :unauthorized unless @organization.present? && current_user.member_of?(@organization.id)
+    head :unauthorized unless @organization.present? && @organization.can_access?(current_user, passed_api_token)
   end
 
   def set_variables

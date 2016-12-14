@@ -24,9 +24,10 @@ class Fact < ActiveRecord::Base
 
   CHECKPOINT_LIMIT = 1000
 
-  def take_checkpoint(author)
+  def take_checkpoint(author, by_api)
     checkpoint = checkpoints.create(
       author: author,
+      by_api: by_api,
       simulation: simulation,
       name: name,
       variable_name: variable_name,

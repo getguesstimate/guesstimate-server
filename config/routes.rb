@@ -32,6 +32,12 @@ Rails.application.routes.draw do
     get :members, to: 'user_organization_memberships#organization_memberships'
     get :invitees, to: 'user_organization_invitations#organization_invitations'
     post :members, to: 'user_organization_invitations#invite_by_email'
+
+    member do
+      patch '/enable_api_access', to: 'organizations#enable_api_access'
+      patch '/disable_api_access', to: 'organizations#disable_api_access'
+      patch '/rotate_api_token', to: 'organizations#rotate_api_token'
+    end
   end
 
   resources :user_organization_memberships, only: [:destroy]

@@ -14,6 +14,8 @@ class Organization < ActiveRecord::Base
   validates_presence_of :admin
   validates_presence_of :name
   validates_presence_of :plan
+  validates :api_token, length: { minimum: 32 }, if: :api_enabled
+  validates :api_token, absence: true, unless: :api_enabled
 
   after_create :make_admin_member
   after_create :create_account
@@ -37,7 +39,37 @@ class Organization < ActiveRecord::Base
     spaces.has_fact_exports
   end
 
+  def valid_api_token?(passed_api_token)
+    passed_api_token.present? && api_enabled && api_token == passed_api_token
+  end
+
+  def is_member?(user)
+    user.present? && user.member_of?(id)
+  end
+
+  def can_access?(user, passed_api_token)
+    is_member?(user) || valid_api_token?(passed_api_token)
+  end
+
+  def enable_api_access!
+    return true if api_enabled
+    update_attributes api_token: get_secure_token, api_enabled: true
+  end
+
+  def disable_api_access!
+    return true unless api_enabled
+    update_attributes api_token: nil, api_enabled: false
+  end
+
+  def rotate_api_token!
+    update_attributes api_token: get_secure_token if api_enabled
+  end
+
   private
+
+  def get_secure_token
+    SecureRandom.urlsafe_base64(64, false)
+  end
 
   def create_trial
     account.create_subscription(plan)
