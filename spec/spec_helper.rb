@@ -1,8 +1,14 @@
 class AdapterMock
-    class << self
-      def create_subscription(entity_id, plan_id)
-      end
+  class << self
+    def create_subscription(entity_id, plan_id)
     end
+  end
+end
+class PaymentPortalMock
+  class << self
+    def new(chargebee_id)
+    end
+  end
 end
 
 RSpec.configure do |config|
@@ -31,5 +37,6 @@ RSpec.configure do |config|
 
   config.before(:each) do
     stub_const('ExternalSubscriptions::Adapter', AdapterMock)
+    stub_const('ExternalSubscriptions::PaymentPortal', PaymentPortalMock)
   end
 end

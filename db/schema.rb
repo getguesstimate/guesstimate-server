@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160916191543) do
+ActiveRecord::Schema.define(version: 20161214161326) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,6 +47,7 @@ ActiveRecord::Schema.define(version: 20160916191543) do
     t.string   "expression"
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
+    t.boolean  "by_api"
   end
 
   add_index "fact_checkpoints", ["author_id"], name: "index_fact_checkpoints_on_author_id", using: :btree
@@ -78,11 +79,13 @@ ActiveRecord::Schema.define(version: 20160916191543) do
 
   create_table "organizations", force: :cascade do |t|
     t.string   "name"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
     t.string   "picture"
     t.integer  "admin_id"
-    t.integer  "plan",       default: 6
+    t.integer  "plan",        default: 6
+    t.string   "api_token"
+    t.boolean  "api_enabled"
   end
 
   add_index "organizations", ["admin_id"], name: "index_organizations_on_admin_id", using: :btree

@@ -12,7 +12,9 @@ end
 
 RSpec.describe FactsController, type: :controller do
   describe 'POST create' do
-    let (:organization) { FactoryGirl.create(:organization) }
+    let (:api_token) { nil }
+    let (:passed_token) { nil }
+    let (:organization) { FactoryGirl.create(:organization, api_token: api_token, api_enabled: api_token.present?) }
 
     let (:fact_params) {{
       name: 'name',
@@ -37,11 +39,32 @@ RSpec.describe FactsController, type: :controller do
     let (:creating_user) { nil }
     before do
       setup_knock(creating_user) if creating_user.present?
+      request.headers['Api-Token'] = passed_token if passed_token.present?
       post :create, fact: fact_params, organization_id: organization.id
     end
 
     context 'for a logged out creator' do
-      it { is_expected.to respond_with :unauthorized }
+      context 'with no token' do
+        it { is_expected.to respond_with :unauthorized }
+      end
+
+      context 'with a token' do
+        let (:api_token) { 'a'*32 }
+
+        context 'with no passed token' do
+          it { is_expected.to respond_with :unauthorized }
+        end
+
+        context 'with an incorrect passed token' do
+          let (:passed_token) { 'incorrect' }
+          it { is_expected.to respond_with :unauthorized }
+        end
+
+        context 'with a correct passed token' do
+          let (:passed_token) { api_token }
+          include_examples 'it successfully creates the fact'
+        end
+      end
     end
 
     context 'for a logged-in, non-member creator' do

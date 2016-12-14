@@ -8,6 +8,8 @@ class OrganizationRepresenter < Roar::Decorator
   property :name
   property :picture
   property :admin_id
+  property :api_enabled, if: ->(user_options:, **) { user_options[:current_user_is_admin] }
+  property :api_token, if: ->(user_options:, **) { user_options[:current_user_is_admin] }
 
   property :admin, class: User, embedded: true  do
     property :id
