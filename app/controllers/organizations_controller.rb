@@ -5,12 +5,7 @@ class OrganizationsController < ApplicationController
 
   def create
     @organization = Organization.new organization_params.merge(admin_id: current_user.id)
-    if @organization.save
-      # TODO(matthew): Check that we don't need to hard code current_user_is_... params in this case.
-      render_organization
-    else
-      render_errors
-    end
+    render_organization_or_errors(@organization.save)
   end
 
   def show
@@ -18,33 +13,21 @@ class OrganizationsController < ApplicationController
   end
 
   def enable_api_access
-    if @organization.enable_api_access!
-      render_organization
-    else
-      render_errors
-    end
+    render_organization_or_errors(@organization.enable_api_access!)
   end
 
   def disable_api_access
-    if @organization.disable_api_access!
-      render_organization
-    else
-      render_errors
-    end
+    render_organization_or_errors(@organization.disable_api_access!)
   end
 
   def rotate_api_token
-    if @organization.rotate_api_token!
-      render_organization
-    else
-      render_errors
-    end
+    render_organization_or_errors(@organization.rotate_api_token!)
   end
 
   private
 
-  def current_user_is_admin?
-    current_user.present? && @organization.present? && @organization.admin_id == current_user.id
+  def render_organization_or_errors(valid)
+    if valid then render_organization else render_errors end
   end
 
   def render_organization
@@ -62,6 +45,10 @@ class OrganizationsController < ApplicationController
 
   def set_organization
     @organization = Organization.find(params[:id])
+  end
+
+  def current_user_is_admin?
+    current_user.present? && @organization.present? && @organization.admin_id == current_user.id
   end
 
   def ensure_admin
