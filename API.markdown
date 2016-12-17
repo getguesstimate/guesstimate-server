@@ -50,4 +50,4 @@ Of these parameters, "name", "expression", "variable_name", and "simulation" are
 
 **expression**: This is what a user enters as the value for the metric. If it is an exact number, you can specify that directly; if it is an array, use commas ("3,4,5,6,7,8").  
 
-**simulation**: This is a bunch of derived data from the expression, typically simulated in the javascript client. If you are to POST or PATCH data, make sure to get this right, as it is not done for you.  
+**simulation**: This is a bunch of derived data from the expression, typically simulated in the javascript client. If you are to POST or PATCH data, make sure to get at least the 'values' and 'length' right, as it is not done for you.  
