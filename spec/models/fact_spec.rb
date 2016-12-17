@@ -143,9 +143,10 @@ RSpec.describe Fact, type: :model do
   end
 
   describe 'take_checkpoint' do
+    let (:by_api) { false }
     let (:author) { FactoryGirl.create(:user) }
     let (:first_checkpoint) { FactoryGirl.create(:fact_checkpoint, fact: fact, created_at: 0) }
-    let (:checkpoint) { fact.take_checkpoint(author) }
+    let (:checkpoint) { fact.take_checkpoint(author, by_api) }
     let (:num_other_facts) { 0 }
     let (:checkpoint_limit) { 5 }
     subject (:fact) { FactoryGirl.create(:fact) }
@@ -163,7 +164,8 @@ RSpec.describe Fact, type: :model do
       it 'matches the fact' do
         expect(checkpoint).to be_valid
         expect(checkpoint.fact_id).to eq fact.id
-        expect(checkpoint.author_id).to eq author.id
+        expect(checkpoint.author_id).to eq author.nil? ? nil : author.id
+        expect(checkpoint.by_api).to eq by_api
         expect(checkpoint.simulation).to eq fact.simulation
         expect(checkpoint.name).to eq fact.name
         expect(checkpoint.variable_name).to eq fact.variable_name
@@ -180,6 +182,12 @@ RSpec.describe Fact, type: :model do
       it 'still has the first_checkpoint' do
         expect(fact.checkpoints.count).to be 2
         expect(fact.checkpoints.where(id: first_checkpoint.id).count).to be 1
+      end
+
+      context 'with no author, by api' do
+        let (:author) { nil }
+        let (:by_api) { true }
+        include_examples 'the new checkpoint matches the fact and is not deleted'
       end
     end
 

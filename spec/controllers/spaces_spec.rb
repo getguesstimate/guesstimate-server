@@ -255,12 +255,12 @@ RSpec.describe SpacesController, type: :controller do
       let (:is_private) { false }
     end
 
-    shared_context 'shareable_link enabled', enabled: true do
+    shared_context 'shareable_link enabled', space_shareable_link_enabled: true do
       include_context 'private space'
       let (:shareable_link_enabled) { true }
       let (:shareable_link_token) { 'a' * 32 }
     end
-    shared_context 'shareable_link disabled', enabled: false do
+    shared_context 'shareable_link disabled', space_shareable_link_enabled: false do
       let (:shareable_link_enabled) { false }
       let (:shareable_link_token) { nil }
     end
@@ -308,11 +308,11 @@ RSpec.describe SpacesController, type: :controller do
         it { is_expected.to respond_with :unprocessable_entity }
       end
 
-      context 'with shareable_link disabled on a private space', enabled: false, is_private: true do
+      context 'with shareable_link disabled on a private space', space_shareable_link_enabled: false, is_private: true do
         include_examples 'responds with enabled shareable_link'
       end
 
-      context 'with shareable_link enabled on a private space', enabled: true do
+      context 'with shareable_link enabled on a private space', space_shareable_link_enabled: true do
         include_examples 'responds with enabled shareable_link'
       end
     end
@@ -336,11 +336,11 @@ RSpec.describe SpacesController, type: :controller do
           it { is_expected.to respond_with :unprocessable_entity }
         end
 
-        context 'with shareable_link disabled on a private space', enabled: false, is_private: true do
+        context 'with shareable_link disabled on a private space', space_shareable_link_enabled: false, is_private: true do
           include_examples 'responds with enabled shareable_link'
         end
 
-        context 'with shareable_link enabled on a private space', enabled: true do
+        context 'with shareable_link enabled on a private space', space_shareable_link_enabled: true do
           include_examples 'responds with enabled shareable_link'
         end
       end
@@ -377,12 +377,12 @@ RSpec.describe SpacesController, type: :controller do
       let (:is_private) { false }
     end
 
-    shared_context 'shareable_link enabled', enabled: true do
+    shared_context 'shareable_link enabled', space_shareable_link_enabled: true do
       include_context 'private space'
       let (:shareable_link_enabled) { true }
       let (:shareable_link_token) { 'a' * 32 }
     end
-    shared_context 'shareable_link disabled', enabled: false do
+    shared_context 'shareable_link disabled', space_shareable_link_enabled: false do
       let (:shareable_link_enabled) { false }
       let (:shareable_link_token) { nil }
     end
@@ -424,11 +424,11 @@ RSpec.describe SpacesController, type: :controller do
         include_examples 'responds with disabled shareable_link'
       end
 
-      context 'with shareable_link disabled on a private space', enabled: false, is_private: true do
+      context 'with shareable_link disabled on a private space', space_shareable_link_enabled: false, is_private: true do
         include_examples 'responds with disabled shareable_link'
       end
 
-      context 'with shareable_link enabled on a private space', enabled: true do
+      context 'with shareable_link enabled on a private space', space_shareable_link_enabled: true do
         include_examples 'responds with disabled shareable_link'
       end
     end
@@ -452,11 +452,11 @@ RSpec.describe SpacesController, type: :controller do
           include_examples 'responds with disabled shareable_link'
         end
 
-        context 'with shareable_link disabled on a private space', enabled: false, is_private: true do
+        context 'with shareable_link disabled on a private space', space_shareable_link_enabled: false, is_private: true do
           include_examples 'responds with disabled shareable_link'
         end
 
-        context 'with shareable_link enabled on a private space', enabled: true do
+        context 'with shareable_link enabled on a private space', space_shareable_link_enabled: true do
           include_examples 'responds with disabled shareable_link'
         end
       end
@@ -493,13 +493,13 @@ RSpec.describe SpacesController, type: :controller do
       let (:is_private) { false }
     end
 
-    shared_context 'shareable_link enabled', enabled: true do
+    shared_context 'shareable_link enabled', space_shareable_link_enabled: true do
       include_context 'private space'
 
       let (:shareable_link_enabled) { true }
       let (:shareable_link_token) { 'a' * 32 }
     end
-    shared_context 'shareable_link disabled', enabled: false do
+    shared_context 'shareable_link disabled', space_shareable_link_enabled: false do
       let (:shareable_link_enabled) { false }
       let (:shareable_link_token) { nil }
     end
@@ -542,11 +542,11 @@ RSpec.describe SpacesController, type: :controller do
     context 'viewer is also creator' do
       let (:viewing_user) { creator }
 
-      context 'with shareable_link disabled on a private space', enabled: false, is_private: true do
+      context 'with shareable_link disabled on a private space', space_shareable_link_enabled: false, is_private: true do
         it { is_expected.to respond_with :unprocessable_entity }
       end
 
-      context 'with shareable_link enabled on a private space', enabled: true do
+      context 'with shareable_link enabled on a private space', space_shareable_link_enabled: true do
         include_examples 'responds with rotated shareable_link'
       end
     end
@@ -566,11 +566,11 @@ RSpec.describe SpacesController, type: :controller do
           user
         end
 
-        context 'with shareable_link disabled on a private space', enabled: false, is_private: true do
+        context 'with shareable_link disabled on a private space', space_shareable_link_enabled: false, is_private: true do
           it { is_expected.to respond_with :unprocessable_entity }
         end
 
-        context 'with shareable_link enabled on a private space', enabled: true do
+        context 'with shareable_link enabled on a private space', space_shareable_link_enabled: true do
           include_examples 'responds with rotated shareable_link'
         end
       end
