@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '2.2.2'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.4'
+gem 'rails', '>= 5.0.5', '< 5.1'
 # Use postgresql as the database for Active Record
 gem 'pg'
 
@@ -21,7 +21,7 @@ gem 'dalli'
 gem 'rack-cors', require: 'rack/cors'
 
 gem 'auth0'
-gem 'knock', '~> 1.4'
+gem 'knock', '~> 1.4.2'
 gem 'algoliasearch-rails'
 
 gem 'responders'
@@ -30,7 +30,7 @@ gem 'uglifier'
 gem 'chargebee'
 
 # This is needed to load on heroku, should be fixed later.
-gem 'sass-rails'
+# gem 'sass-rails'
 
 # Analytics & Reporting
 gem 'analytics-ruby', '~> 2.0.0', require: 'segment/analytics'
@@ -61,7 +61,7 @@ end
 
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> in views
-  gem 'web-console', '~> 2.0'
+  gem 'web-console', '~> 3.6.2'
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
