@@ -10,7 +10,6 @@ class User < ActiveRecord::Base
   after_create :create_account
   after_create :accept_invitations
   after_create :set_needs_tutorial
-  after_save :identify
 
   validates_presence_of :username
   validates_presence_of :name
@@ -49,31 +48,6 @@ class User < ActiveRecord::Base
 
   def organization_names
     organizations.map(&:name).join(',')
-  end
-
-  def identify
-    # TODO(matthew): This makes our space update action more expensive, by running repetitive queires
-    # (public_model_count and private_model_count) in particular. This prompts a skylight warning.
-    Analytics.identify(
-      user_id: id,
-      traits: {
-        name: name,
-        email: email,
-        company: company,
-        domain_name: domain_name,
-        organization_names: organization_names,
-        public_model_count: public_model_count,
-        private_model_count: private_model_count,
-        nodes_per_model: nodes_per_model.round(2),
-        plan: plan,
-        industry: industry,
-        role: role,
-        gender: gender,
-        locale: locale,
-        location: location,
-        created_at: created_at
-      }
-    )
   end
 
   def satisfied_private_model_count

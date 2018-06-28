@@ -32,9 +32,6 @@ gem 'chargebee'
 # This is needed to load on heroku, should be fixed later.
 # gem 'sass-rails'
 
-# Analytics & Reporting
-gem 'analytics-ruby', '~> 2.0.0', require: 'segment/analytics'
-
 # Caching
 gem 'actionpack-action_caching'
 

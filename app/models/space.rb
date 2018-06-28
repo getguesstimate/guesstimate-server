@@ -20,9 +20,7 @@ class Space < ActiveRecord::Base
   validates_presence_of :is_private, if: :shareable_link_enabled # Booleans are only considered 'present' on 'true'
 
   after_initialize :init
-  after_save :identify_user
   before_save :update_imported_fact_ids!
-  after_destroy :identify_user
 
   scope :is_private, -> { where(is_private: true) }
   scope :is_public, -> { where(is_private: false) }
@@ -325,10 +323,6 @@ class Space < ActiveRecord::Base
 
   def cleaned_guesstimates
     clean_items('guesstimates', 'metric')
-  end
-
-  def identify_user
-    user && user.identify
   end
 
   # Validations
