@@ -1,5 +1,5 @@
 class UserOrganizationInvitationsController < ApplicationController
-  before_action :authenticate, :set_entities, :check_authorization
+  before_action :authenticate_user, :set_entities, :check_authorization
 
   def organization_invitations
     # We use a UserOrganizationInvitations scope here to avoid unnecessary DB indirection through the organization.

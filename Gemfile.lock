@@ -57,7 +57,7 @@ GEM
     arel (6.0.3)
     auth0 (3.6.1)
       httparty (~> 0.13)
-    bcrypt (3.1.10)
+    bcrypt (3.1.12)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     builder (3.2.2)
@@ -104,8 +104,8 @@ GEM
       multi_json (~> 1.2)
     json (1.8.3)
     json_pure (1.8.3)
-    jwt (1.5.2)
-    knock (1.4.2)
+    jwt (1.5.6)
+    knock (2.1.1)
       bcrypt (~> 3.1)
       jwt (~> 1.5)
       rails (>= 4.2)
@@ -272,13 +272,14 @@ DEPENDENCIES
   algoliasearch-rails
   analytics-ruby (~> 2.0.0)
   auth0
+  bcrypt (~> 3.1.7)
   byebug
   chargebee
   dalli
   database_cleaner
   factory_girl_rails (~> 4.6)
   jbuilder (~> 2.0)
-  knock (~> 1.4)
+  knock (~> 2.0)
   le
   pg
   pry
@@ -307,4 +308,4 @@ RUBY VERSION
    ruby 2.2.2p95
 
 BUNDLED WITH
-   1.12.2
+   1.16.2
