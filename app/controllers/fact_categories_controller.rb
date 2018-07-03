@@ -1,5 +1,5 @@
 class FactCategoriesController < ApplicationController
-  before_action :authenticate, :set_variables, :check_authorization
+  before_action :authenticate_user, :set_variables, :check_authorization
 
   # POST /organizations/:organization_id/fact_categories
   def create

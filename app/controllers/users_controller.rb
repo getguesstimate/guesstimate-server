@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :set_variables, only: [:show, :finished_tutorial]
-  before_action :authenticate, :verify_is_current_user, only: [:finished_tutorial]
+  before_action :authenticate_user, :verify_is_current_user, only: [:finished_tutorial]
 
   def show
     render json: user_representation(@user)

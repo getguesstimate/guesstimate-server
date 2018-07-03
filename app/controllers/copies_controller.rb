@@ -1,5 +1,5 @@
 class CopiesController < ApplicationController
-  before_action :authenticate, only: [:create]
+  before_action :authenticate_user, only: [:create]
 
   # POST /spaces/:id/copies
   # POST /spaces.json
