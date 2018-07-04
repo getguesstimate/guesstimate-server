@@ -14,7 +14,7 @@ RSpec.describe UserOrganizationMembershipsController, type: :controller do
     let (:requesting_user) { nil }
     before do
       requesting_user && setup_knock(requesting_user)
-      delete :destroy, id: membership.id
+      delete :destroy, params: { id: membership.id }
     end
 
     shared_examples 'delete failed' do

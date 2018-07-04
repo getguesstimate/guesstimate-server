@@ -22,7 +22,7 @@ RSpec.describe UserOrganizationInvitationsController, type: :controller do
 
       requesting_user && setup_knock(requesting_user)
 
-      post :invite_by_email, organization_id: organization[:id], email: email
+      post :invite_by_email, params: { organization_id: organization[:id], email: email }
     end
 
     shared_examples 'successfully creates for existing user' do
@@ -120,7 +120,7 @@ RSpec.describe UserOrganizationInvitationsController, type: :controller do
 
       requesting_user && setup_knock(requesting_user)
 
-      get :organization_invitations, organization_id: organization[:id]
+      get :organization_invitations, params: { organization_id: organization[:id] }
     end
 
     shared_examples 'authorization fails' do

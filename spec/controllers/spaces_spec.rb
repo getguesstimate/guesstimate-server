@@ -32,7 +32,7 @@ RSpec.describe SpacesController, type: :controller do
         let (:shareable_link_token) { 'a' * 32 }
         before {
           request.headers['Shareable-Link-Token'] = shareable_link_token
-          get :show, id: space.id
+          get :show, params: { id: space.id }
         }
 
         it { is_expected.to respond_with :ok }
@@ -44,7 +44,7 @@ RSpec.describe SpacesController, type: :controller do
       end
 
       context 'for a logged out viewer' do
-        before { get :show, id: space.id }
+        before { get :show, params: { id: space.id } }
 
         it { is_expected.to respond_with :ok }
 
@@ -59,7 +59,7 @@ RSpec.describe SpacesController, type: :controller do
 
         before do
           setup_knock(viewing_user)
-          get :show, id: space.id
+          get :show, params: { id: space.id }
         end
 
         it { is_expected.to respond_with :ok }
@@ -108,7 +108,7 @@ RSpec.describe SpacesController, type: :controller do
       let (:params_token) { nil }
       before {
         request.headers['Shareable-Link-Token'] = params_token
-        get :show, id: space.id
+        get :show, params: { id: space.id }
       }
 
       context 'with no token in params' do
@@ -157,7 +157,7 @@ RSpec.describe SpacesController, type: :controller do
     before do
       spaces
       viewing_user && setup_knock(viewing_user)
-      get :index, get_params
+      get :index, params: get_params
     end
 
     shared_examples 'has_visible_spaces' do
@@ -287,7 +287,7 @@ RSpec.describe SpacesController, type: :controller do
       viewing_user
 
       setup_knock(viewing_user) if viewing_user.present?
-      patch :enable_shareable_link, id: space.id
+      patch :enable_shareable_link, params: { id: space.id }
     end
 
     context 'logged out viewer' do
@@ -403,7 +403,7 @@ RSpec.describe SpacesController, type: :controller do
       viewing_user
 
       setup_knock(viewing_user) if viewing_user.present?
-      patch :disable_shareable_link, id: space.id
+      patch :disable_shareable_link, params: { id: space.id }
     end
 
     context 'logged out viewer' do
@@ -525,7 +525,7 @@ RSpec.describe SpacesController, type: :controller do
       viewing_user
 
       setup_knock(viewing_user) if viewing_user.present?
-      patch :rotate_shareable_link, id: space.id
+      patch :rotate_shareable_link, params: { id: space.id }
     end
 
     context 'logged out viewer' do

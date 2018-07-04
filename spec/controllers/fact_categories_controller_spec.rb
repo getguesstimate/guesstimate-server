@@ -16,7 +16,7 @@ RSpec.describe FactCategoriesController, type: :controller do
     let (:creating_user) { nil }
     before do
       setup_knock(creating_user) if creating_user.present?
-      post :create, fact_category: {name: name}, organization_id: organization.id
+      post :create, params: {fact_category: {name: name}, organization_id: organization.id}
     end
 
     context 'for a logged out creator' do

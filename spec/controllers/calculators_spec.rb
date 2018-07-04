@@ -36,7 +36,7 @@ RSpec.describe CalculatorsController, type: :controller do
     let (:viewing_user) { nil }
     before do
       setup_knock(viewing_user) if viewing_user.present?
-      post :create, space_id: space.id, calculator: calculator_params
+      post :create, params: { space_id: space.id, calculator: calculator_params }
     end
 
     context 'for a logged out creator' do

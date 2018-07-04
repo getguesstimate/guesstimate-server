@@ -53,7 +53,7 @@ RSpec.describe OrganizationsController, type: :controller do
       viewing_user
 
       setup_knock(viewing_user) if viewing_user.present?
-      patch :enable_api_access, id: organization.id
+      patch :enable_api_access, params: { id: organization.id }
     end
 
     context 'logged out viewer' do
@@ -127,7 +127,7 @@ RSpec.describe OrganizationsController, type: :controller do
       viewing_user
 
       setup_knock(viewing_user) if viewing_user.present?
-      patch :disable_api_access, id: organization.id
+      patch :disable_api_access, params: { id: organization.id }
     end
 
     context 'logged out viewer' do
@@ -204,7 +204,7 @@ RSpec.describe OrganizationsController, type: :controller do
       viewing_user
 
       setup_knock(viewing_user) if viewing_user.present?
-      patch :rotate_api_token, id: organization.id
+      patch :rotate_api_token, params: { id: organization.id }
     end
 
     context 'logged out viewer' do

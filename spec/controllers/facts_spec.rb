@@ -39,7 +39,7 @@ RSpec.describe FactsController, type: :controller do
     before do
       setup_knock(creating_user) if creating_user.present?
       request.headers['Api-Token'] = passed_token if passed_token.present?
-      post :create, fact: fact_params, organization_id: organization.id
+      post :create, params: { fact: fact_params, organization_id: organization.id }
     end
 
     context 'for a logged out creator' do
@@ -103,7 +103,7 @@ RSpec.describe FactsController, type: :controller do
     end
 
     it 'should successfully update the fact' do
-      patch :update, fact: fact_params, organization_id: fact.organization.id, id: fact.id
+      patch :update, params: { fact: fact_params, organization_id: fact.organization.id, id: fact.id }
 
       expect(subject).to respond_with :ok
       expect(JSON.parse(response.body)['name']).to eq fact_params[:name]
@@ -116,7 +116,7 @@ RSpec.describe FactsController, type: :controller do
       # It should start with no checkpoints
       expect(fact.checkpoints.count).to be 0
 
-      patch :update, fact: fact_params, organization_id: fact.organization.id, id: fact.id
+      patch :update, params: { fact: fact_params, organization_id: fact.organization.id, id: fact.id }
 
       # Now it should have a checkpoint
       expect(fact.checkpoints.count).to be 1

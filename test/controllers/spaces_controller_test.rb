@@ -18,30 +18,30 @@ class SpacesControllerTest < ActionController::TestCase
 
   test "should create space" do
     assert_difference('Space.count') do
-      post :create, space: { description: @space.description, name: @space.name }
+      post :create, params: { space: { description: @space.description, name: @space.name } }
     end
 
     assert_redirected_to space_path(assigns(:space))
   end
 
   test "should show space" do
-    get :show, id: @space
+    get :show, params: { id: @space }
     assert_response :success
   end
 
   test "should get edit" do
-    get :edit, id: @space
+    get :edit, params: { id: @space }
     assert_response :success
   end
 
   test "should update space" do
-    patch :update, id: @space, space: { description: @space.description, name: @space.name }
+    patch :update, params: { id: @space, space: { description: @space.description, name: @space.name } }
     assert_redirected_to space_path(assigns(:space))
   end
 
   test "should destroy space" do
     assert_difference('Space.count', -1) do
-      delete :destroy, id: @space
+      delete :destroy, params: { id: @space }
     end
 
     assert_redirected_to spaces_path

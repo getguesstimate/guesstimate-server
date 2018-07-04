@@ -19,7 +19,7 @@ RSpec.describe UsersController, type: :controller do
       requesting_user
 
       setup_knock(requesting_user) if requesting_user.present?
-      patch :finished_tutorial, user_id: user.id
+      patch :finished_tutorial, params: { user_id: user.id }
     end
 
     it { is_expected.to respond_with :unauthorized }
