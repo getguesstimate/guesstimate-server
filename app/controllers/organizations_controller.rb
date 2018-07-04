@@ -1,6 +1,6 @@
 class OrganizationsController < ApplicationController
   before_action :set_organization, only: [:show, :enable_api_access, :disable_api_access, :rotate_api_token]
-  before_action :authenticate, only: [:create, :enable_api_access, :disable_api_access, :rotate_api_token]
+  before_action :authenticate_user, only: [:create, :enable_api_access, :disable_api_access, :rotate_api_token]
   before_action :ensure_admin, only: [:enable_api_access, :disable_api_access, :rotate_api_token]
 
   def create

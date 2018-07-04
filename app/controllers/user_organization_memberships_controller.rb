@@ -1,5 +1,5 @@
 class UserOrganizationMembershipsController < ApplicationController
-  before_action :authenticate, only: [:destroy]
+  before_action :authenticate_user, only: [:destroy]
   before_action :set_membership, only: [:destroy]
   before_action :check_authorization, only: [:destroy]
 

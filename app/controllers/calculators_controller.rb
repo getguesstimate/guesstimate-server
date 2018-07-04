@@ -1,6 +1,6 @@
 class CalculatorsController < ApplicationController
   before_action :set_variables
-  before_action :authenticate, :check_edit_authorization, except: [:show]
+  before_action :authenticate_user, :check_edit_authorization, except: [:show]
   before_action :check_show_authorization, only: [:show]
 
   # GET /calculators/:id

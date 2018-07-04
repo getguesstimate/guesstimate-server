@@ -21,7 +21,7 @@ gem 'dalli'
 gem 'rack-cors', require: 'rack/cors'
 
 gem 'auth0'
-gem 'knock', '~> 1.4.2'
+gem 'knock', '~> 2.0'
 gem 'algoliasearch-rails'
 
 gem 'responders'

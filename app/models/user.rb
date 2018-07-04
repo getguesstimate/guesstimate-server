@@ -20,6 +20,10 @@ class User < ActiveRecord::Base
 
   scope :uncategorized_since, -> (date) { where 'categorized IS NOT true AND DATE(created_at) >= ?', date }
 
+  def self.from_token_payload payload
+    User.where(auth0_id: payload["sub"]).first
+  end
+
   def self.create_from_auth0_user(auth0_user)
     User.create(
       name: auth0_user['name'],
