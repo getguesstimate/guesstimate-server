@@ -4,8 +4,8 @@
 #RSpec.describe Account, type: :model do
 
     #describe '#new_description_iframe' do
-      #let (:user) { FactoryGirl.create(:user) }
-      #subject (:account) { FactoryGirl.build(:account, user: user) }
+      #let (:user) { FactoryBot.create(:user) }
+      #subject (:account) { FactoryBot.build(:account, user: user) }
 
 
       #it 'does x' do

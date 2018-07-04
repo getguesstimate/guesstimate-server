@@ -11,7 +11,7 @@ end
 
 RSpec.describe UsersController, type: :controller do
   describe 'PATCH finished_tutorial' do
-    let (:user) { FactoryGirl.create(:user, needs_tutorial: true) }
+    let (:user) { FactoryBot.create(:user, needs_tutorial: true) }
     let (:requesting_user) { nil }
 
     before do
@@ -25,7 +25,7 @@ RSpec.describe UsersController, type: :controller do
     it { is_expected.to respond_with :unauthorized }
 
     context 'for a logged in but different requesting_user' do
-      let (:requesting_user) { FactoryGirl.create(:user) }
+      let (:requesting_user) { FactoryBot.create(:user) }
       it { is_expected.to respond_with :unauthorized }
     end
 

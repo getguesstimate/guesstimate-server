@@ -2,10 +2,10 @@ require 'rails_helper'
 
 RSpec.describe Organization, type: :model do
   describe '#create' do
-    let (:admin) { FactoryGirl.create(:user) }
+    let (:admin) { FactoryBot.create(:user) }
     let (:api_token) { nil }
     let (:api_enabled) { false }
-    subject (:organization) { FactoryGirl.build(:organization, admin: admin, api_token: api_token, api_enabled: api_enabled) }
+    subject (:organization) { FactoryBot.build(:organization, admin: admin, api_token: api_token, api_enabled: api_enabled) }
 
     it { is_expected.to be_valid }
 
@@ -40,9 +40,9 @@ RSpec.describe Organization, type: :model do
   end
 
   describe 'after create' do
-    let (:admin) { FactoryGirl.create(:user) }
+    let (:admin) { FactoryBot.create(:user) }
     let (:plan) { 5 }
-    let (:organization) { FactoryGirl.create(:organization, admin: admin, plan: plan) }
+    let (:organization) { FactoryBot.create(:organization, admin: admin, plan: plan) }
     subject (:members) {organization.members}
 
     it { is_expected.to match_array [admin] }

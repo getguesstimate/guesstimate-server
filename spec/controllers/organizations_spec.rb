@@ -12,10 +12,10 @@ end
 RSpec.describe OrganizationsController, type: :controller do
   describe 'PATCH enable_api_access' do
     # Server Variables:
-    let (:admin) { FactoryGirl.create(:user) }
+    let (:admin) { FactoryBot.create(:user) }
     let (:api_enabled) { false }
     let (:api_token) { nil }
-    let (:organization) { FactoryGirl.create(:organization, api_enabled: api_enabled, api_token: api_token, admin: admin) }
+    let (:organization) { FactoryBot.create(:organization, api_enabled: api_enabled, api_token: api_token, admin: admin) }
 
     # Client Variables:
     let (:viewing_user) { nil }
@@ -62,14 +62,14 @@ RSpec.describe OrganizationsController, type: :controller do
     end
 
     context 'logged in viewer who is not member, not admin' do
-      let (:viewing_user) { FactoryGirl.create(:user) }
+      let (:viewing_user) { FactoryBot.create(:user) }
       it { is_expected.to respond_with :unauthorized }
     end
 
     context 'logged in viewer who is member, not admin' do
       let (:viewing_user) {
-        user = FactoryGirl.create(:user)
-        FactoryGirl.create(:user_organization_membership, user: user, organization: organization)
+        user = FactoryBot.create(:user)
+        FactoryBot.create(:user_organization_membership, user: user, organization: organization)
         user
       }
       it { is_expected.to respond_with :unauthorized }
@@ -89,10 +89,10 @@ RSpec.describe OrganizationsController, type: :controller do
 
   describe 'PATCH disable_api_access' do
     # Server Variables:
-    let (:admin) { FactoryGirl.create(:user) }
+    let (:admin) { FactoryBot.create(:user) }
     let (:api_enabled) { false }
     let (:api_token) { nil }
-    let (:organization) { FactoryGirl.create(:organization, api_enabled: api_enabled, api_token: api_token, admin: admin) }
+    let (:organization) { FactoryBot.create(:organization, api_enabled: api_enabled, api_token: api_token, admin: admin) }
 
     # Client Variables:
     let (:viewing_user) { nil }
@@ -136,14 +136,14 @@ RSpec.describe OrganizationsController, type: :controller do
     end
 
     context 'logged in viewer who is not member, not admin' do
-      let (:viewing_user) { FactoryGirl.create(:user) }
+      let (:viewing_user) { FactoryBot.create(:user) }
       it { is_expected.to respond_with :unauthorized }
     end
 
     context 'logged in viewer who is member, not admin' do
       let (:viewing_user) {
-        user = FactoryGirl.create(:user)
-        FactoryGirl.create(:user_organization_membership, user: user, organization: organization)
+        user = FactoryBot.create(:user)
+        FactoryBot.create(:user_organization_membership, user: user, organization: organization)
         user
       }
       it { is_expected.to respond_with :unauthorized }
@@ -164,10 +164,10 @@ RSpec.describe OrganizationsController, type: :controller do
 
   describe 'PATCH rotate_api_token' do
     # Server Variables:
-    let (:admin) { FactoryGirl.create(:user) }
+    let (:admin) { FactoryBot.create(:user) }
     let (:api_enabled) { false }
     let (:api_token) { nil }
-    let (:organization) { FactoryGirl.create(:organization, api_enabled: api_enabled, api_token: api_token, admin: admin) }
+    let (:organization) { FactoryBot.create(:organization, api_enabled: api_enabled, api_token: api_token, admin: admin) }
 
     # Client Variables:
     let (:viewing_user) { nil }
@@ -213,14 +213,14 @@ RSpec.describe OrganizationsController, type: :controller do
     end
 
     context 'logged in viewer who is not member, not admin' do
-      let (:viewing_user) { FactoryGirl.create(:user) }
+      let (:viewing_user) { FactoryBot.create(:user) }
       it { is_expected.to respond_with :unauthorized }
     end
 
     context 'logged in viewer who is member, not admin' do
       let (:viewing_user) {
-        user = FactoryGirl.create(:user)
-        FactoryGirl.create(:user_organization_membership, user: user, organization: organization)
+        user = FactoryBot.create(:user)
+        FactoryBot.create(:user_organization_membership, user: user, organization: organization)
         user
       }
       it { is_expected.to respond_with :unauthorized }

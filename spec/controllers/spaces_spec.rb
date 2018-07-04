@@ -11,13 +11,13 @@ end
 
 RSpec.describe SpacesController, type: :controller do
   describe 'GET show' do
-    let (:creator) { FactoryGirl.create(:user, :lite_plan) }
+    let (:creator) { FactoryBot.create(:user, :lite_plan) }
     let (:is_private) { false } # default context public.
     let (:organization) { nil } # default context no organization.
     let (:shareable_link_token) { nil }
     let (:shareable_link_enabled) { false }
     let (:space) {
-      FactoryGirl.create(
+      FactoryBot.create(
         :space,
         user: creator,
         organization: organization,
@@ -55,7 +55,7 @@ RSpec.describe SpacesController, type: :controller do
       end
 
       context 'for a logged in viewer' do
-        let (:viewing_user) { FactoryGirl.create(:user) }
+        let (:viewing_user) { FactoryBot.create(:user) }
 
         before do
           setup_knock(viewing_user)
@@ -84,15 +84,15 @@ RSpec.describe SpacesController, type: :controller do
             context 'for a space with organization' do
               context 'for a creator who is a member' do
                 let (:organization) {
-                  organization = FactoryGirl.create(:organization)
-                  FactoryGirl.create(:user_organization_membership, user: creator, organization: organization)
+                  organization = FactoryBot.create(:organization)
+                  FactoryBot.create(:user_organization_membership, user: creator, organization: organization)
                   organization
                 }
                 it { is_expected.to respond_with :ok }
               end
 
               context 'for a non-membered creator' do
-                let (:organization) { FactoryGirl.create(:organization) }
+                let (:organization) { FactoryBot.create(:organization) }
                 it { is_expected.to respond_with :unauthorized }
               end
             end
@@ -130,25 +130,25 @@ RSpec.describe SpacesController, type: :controller do
   end
 
   describe 'GET index' do
-    let (:creator) { FactoryGirl.create(:user, :lite_plan) }
-    let (:secondary) { FactoryGirl.create(:user, :lite_plan) }
+    let (:creator) { FactoryBot.create(:user, :lite_plan) }
+    let (:secondary) { FactoryBot.create(:user, :lite_plan) }
     let (:organization_creator_member) {
-      organization = FactoryGirl.create(:organization, name: 'creator member')
-      FactoryGirl.create(:user_organization_membership, user: creator, organization: organization)
+      organization = FactoryBot.create(:organization, name: 'creator member')
+      FactoryBot.create(:user_organization_membership, user: creator, organization: organization)
       organization
     }
-    let (:secondary_organization) { FactoryGirl.create(:organization, name: 'creator not member') }
+    let (:secondary_organization) { FactoryBot.create(:organization, name: 'creator not member') }
     let (:spaces) {{
-      creator_public_no_org: FactoryGirl.create(:space, user: creator, is_private: false, name: 'public no org'),
-      creator_private_no_org: FactoryGirl.create(:space, user: creator, is_private: true, name: 'private no org'),
-      creator_public_org: FactoryGirl.create(:space, organization: organization_creator_member, user: creator, is_private: false, name: 'public org'),
-      creator_private_org: FactoryGirl.create(:space, organization: organization_creator_member, user: creator, is_private: true, name: 'private org'),
-      creator_public_org_no_member: FactoryGirl.create(:space, organization: secondary_organization, user: creator, is_private: false, name: 'private org not member'),
-      creator_private_org_no_member: FactoryGirl.create(:space, organization: secondary_organization, user: creator, is_private: true, name: 'private org not member'),
-      secondary_public_no_org: FactoryGirl.create(:space, user: secondary, is_private: false, name: 'public no org secondary user'),
-      secondary_private_no_org: FactoryGirl.create(:space, user: secondary, is_private: true, name: 'private no org secondary user'),
-      secondary_public_org: FactoryGirl.create(:space, organization: organization_creator_member, user: secondary, is_private: false, name: 'public org secondary user'),
-      secondary_private_org: FactoryGirl.create(:space, organization: organization_creator_member, user: secondary, is_private: true, name: 'private org secondary user'),
+      creator_public_no_org: FactoryBot.create(:space, user: creator, is_private: false, name: 'public no org'),
+      creator_private_no_org: FactoryBot.create(:space, user: creator, is_private: true, name: 'private no org'),
+      creator_public_org: FactoryBot.create(:space, organization: organization_creator_member, user: creator, is_private: false, name: 'public org'),
+      creator_private_org: FactoryBot.create(:space, organization: organization_creator_member, user: creator, is_private: true, name: 'private org'),
+      creator_public_org_no_member: FactoryBot.create(:space, organization: secondary_organization, user: creator, is_private: false, name: 'private org not member'),
+      creator_private_org_no_member: FactoryBot.create(:space, organization: secondary_organization, user: creator, is_private: true, name: 'private org not member'),
+      secondary_public_no_org: FactoryBot.create(:space, user: secondary, is_private: false, name: 'public no org secondary user'),
+      secondary_private_no_org: FactoryBot.create(:space, user: secondary, is_private: true, name: 'private no org secondary user'),
+      secondary_public_org: FactoryBot.create(:space, organization: organization_creator_member, user: secondary, is_private: false, name: 'public org secondary user'),
+      secondary_private_org: FactoryBot.create(:space, organization: organization_creator_member, user: secondary, is_private: true, name: 'private org secondary user'),
     }}
 
     let (:rendered_space_ids) { JSON.parse(response.body)['items'].map {|s| s['id']} }
@@ -187,7 +187,7 @@ RSpec.describe SpacesController, type: :controller do
       end
 
       context 'for a logged in viewer (not creator)' do
-        let (:viewing_user) { FactoryGirl.create(:user) }
+        let (:viewing_user) { FactoryBot.create(:user) }
         let (:expected_rendered_spaces) {[
           :creator_public_org,
           :creator_public_no_org,
@@ -217,7 +217,7 @@ RSpec.describe SpacesController, type: :controller do
       end
 
       context 'for a viewer who is not a member' do
-        let (:viewing_user) { FactoryGirl.create(:user) }
+        let (:viewing_user) { FactoryBot.create(:user) }
         let (:expected_rendered_spaces) {[:creator_public_org, :secondary_public_org]}
         include_examples 'has_visible_spaces'
       end
@@ -226,13 +226,13 @@ RSpec.describe SpacesController, type: :controller do
 
   describe 'PATCH enable_shareable_link' do
     # Server Variables:
-    let (:creator) { FactoryGirl.create(:user) }
+    let (:creator) { FactoryBot.create(:user) }
     let (:organization) { nil }
     let (:is_private) { false }
     let (:shareable_link_enabled) { false }
     let (:shareable_link_token) { nil }
     let (:space) {
-      FactoryGirl.create(
+      FactoryBot.create(
         :space,
         user: creator,
         organization: organization,
@@ -247,7 +247,7 @@ RSpec.describe SpacesController, type: :controller do
 
     # Shared Contextes:
     shared_context 'private space', is_private: true do
-      let (:creator) { FactoryGirl.create(:user, :lite_plan) }
+      let (:creator) { FactoryBot.create(:user, :lite_plan) }
       let (:is_private) { true }
     end
     shared_context 'public space', is_private: false do
@@ -296,7 +296,7 @@ RSpec.describe SpacesController, type: :controller do
     end
 
     context 'logged in viewer who is not creator' do
-      let (:viewing_user) { FactoryGirl.create(:user) }
+      let (:viewing_user) { FactoryBot.create(:user) }
       it { is_expected.to respond_with :unauthorized }
     end
 
@@ -317,17 +317,17 @@ RSpec.describe SpacesController, type: :controller do
     end
 
     context 'space has organization' do
-      let (:organization) { FactoryGirl.create(:organization) }
+      let (:organization) { FactoryBot.create(:organization) }
 
       context 'viewer is not a member' do
-        let (:viewing_user) { FactoryGirl.create(:user) }
+        let (:viewing_user) { FactoryBot.create(:user) }
         it { is_expected.to respond_with :unauthorized }
       end
 
       context 'viewer is a member' do
         let (:viewing_user) do
-          user = FactoryGirl.create(:user)
-          FactoryGirl.create(:user_organization_membership, user: user, organization: organization)
+          user = FactoryBot.create(:user)
+          FactoryBot.create(:user_organization_membership, user: user, organization: organization)
           user
         end
 
@@ -348,13 +348,13 @@ RSpec.describe SpacesController, type: :controller do
 
   describe 'PATCH disable_shareable_link' do
     # Server Variables:
-    let (:creator) { FactoryGirl.create(:user) }
+    let (:creator) { FactoryBot.create(:user) }
     let (:organization) { nil }
     let (:is_private) { false }
     let (:shareable_link_enabled) { false }
     let (:shareable_link_token) { nil }
     let (:space) {
-      FactoryGirl.create(
+      FactoryBot.create(
         :space,
         user: creator,
         organization: organization,
@@ -369,7 +369,7 @@ RSpec.describe SpacesController, type: :controller do
 
     # Shared Contextes:
     shared_context 'private space', is_private: true do
-      let (:creator) { FactoryGirl.create(:user, :lite_plan) }
+      let (:creator) { FactoryBot.create(:user, :lite_plan) }
       let (:is_private) { true }
     end
     shared_context 'public space', is_private: false do
@@ -412,7 +412,7 @@ RSpec.describe SpacesController, type: :controller do
     end
 
     context 'logged in viewer who is not creator' do
-      let (:viewing_user) { FactoryGirl.create(:user) }
+      let (:viewing_user) { FactoryBot.create(:user) }
       it { is_expected.to respond_with :unauthorized }
     end
 
@@ -433,17 +433,17 @@ RSpec.describe SpacesController, type: :controller do
     end
 
     context 'space has organization' do
-      let (:organization) { FactoryGirl.create(:organization) }
+      let (:organization) { FactoryBot.create(:organization) }
 
       context 'viewer is not a member' do
-        let (:viewing_user) { FactoryGirl.create(:user) }
+        let (:viewing_user) { FactoryBot.create(:user) }
         it { is_expected.to respond_with :unauthorized }
       end
 
       context 'viewer is a member' do
         let (:viewing_user) do
-          user = FactoryGirl.create(:user)
-          FactoryGirl.create(:user_organization_membership, user: user, organization: organization)
+          user = FactoryBot.create(:user)
+          FactoryBot.create(:user_organization_membership, user: user, organization: organization)
           user
         end
 
@@ -464,13 +464,13 @@ RSpec.describe SpacesController, type: :controller do
 
   describe 'PATCH rotate_shareable_link' do
     # Server Variables:
-    let (:creator) { FactoryGirl.create(:user) }
+    let (:creator) { FactoryBot.create(:user) }
     let (:organization) { nil }
     let (:is_private) { false }
     let (:shareable_link_enabled) { false }
     let (:shareable_link_token) { nil }
     let (:space) {
-      FactoryGirl.create(
+      FactoryBot.create(
         :space,
         user: creator,
         organization: organization,
@@ -485,7 +485,7 @@ RSpec.describe SpacesController, type: :controller do
 
     # Shared Contextes:
     shared_context 'private space', is_private: true do
-      let (:creator) { FactoryGirl.create(:user, :lite_plan) }
+      let (:creator) { FactoryBot.create(:user, :lite_plan) }
       let (:is_private) { true }
     end
     shared_context 'public space', is_private: false do
@@ -534,7 +534,7 @@ RSpec.describe SpacesController, type: :controller do
     end
 
     context 'logged in viewer who is not creator' do
-      let (:viewing_user) { FactoryGirl.create(:user) }
+      let (:viewing_user) { FactoryBot.create(:user) }
       it { is_expected.to respond_with :unauthorized }
     end
 
@@ -551,17 +551,17 @@ RSpec.describe SpacesController, type: :controller do
     end
 
     context 'space has organization' do
-      let (:organization) { FactoryGirl.create(:organization) }
+      let (:organization) { FactoryBot.create(:organization) }
 
       context 'viewer is not a member' do
-        let (:viewing_user) { FactoryGirl.create(:user) }
+        let (:viewing_user) { FactoryBot.create(:user) }
         it { is_expected.to respond_with :unauthorized }
       end
 
       context 'viewer is a member' do
         let (:viewing_user) do
-          user = FactoryGirl.create(:user)
-          FactoryGirl.create(:user_organization_membership, user: user, organization: organization)
+          user = FactoryBot.create(:user)
+          FactoryBot.create(:user_organization_membership, user: user, organization: organization)
           user
         end
 

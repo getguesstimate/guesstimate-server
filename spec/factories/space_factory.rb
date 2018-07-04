@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :space do
     exported_facts_count 0
     shareable_link_enabled false

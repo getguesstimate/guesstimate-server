@@ -13,7 +13,7 @@ RSpec.describe FactsController, type: :controller do
   describe 'POST create' do
     let (:api_token) { nil }
     let (:passed_token) { nil }
-    let (:organization) { FactoryGirl.create(:organization, api_token: api_token, api_enabled: api_token.present?) }
+    let (:organization) { FactoryBot.create(:organization, api_token: api_token, api_enabled: api_token.present?) }
 
     let (:fact_params) {{
       name: 'name',
@@ -67,14 +67,14 @@ RSpec.describe FactsController, type: :controller do
     end
 
     context 'for a logged-in, non-member creator' do
-      let (:creating_user) { FactoryGirl.create(:user) }
+      let (:creating_user) { FactoryBot.create(:user) }
       it { is_expected.to respond_with :unauthorized }
     end
 
     context 'for a logged-in, member creator' do
       let (:creating_user) {
-        user = FactoryGirl.create(:user)
-        FactoryGirl.create(:user_organization_membership, user: user, organization: organization)
+        user = FactoryBot.create(:user)
+        FactoryBot.create(:user_organization_membership, user: user, organization: organization)
         user
       }
       include_examples 'it successfully creates the fact'
@@ -82,10 +82,10 @@ RSpec.describe FactsController, type: :controller do
   end
 
   describe 'PATCH update' do
-    let (:fact) { FactoryGirl.create(:fact) }
+    let (:fact) { FactoryBot.create(:fact) }
     let (:author) {
-      user = FactoryGirl.create(:user)
-      FactoryGirl.create(:user_organization_membership, user: user, organization: fact.organization)
+      user = FactoryBot.create(:user)
+      FactoryBot.create(:user_organization_membership, user: user, organization: fact.organization)
       user
     }
     let (:fact_params) {{

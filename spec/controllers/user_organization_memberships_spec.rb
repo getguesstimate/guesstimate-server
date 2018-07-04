@@ -10,7 +10,7 @@ end
 
 RSpec.describe UserOrganizationMembershipsController, type: :controller do
   describe 'DELETE destroy' do
-    let (:membership) { FactoryGirl.create(:user_organization_membership) }
+    let (:membership) { FactoryBot.create(:user_organization_membership) }
     let (:requesting_user) { nil }
     before do
       requesting_user && setup_knock(requesting_user)
@@ -30,9 +30,9 @@ RSpec.describe UserOrganizationMembershipsController, type: :controller do
 
     context 'for admin requester' do
       let (:requesting_user) {
-        user = FactoryGirl.create(:user)
+        user = FactoryBot.create(:user)
         organization = membership.organization
-        FactoryGirl.create(:user_organization_membership, user: user, organization: organization)
+        FactoryBot.create(:user_organization_membership, user: user, organization: organization)
         organization.update(admin: user)
         user
       }
@@ -45,16 +45,16 @@ RSpec.describe UserOrganizationMembershipsController, type: :controller do
 
     context 'for member (but not admin)' do
       let (:requesting_user) {
-        user = FactoryGirl.create(:user)
+        user = FactoryBot.create(:user)
         organization = membership.organization
-        FactoryGirl.create(:user_organization_membership, user: user, organization: organization)
+        FactoryBot.create(:user_organization_membership, user: user, organization: organization)
         user
       }
       include_examples 'delete failed'
     end
 
     context 'when not member' do
-      let (:requesting_user) { FactoryGirl.create(:user) }
+      let (:requesting_user) { FactoryBot.create(:user) }
       include_examples 'delete failed'
     end
   end

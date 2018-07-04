@@ -10,7 +10,7 @@ end
 RSpec.describe FactCategoriesController, type: :controller do
   # We only test create as authentication guidelines are the same for create, update, & destroy.
   describe 'POST create' do
-    let (:organization) { FactoryGirl.create(:organization) }
+    let (:organization) { FactoryBot.create(:organization) }
     let (:name) { 'name' }
 
     let (:creating_user) { nil }
@@ -25,14 +25,14 @@ RSpec.describe FactCategoriesController, type: :controller do
     end
 
     context 'for a logged in, non-member creator' do
-      let (:creating_user) { FactoryGirl.create(:user) }
+      let (:creating_user) { FactoryBot.create(:user) }
       it { is_expected.to respond_with :unauthorized }
     end
 
     context 'for a logged in, member creator' do
       let (:creating_user) {
-        user = FactoryGirl.create(:user)
-        FactoryGirl.create(:user_organization_membership, user: user, organization: organization)
+        user = FactoryBot.create(:user)
+        FactoryBot.create(:user_organization_membership, user: user, organization: organization)
         user
       }
       it 'should successfully create the fact category' do

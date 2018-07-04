@@ -2,10 +2,10 @@ require 'rails_helper'
 
 RSpec.describe SpaceCheckpoint, type: :model do
   describe '#create' do
-    let (:space) { FactoryGirl.create(:space) }
+    let (:space) { FactoryBot.create(:space) }
     let (:graph) { JSON.generate metrics: [], guesstimates: [] }
 
-    subject (:checkpoint) { FactoryGirl.build(:space_checkpoint, space: space, graph: graph) }
+    subject (:checkpoint) { FactoryBot.build(:space_checkpoint, space: space, graph: graph) }
 
     it { is_expected.to be_valid }
 

@@ -1,16 +1,16 @@
 namespace :factory_girl do
-  desc "Verify that all FactoryGirl factories are valid"
+  desc "Verify that all FactoryBot factories are valid"
   task :lint, [:path] => :environment do |t, args|
     if Rails.env.test?
       begin
         DatabaseCleaner.start
         if args.path.present?
-          factories = FactoryGirl.factories.select do |factory|
+          factories = FactoryBot.factories.select do |factory|
             factory.name.to_s =~ /#{args.path[0]}/
           end
-          FactoryGirl.lint factories
+          FactoryBot.lint factories
         else
-          FactoryGirl.lint
+          FactoryBot.lint
         end
       ensure
         DatabaseCleaner.clean

@@ -2,12 +2,12 @@ require 'rails_helper'
 
 RSpec.describe FactCheckpoint, type: :model do
   describe '#create' do
-    let (:fact) { FactoryGirl.create(:fact) }
+    let (:fact) { FactoryBot.create(:fact) }
     let (:by_api) { false }
-    let (:author) { FactoryGirl.create(:user) }
+    let (:author) { FactoryBot.create(:user) }
     let (:simulation) { JSON.generate sample: {values: [1], errors: []}, stats: {mean: 1, stdev: 0, length: 1} }
 
-    subject (:checkpoint) { FactoryGirl.build(:fact_checkpoint, by_api: by_api, fact: fact, simulation: simulation, author: author) }
+    subject (:checkpoint) { FactoryBot.build(:fact_checkpoint, by_api: by_api, fact: fact, simulation: simulation, author: author) }
 
     it { is_expected.to be_valid }
 
