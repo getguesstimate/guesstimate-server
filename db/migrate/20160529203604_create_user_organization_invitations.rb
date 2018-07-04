@@ -1,4 +1,4 @@
-class CreateUserOrganizationInvitations < ActiveRecord::Migration
+class CreateUserOrganizationInvitations < ActiveRecord::Migration[4.2]
   def change
     create_table :user_organization_invitations do |t|
       t.string :email

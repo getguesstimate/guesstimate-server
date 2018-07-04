@@ -1,4 +1,4 @@
-class CreateFactCategories < ActiveRecord::Migration
+class CreateFactCategories < ActiveRecord::Migration[4.2]
   def change
     create_table :fact_categories do |t|
       t.integer :organization_id

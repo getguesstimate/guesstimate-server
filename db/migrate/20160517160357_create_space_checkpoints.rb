@@ -1,4 +1,4 @@
-class CreateSpaceCheckpoints < ActiveRecord::Migration
+class CreateSpaceCheckpoints < ActiveRecord::Migration[4.2]
   def change
     create_table :space_checkpoints do |t|
       t.json :graph
