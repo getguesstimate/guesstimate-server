@@ -272,7 +272,6 @@ DEPENDENCIES
   algoliasearch-rails
   analytics-ruby (~> 2.0.0)
   auth0
-  bcrypt (~> 3.1.7)
   byebug
   chargebee
   dalli
