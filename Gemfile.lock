@@ -87,6 +87,8 @@ GEM
     factory_bot_rails (4.10.0)
       factory_bot (~> 4.10.0)
       railties (>= 3.0.0)
+    faraday (0.15.2)
+      multipart-post (>= 1.2, < 3)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
     haml (5.0.4)
@@ -124,6 +126,7 @@ GEM
     mini_portile2 (2.3.0)
     minitest (5.11.3)
     multi_json (1.13.1)
+    multipart-post (2.0.0)
     mustermann (1.0.2)
     netrc (0.11.0)
     nio4r (2.3.1)
@@ -223,6 +226,8 @@ GEM
     sdoc (0.4.2)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
+    sentry-raven (2.7.4)
+      faraday (>= 0.7.6, < 1.0)
     sequel (5.9.0)
     shoulda-matchers (3.1.2)
       activesupport (>= 4.0.0)
@@ -298,6 +303,7 @@ DEPENDENCIES
   rspec-collection_matchers
   rspec-rails
   sdoc (~> 0.4.0)
+  sentry-raven
   shoulda-matchers
   skylight
   spring

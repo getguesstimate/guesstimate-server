@@ -30,7 +30,9 @@ gem 'uglifier'
 gem 'chargebee'
 
 # This is needed to load on heroku, should be fixed later.
-# gem 'sass-rails'
+
+# Analytics & Reporting
+gem 'sentry-raven'
 
 # Caching
 gem 'actionpack-action_caching'
