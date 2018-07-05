@@ -88,6 +88,8 @@ GEM
     factory_girl_rails (4.6.0)
       factory_girl (~> 4.5.0)
       railties (>= 3.0.0)
+    faraday (0.15.2)
+      multipart-post (>= 1.2, < 3)
     globalid (0.3.6)
       activesupport (>= 4.1.0)
     haml (4.0.7)
@@ -120,6 +122,7 @@ GEM
     minitest (5.8.4)
     multi_json (1.11.2)
     multi_xml (0.5.5)
+    multipart-post (2.0.0)
     netrc (0.11.0)
     nokogiri (1.6.7.2)
       mini_portile2 (~> 2.0.0.rc2)
@@ -223,6 +226,8 @@ GEM
     sdoc (0.4.1)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
+    sentry-raven (2.7.4)
+      faraday (>= 0.7.6, < 1.0)
     sequel (4.36.0)
     shoulda-matchers (3.1.1)
       activesupport (>= 4.0.0)
@@ -295,6 +300,7 @@ DEPENDENCIES
   rspec-rails
   sass-rails
   sdoc (~> 0.4.0)
+  sentry-raven
   shoulda-matchers
   skylight
   spring

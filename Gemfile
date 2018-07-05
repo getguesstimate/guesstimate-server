@@ -34,6 +34,7 @@ gem 'sass-rails'
 
 # Analytics & Reporting
 gem 'analytics-ruby', '~> 2.0.0', require: 'segment/analytics'
+gem 'sentry-raven'
 
 # Caching
 gem 'actionpack-action_caching'
