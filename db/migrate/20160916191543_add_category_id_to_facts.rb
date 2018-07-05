@@ -1,4 +1,4 @@
-class AddCategoryIdToFacts < ActiveRecord::Migration
+class AddCategoryIdToFacts < ActiveRecord::Migration[4.2]
   def change
     add_column :facts, :category_id, :integer
 

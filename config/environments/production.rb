@@ -86,7 +86,7 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  config.middleware.insert_before 0, "Rack::Cors" do
+  config.middleware.insert_before 0, Rack::Cors do
     allow do
       origins /\Ahttps:\/\/[a-z]+.getguesstimate.com\z/, /\Ahttp:\/\/([^w]|w[^w])[a-z]*\.getguesstimate.com\z/
       resource '*', headers: :any, methods: [:get, :post, :options, :delete, :put, :update, :patch]

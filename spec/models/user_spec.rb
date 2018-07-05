@@ -6,7 +6,7 @@ RSpec.describe User, type: :model do
     let (:name) { "name" }
     let (:email) { "email@email.com" }
     let (:auth0_id) { "auth0_id" }
-    subject (:user) { FactoryGirl.build(:user, username: username, name: name, email: email, auth0_id: auth0_id) }
+    subject (:user) { FactoryBot.build(:user, username: username, name: name, email: email, auth0_id: auth0_id) }
 
     it { is_expected.to be_valid }
 
@@ -36,8 +36,8 @@ RSpec.describe User, type: :model do
     end
 
     context 'with invitation' do
-      let (:organization) { FactoryGirl.create :organization }
-      let (:invitation) { FactoryGirl.create :user_organization_invitation, email: email, organization: organization }
+      let (:organization) { FactoryBot.create :organization }
+      let (:invitation) { FactoryBot.create :user_organization_invitation, email: email, organization: organization }
       it 'should be added to the organization' do
         organization
         invitation
@@ -51,24 +51,24 @@ RSpec.describe User, type: :model do
     subject (:private_model_limit) { user.private_model_limit}
 
     context 'a free user' do
-      let (:user) { FactoryGirl.create(:user) }
+      let (:user) { FactoryBot.create(:user) }
       it { is_expected.to eq(0) }
     end
 
     context 'a user on a lite plan' do
-      let (:user) { FactoryGirl.create(:user, :lite_plan) }
+      let (:user) { FactoryBot.create(:user, :lite_plan) }
       it { is_expected.to eq(20) }
     end
 
     context 'a user on a premium plan' do
-      let (:user) { FactoryGirl.create(:user, :premium_plan) }
+      let (:user) { FactoryBot.create(:user, :premium_plan) }
       it { is_expected.to eq(100) }
     end
   end
 
   describe '#domain_name' do
     let (:email) { 'foo@barcom.com' }
-    let (:user) {FactoryGirl.build(:user, email: email) }
+    let (:user) {FactoryBot.build(:user, email: email) }
     subject (:domain_name) { user.domain_name }
 
     it { is_expected.to eq('barcom') }

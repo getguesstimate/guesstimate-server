@@ -3,14 +3,14 @@ require 'spec_helper'
 
 RSpec.describe Space, type: :model do
   describe '#create' do
-    let (:user) { FactoryGirl.create(:user) }
+    let (:user) { FactoryBot.create(:user) }
     let (:viewcount) { nil } # default context unviewed.
     let (:is_private) { false } # default context public.
     let (:shareable_link_enabled) { false }
     let (:shareable_link_token) { nil }
 
     subject (:space) {
-      FactoryGirl.build(
+      FactoryBot.build(
         :space,
         user: user,
         is_private: is_private,
@@ -34,7 +34,7 @@ RSpec.describe Space, type: :model do
       context 'with a too short token on a private space' do
         let (:is_private) { true }
         let (:shareable_link_token) { 'a' * 31 }
-        let (:user) { FactoryGirl.create(:user, :lite_plan) }
+        let (:user) { FactoryBot.create(:user, :lite_plan) }
         it { is_expected.not_to be_valid }
       end
 
@@ -47,7 +47,7 @@ RSpec.describe Space, type: :model do
       context 'with a valid token on a private space' do
         let (:is_private) { true }
         let (:shareable_link_token) { 'a' * 32 }
-        let (:user) { FactoryGirl.create(:user, :lite_plan) }
+        let (:user) { FactoryBot.create(:user, :lite_plan) }
         it { is_expected.to be_valid }
       end
     end
@@ -65,14 +65,14 @@ RSpec.describe Space, type: :model do
       end
 
       context 'with user on lite plan' do
-        let (:user) { FactoryGirl.create(:user, :lite_plan) }
+        let (:user) { FactoryBot.create(:user, :lite_plan) }
         it { is_expected.to be_valid }
       end
     end
   end
 
   describe '#searchable' do
-    subject(:space) { FactoryGirl.build(:space, name: name, graph: graph) }
+    subject(:space) { FactoryBot.build(:space, name: name, graph: graph) }
     let(:graph) {nil}
     let(:name) {'real model'}
 
@@ -118,9 +118,9 @@ RSpec.describe Space, type: :model do
   end
 
   describe '#copy' do
-    let(:base_user) { FactoryGirl.create(:user) }
+    let(:base_user) { FactoryBot.create(:user) }
     let(:base_organization) { nil }
-    let(:copying_user) { FactoryGirl.create(:user) }
+    let(:copying_user) { FactoryBot.create(:user) }
     let(:graph) {
       {'metrics'=>
         [{'id'=>'3', 'readableId'=>'AR', 'name'=>'Point', 'location'=>{'row'=>1, 'column'=>0}},
@@ -133,7 +133,7 @@ RSpec.describe Space, type: :model do
          {'metric'=>'5', 'input'=>'=lognormal(AR,QK)', 'guesstimateType'=>'FUNCTION', 'description'=>''},
          {'metric'=>'6', 'input'=>'[1,3]', 'guesstimateType'=>'NORMAL', 'description'=>''}]}
     }
-    let(:space) { FactoryGirl.create(:space, user: base_user, organization: base_organization, graph: graph) }
+    let(:space) { FactoryBot.create(:space, user: base_user, organization: base_organization, graph: graph) }
     let(:should_copy_be_private) { false }
 
     subject(:copy) {space.copy(copying_user)}
@@ -159,21 +159,21 @@ RSpec.describe Space, type: :model do
     end
 
     context 'with user who prefers private' do
-      let (:copying_user) { FactoryGirl.create(:user, :lite_plan) }
+      let (:copying_user) { FactoryBot.create(:user, :lite_plan) }
       let (:should_copy_be_private) { true }
 
       include_examples('copies properly')
     end
 
     context 'with non-membered base organization' do
-      let (:base_organization) { FactoryGirl.create(:organization) }
+      let (:base_organization) { FactoryBot.create(:organization) }
       include_examples('copies properly')
     end
 
     context 'with membered free base organization' do
       let (:base_organization) {
-        organization = FactoryGirl.create(:organization, plan: :organization_free)
-        FactoryGirl.create(:user_organization_membership, user: copying_user, organization: organization)
+        organization = FactoryBot.create(:organization, plan: :organization_free)
+        FactoryBot.create(:user_organization_membership, user: copying_user, organization: organization)
         organization
       }
       let (:should_copy_be_private) { false }
@@ -183,8 +183,8 @@ RSpec.describe Space, type: :model do
 
     context 'with membered base organization' do
       let (:base_organization) {
-        organization = FactoryGirl.create(:organization, plan: :organization_basic_30)
-        FactoryGirl.create(:user_organization_membership, user: copying_user, organization: organization)
+        organization = FactoryBot.create(:organization, plan: :organization_basic_30)
+        FactoryBot.create(:user_organization_membership, user: copying_user, organization: organization)
         organization
       }
       let (:should_copy_be_private) { true }
@@ -194,7 +194,7 @@ RSpec.describe Space, type: :model do
   end
 
   describe '#save' do
-    subject(:space) { FactoryGirl.create(:space) }
+    subject(:space) { FactoryBot.create(:space) }
     let(:new_graph) {
       {
         'guesstimates' => [
@@ -213,7 +213,7 @@ RSpec.describe Space, type: :model do
 
   describe '#get_imported_fact_ids' do
     let(:guesstimates) { [] }
-    let(:space) { FactoryGirl.build(:space, graph: guesstimates.empty? ? nil : {'guesstimates' => guesstimates}) }
+    let(:space) { FactoryBot.build(:space, graph: guesstimates.empty? ? nil : {'guesstimates' => guesstimates}) }
     subject(:fact_ids) { space.get_imported_fact_ids }
 
     context 'without facts' do
@@ -236,7 +236,7 @@ RSpec.describe Space, type: :model do
 
   describe '#enable_shareable_link!' do
     context 'with shareable_link disabled' do
-      subject(:space) { FactoryGirl.create :space }
+      subject(:space) { FactoryBot.create :space }
       it 'enables shareable link' do
         expect { space.enable_shareable_link! }
           .to  change { space.shareable_link_enabled }.from(false).to(true)
@@ -245,7 +245,7 @@ RSpec.describe Space, type: :model do
     end
 
     context 'with shareable link_enabled' do
-      subject(:space) { FactoryGirl.create :space, :shareable_link_enabled }
+      subject(:space) { FactoryBot.create :space, :shareable_link_enabled }
       it 'does not modify the shareable link token and does not disable shareable link' do
         expect { space.enable_shareable_link! }.to_not change { space.shareable_link_token }
         expect { space.enable_shareable_link! }.to_not change { space.shareable_link_enabled }.from(true)
@@ -254,7 +254,7 @@ RSpec.describe Space, type: :model do
   end
 
   describe '#disable_shareable_link!' do
-    subject(:space) { FactoryGirl.create :space, :shareable_link_enabled }
+    subject(:space) { FactoryBot.create :space, :shareable_link_enabled }
 
     it 'disables shareable link' do
       expect { space.disable_shareable_link! }
@@ -265,7 +265,7 @@ RSpec.describe Space, type: :model do
 
   describe '#rotate_shareable_link!' do
     context 'with shareable link_enabled' do
-      subject(:space) { FactoryGirl.create :space, :shareable_link_enabled }
+      subject(:space) { FactoryBot.create :space, :shareable_link_enabled }
       it 'rotates the shareable link token and does not disable shareable link' do
         expect { space.rotate_shareable_link! }.to change { space.shareable_link_token }
         expect { space.rotate_shareable_link! }.to_not change { space.shareable_link_enabled }.from(true)
@@ -274,7 +274,7 @@ RSpec.describe Space, type: :model do
       end
     end
     context 'with shareable link disabled' do
-      subject(:space) { FactoryGirl.create :space }
+      subject(:space) { FactoryBot.create :space }
       it 'does not change the shareable link token' do
         expect { space.rotate_shareable_link! }.to_not change { space.shareable_link_token }.from(nil)
         expect { space.rotate_shareable_link! }.to_not change { space.shareable_link_enabled }.from(false)
@@ -285,7 +285,7 @@ RSpec.describe Space, type: :model do
   describe '#shareable_link_url' do
     context 'with shareable link enabled' do
       subject(:space) {
-        FactoryGirl.build(
+        FactoryBot.build(
           :space,
           shareable_link_enabled: true,
           shareable_link_token: 'token------------------------------', # Padded to be > 32 characters, for validation limit.
@@ -297,7 +297,7 @@ RSpec.describe Space, type: :model do
       end
     end
     context 'with shareable link disabled' do
-      subject(:space) { FactoryGirl.build :space, shareable_link_enabled: false, shareable_link_token: 'shouldNotShow', id: 1 }
+      subject(:space) { FactoryBot.build :space, shareable_link_enabled: false, shareable_link_token: 'shouldNotShow', id: 1 }
       it 'gets the correct link' do
         expect(space.shareable_link_url).to eq ''
       end

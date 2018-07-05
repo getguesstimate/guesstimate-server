@@ -20,7 +20,6 @@ class UsersController < ApplicationController
 
     @user = User.new(user_params)
     if @user.save
-      @user.identify
       render json: user_representation(@user)
     else
       render json: @user.errors, status: :unprocessable_entity

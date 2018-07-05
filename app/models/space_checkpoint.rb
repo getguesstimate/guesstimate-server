@@ -1,4 +1,4 @@
-class SpaceCheckpoint < ActiveRecord::Base
+class SpaceCheckpoint < ApplicationRecord
   belongs_to :space
   belongs_to :author, class_name: 'User'
 

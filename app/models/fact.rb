@@ -1,4 +1,4 @@
-class Fact < ActiveRecord::Base
+class Fact < ApplicationRecord
   belongs_to :organization
   belongs_to :exported_from, class_name: 'Space'
   belongs_to :category, class_name: 'FactCategory'

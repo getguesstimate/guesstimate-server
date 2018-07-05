@@ -11,7 +11,7 @@ end
 RSpec.describe UserOrganizationInvitationsController, type: :controller do
   describe 'POST invite_by_email' do
     let (:requesting_user) { nil }
-    let (:organization) { FactoryGirl.create :organization }
+    let (:organization) { FactoryBot.create :organization }
     let (:existing_user) { nil }
     let (:email) { "" }
 
@@ -22,7 +22,7 @@ RSpec.describe UserOrganizationInvitationsController, type: :controller do
 
       requesting_user && setup_knock(requesting_user)
 
-      post :invite_by_email, organization_id: organization[:id], email: email
+      post :invite_by_email, params: { organization_id: organization[:id], email: email }
     end
 
     shared_examples 'successfully creates for existing user' do
@@ -47,7 +47,7 @@ RSpec.describe UserOrganizationInvitationsController, type: :controller do
     end
 
     shared_context 'for existing user', user: true do
-      let (:existing_user) { FactoryGirl.create :user }
+      let (:existing_user) { FactoryBot.create :user }
       let (:email) { existing_user.email }
     end
 
@@ -65,7 +65,7 @@ RSpec.describe UserOrganizationInvitationsController, type: :controller do
     end
 
     context 'for logged in requester' do
-      let (:requesting_user) { FactoryGirl.create :user }
+      let (:requesting_user) { FactoryBot.create :user }
       include_examples 'authorization fails'
 
       context 'for an existing user', user: true do
@@ -75,8 +75,8 @@ RSpec.describe UserOrganizationInvitationsController, type: :controller do
 
     context 'for logged in member requester' do
       let (:requesting_user) {
-        user = FactoryGirl.create :user
-        FactoryGirl.create :user_organization_membership, user: user, organization: organization
+        user = FactoryBot.create :user
+        FactoryBot.create :user_organization_membership, user: user, organization: organization
         user
       }
 
@@ -88,8 +88,8 @@ RSpec.describe UserOrganizationInvitationsController, type: :controller do
     end
 
     context 'for logged in admin requester' do
-      let (:requesting_user) { user = FactoryGirl.create :user }
-      let (:organization) { FactoryGirl.create :organization, admin: requesting_user }
+      let (:requesting_user) { user = FactoryBot.create :user }
+      let (:organization) { FactoryBot.create :organization, admin: requesting_user }
 
       context 'on new user', user: false do
         include_examples 'invites the user'
@@ -103,13 +103,13 @@ RSpec.describe UserOrganizationInvitationsController, type: :controller do
 
   describe 'GET organization_invitations' do
     let (:requesting_user) { nil }
-    let (:organization) { FactoryGirl.create :organization }
-    let (:secondary_organization) { FactoryGirl.create :organization }
-    let (:existing_membership) { FactoryGirl.create :user_organization_membership }
+    let (:organization) { FactoryBot.create :organization }
+    let (:secondary_organization) { FactoryBot.create :organization }
+    let (:existing_membership) { FactoryBot.create :user_organization_membership }
     let (:invitations) {{
-      in_org_no_member: FactoryGirl.create(:user_organization_invitation, organization: organization),
-      in_org_member: FactoryGirl.create(:user_organization_invitation, organization: organization, membership: existing_membership),
-      not_in_org: FactoryGirl.create(:user_organization_invitation, organization: secondary_organization),
+      in_org_no_member: FactoryBot.create(:user_organization_invitation, organization: organization),
+      in_org_member: FactoryBot.create(:user_organization_invitation, organization: organization, membership: existing_membership),
+      not_in_org: FactoryBot.create(:user_organization_invitation, organization: secondary_organization),
     }}
 
     before do
@@ -120,7 +120,7 @@ RSpec.describe UserOrganizationInvitationsController, type: :controller do
 
       requesting_user && setup_knock(requesting_user)
 
-      get :organization_invitations, organization_id: organization[:id]
+      get :organization_invitations, params: { organization_id: organization[:id] }
     end
 
     shared_examples 'authorization fails' do
@@ -132,14 +132,14 @@ RSpec.describe UserOrganizationInvitationsController, type: :controller do
     end
 
     context 'for logged in requester' do
-      let (:requesting_user) { FactoryGirl.create :user }
+      let (:requesting_user) { FactoryBot.create :user }
       include_examples 'authorization fails'
     end
 
     context 'for logged in member requester' do
       let (:requesting_user) {
-        user = FactoryGirl.create :user
-        FactoryGirl.create :user_organization_membership, user: user, organization: organization
+        user = FactoryBot.create :user
+        FactoryBot.create :user_organization_membership, user: user, organization: organization
         user
       }
 
@@ -147,8 +147,8 @@ RSpec.describe UserOrganizationInvitationsController, type: :controller do
     end
 
     context 'for logged in admin requester' do
-      let (:requesting_user) { user = FactoryGirl.create :user }
-      let (:organization) { FactoryGirl.create :organization, admin: requesting_user }
+      let (:requesting_user) { user = FactoryBot.create :user }
+      let (:organization) { FactoryBot.create :organization, admin: requesting_user }
 
       let (:rendered_invitation_ids) { JSON.parse(response.body)['items'].map {|i| i['id']} }
       let (:expected_invitations) { [invitations[:in_org_no_member], invitations[:in_org_member]] }

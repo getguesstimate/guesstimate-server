@@ -1,4 +1,4 @@
-class FactCategory < ActiveRecord::Base
+class FactCategory < ApplicationRecord
   belongs_to :organization
 
   has_many :facts, foreign_key: :category_id

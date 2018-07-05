@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :calculator do
     content "MyText"
     title "MyTitle"

@@ -1,4 +1,4 @@
-class CreateUserOrganizationMemberships < ActiveRecord::Migration
+class CreateUserOrganizationMemberships < ActiveRecord::Migration[4.2]
   def change
     create_table :user_organization_memberships do |t|
       t.integer :user_id

@@ -1,4 +1,4 @@
-class FactCheckpoint < ActiveRecord::Base
+class FactCheckpoint < ApplicationRecord
   belongs_to :fact
   belongs_to :author, class_name: 'User'
 

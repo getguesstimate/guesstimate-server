@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Fact, type: :model do
   describe '#create' do
-    let (:organization) { FactoryGirl.build(:organization) }
+    let (:organization) { FactoryBot.build(:organization) }
     let (:name) { 'name' }
     let (:expression) { '199' }
     let (:variable_name) { 'var_1' }
@@ -13,7 +13,7 @@ RSpec.describe Fact, type: :model do
     let (:exported_from) { nil }
     let (:metric_id) { nil }
     subject (:fact) {
-      FactoryGirl.build(
+      FactoryBot.build(
         :fact,
         organization: organization,
         name: name,
@@ -55,7 +55,7 @@ RSpec.describe Fact, type: :model do
     context 'non-unique variable_name' do
       let (:variable_name) {
         name = 'foo'
-        FactoryGirl.create(:fact, organization: organization, variable_name: name)
+        FactoryBot.create(:fact, organization: organization, variable_name: name)
         name
       }
       it { is_expected.to_not be_valid }
@@ -88,7 +88,7 @@ RSpec.describe Fact, type: :model do
     end
 
     context 'with exported space' do
-      let (:exported_from) { FactoryGirl.create(:space) }
+      let (:exported_from) { FactoryBot.create(:space) }
 
       context 'without a metric id' do
         let (:metric_id) { nil }
@@ -110,12 +110,12 @@ RSpec.describe Fact, type: :model do
         let (:other_fact_exported_from) { nil }
         let (:metric_id) {
           id = '3'
-          FactoryGirl.create :fact, exported_from: other_fact_exported_from, metric_id: id
+          FactoryBot.create :fact, exported_from: other_fact_exported_from, metric_id: id
           id
         }
 
         context 'across different spaces' do
-          let (:other_fact_exported_from) { FactoryGirl.create :space }
+          let (:other_fact_exported_from) { FactoryBot.create :space }
           it { is_expected.to be_valid }
         end
 
@@ -128,9 +128,9 @@ RSpec.describe Fact, type: :model do
   end
 
   describe '#destroy' do
-    let (:exported_from) { FactoryGirl.create(:space) }
+    let (:exported_from) { FactoryBot.create(:space) }
     let (:metric_id) { '3' }
-    subject (:fact) { FactoryGirl.create(:fact, exported_from: exported_from, metric_id: metric_id) }
+    subject (:fact) { FactoryBot.create(:fact, exported_from: exported_from, metric_id: metric_id) }
 
     before do
       exported_from
@@ -144,18 +144,18 @@ RSpec.describe Fact, type: :model do
 
   describe 'take_checkpoint' do
     let (:by_api) { false }
-    let (:author) { FactoryGirl.create(:user) }
-    let (:first_checkpoint) { FactoryGirl.create(:fact_checkpoint, fact: fact, created_at: 0) }
+    let (:author) { FactoryBot.create(:user) }
+    let (:first_checkpoint) { FactoryBot.create(:fact_checkpoint, fact: fact, created_at: 0) }
     let (:checkpoint) { fact.take_checkpoint(author, by_api) }
     let (:num_other_facts) { 0 }
     let (:checkpoint_limit) { 5 }
-    subject (:fact) { FactoryGirl.create(:fact) }
+    subject (:fact) { FactoryBot.create(:fact) }
 
     before do
       first_checkpoint
 
       stub_const "Fact::CHECKPOINT_LIMIT", checkpoint_limit # We want to reach the history cutoff with little work.
-      num_other_facts.times { FactoryGirl.create(:fact_checkpoint, fact: fact) }
+      num_other_facts.times { FactoryBot.create(:fact_checkpoint, fact: fact) }
 
       checkpoint
     end
@@ -203,11 +203,11 @@ RSpec.describe Fact, type: :model do
   end
 
   describe '#imported_to_intermediate_spaces' do
-    let (:organization) { FactoryGirl.create(:organization) }
-    let (:imported_fact) { FactoryGirl.create(:fact, organization: organization) }
+    let (:organization) { FactoryBot.create(:organization) }
+    let (:imported_fact) { FactoryBot.create(:fact, organization: organization) }
     let (:exported_from) {
       imported_fact
-      FactoryGirl.create(
+      FactoryBot.create(
         :space,
         organization: organization,
         graph: {'guesstimates' => [ {'expression'=>"=${fact:#{imported_fact.id}}"} ]},

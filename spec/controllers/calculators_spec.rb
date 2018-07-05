@@ -11,10 +11,10 @@ end
 
 RSpec.describe CalculatorsController, type: :controller do
   describe 'POST create' do
-    let (:creator) { FactoryGirl.create(:user, :lite_plan) }
+    let (:creator) { FactoryBot.create(:user, :lite_plan) }
     let (:is_private) { false } # default context public.
     let (:organization) { nil } # default context no organization.
-    let (:space) { FactoryGirl.create(:space, user: creator, organization: organization, is_private: is_private) }
+    let (:space) { FactoryBot.create(:space, user: creator, organization: organization, is_private: is_private) }
 
     let (:calculator_params) {{
       title: 'title',
@@ -36,7 +36,7 @@ RSpec.describe CalculatorsController, type: :controller do
     let (:viewing_user) { nil }
     before do
       setup_knock(viewing_user) if viewing_user.present?
-      post :create, space_id: space.id, calculator: calculator_params
+      post :create, params: { space_id: space.id, calculator: calculator_params }
     end
 
     context 'for a logged out creator' do
@@ -44,7 +44,7 @@ RSpec.describe CalculatorsController, type: :controller do
     end
 
     context 'for a logged in creator' do
-      let (:viewing_user) { FactoryGirl.create(:user) }
+      let (:viewing_user) { FactoryBot.create(:user) }
 
       it { is_expected.to respond_with :unauthorized }
 
@@ -62,15 +62,15 @@ RSpec.describe CalculatorsController, type: :controller do
           context 'for a space with organization' do
             context 'for a creator who is a member' do
               let (:organization) {
-                organization = FactoryGirl.create(:organization)
-                FactoryGirl.create(:user_organization_membership, user: creator, organization: organization)
+                organization = FactoryBot.create(:organization)
+                FactoryBot.create(:user_organization_membership, user: creator, organization: organization)
                 organization
               }
               include_examples 'it successfully creates the calculator'
             end
 
             context 'for a non-membered creator' do
-              let (:organization) { FactoryGirl.create(:organization) }
+              let (:organization) { FactoryBot.create(:organization) }
               it { is_expected.to respond_with :unauthorized }
             end
           end

@@ -1,4 +1,4 @@
-class UserOrganizationMembership < ActiveRecord::Base
+class UserOrganizationMembership < ApplicationRecord
   belongs_to :organization
   belongs_to :user
   belongs_to :invitation, class_name: 'UserOrganizationInvitation'
@@ -9,14 +9,9 @@ class UserOrganizationMembership < ActiveRecord::Base
   scope :for_organization, -> (organization_id) { where(organization_id: organization_id) }
   scope :for_user, -> (user_id) { where(user_id: user_id) }
 
-  after_create :identify_user
-  after_destroy :identify_user, :delete_invitation
+  after_destroy :delete_invitation
 
   private
-  def identify_user
-    user.identify
-  end
-
   def delete_invitation
     invitation.destroy if invitation.present?
   end

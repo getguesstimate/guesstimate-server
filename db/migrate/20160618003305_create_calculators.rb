@@ -1,4 +1,4 @@
-class CreateCalculators < ActiveRecord::Migration
+class CreateCalculators < ActiveRecord::Migration[4.2]
   def change
     create_table :calculators do |t|
       t.integer :space_id

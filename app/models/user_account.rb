@@ -1,4 +1,4 @@
-class UserAccount < ActiveRecord::Base
+class UserAccount < ApplicationRecord
   belongs_to :user
 
   def new_subscription_iframe(plan_id)

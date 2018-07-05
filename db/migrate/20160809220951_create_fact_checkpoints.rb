@@ -1,4 +1,4 @@
-class CreateFactCheckpoints < ActiveRecord::Migration
+class CreateFactCheckpoints < ActiveRecord::Migration[4.2]
   def change
     create_table :fact_checkpoints do |t|
       t.integer :fact_id

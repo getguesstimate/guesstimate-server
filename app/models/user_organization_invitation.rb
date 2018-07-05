@@ -1,4 +1,4 @@
-class UserOrganizationInvitation < ActiveRecord::Base
+class UserOrganizationInvitation < ApplicationRecord
   belongs_to :organization
   has_one :membership, class_name: 'UserOrganizationMembership', foreign_key: 'invitation_id'
 

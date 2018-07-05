@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :organization do
     sequence(:name) { |n| "organization #{n}" }
     plan :organization_basic_30
