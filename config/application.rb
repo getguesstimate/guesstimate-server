@@ -23,6 +23,8 @@ module GuesstimateApi
     # Do not swallow errors in after_commit/after_rollback callbacks.
     # config.active_record.raise_in_transactional_callbacks = true
     config.autoload_paths << Rails.root.join('lib')
+
+    # This is here because some dependencies were causing trouble with Heroku
     config.enable_dependency_loading  = true
   end
 end
