@@ -1,4 +1,4 @@
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   has_many :spaces
   has_one :account, dependent: :destroy
   has_one :account, class_name: 'UserAccount', dependent: :destroy

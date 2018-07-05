@@ -1,4 +1,4 @@
-class UserOrganizationMembership < ActiveRecord::Base
+class UserOrganizationMembership < ApplicationRecord
   belongs_to :organization
   belongs_to :user
   belongs_to :invitation, class_name: 'UserOrganizationInvitation'

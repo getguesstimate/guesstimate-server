@@ -1,6 +1,6 @@
 require 'net/http'
 
-class Space < ActiveRecord::Base
+class Space < ApplicationRecord
   include AlgoliaSearch
   include FakeNameDetector
 

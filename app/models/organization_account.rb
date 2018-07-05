@@ -1,4 +1,4 @@
-class OrganizationAccount < ActiveRecord::Base
+class OrganizationAccount < ApplicationRecord
   belongs_to :organization
   after_create :set_chargebee_id
 
