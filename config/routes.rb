@@ -41,4 +41,8 @@ Rails.application.routes.draw do
   end
 
   resources :user_organization_memberships, only: [:destroy]
+
+  namespace :admin do
+    get :bad_show
+  end
 end
