@@ -178,7 +178,6 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rake (12.3.1)
-    rdoc (4.3.0)
     redis (4.0.1)
     representable (3.0.4)
       declarative (< 0.1.0)
@@ -223,9 +222,6 @@ GEM
       rspec-support (~> 3.7.0)
     rspec-support (3.7.1)
     ruby-stemmer (0.9.6)
-    sdoc (0.4.2)
-      json (~> 1.7, >= 1.7.7)
-      rdoc (~> 4.0)
     sentry-raven (2.7.4)
       faraday (>= 0.7.6, < 1.0)
     sequel (5.9.0)
@@ -299,7 +295,6 @@ DEPENDENCIES
   rseg
   rspec-collection_matchers
   rspec-rails
-  sdoc (~> 0.4.0)
   sentry-raven
   shoulda-matchers
   skylight
