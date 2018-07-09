@@ -33,10 +33,6 @@ gem 'sentry-raven'
 # Caching
 gem 'actionpack-action_caching'
 
-# Space Categorization
-gem 'rseg'
-gem 'stuff-classifier', git: 'https://github.com/alexandru/stuff-classifier'
-
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
