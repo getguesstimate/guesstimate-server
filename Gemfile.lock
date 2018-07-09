@@ -87,9 +87,6 @@ GEM
     httpclient (2.8.3)
     i18n (1.0.1)
       concurrent-ruby (~> 1.0)
-    jbuilder (2.7.0)
-      activesupport (>= 4.2.0)
-      multi_json (>= 1.2)
     json (1.8.6)
     json_pure (2.1.0)
     jwt (1.5.6)
@@ -251,9 +248,9 @@ DEPENDENCIES
   dalli
   database_cleaner
   factory_bot_rails
-  jbuilder (~> 2.0)
   knock (~> 2.0)
   le
+  multi_json
   pg
   pry
   pry-byebug
