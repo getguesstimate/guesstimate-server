@@ -60,5 +60,3 @@ group :production do
   gem 'skylight'
   gem 'le'
 end
-
-gem 'rails_12factor', group: :production
