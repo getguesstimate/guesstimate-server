@@ -17,6 +17,12 @@ class Authentor
     User.create_from_auth0_user(new_auth0_user)
   end
 
+  def fetch_user(auth0_id)
+    auth0_user = @auth0.user(auth0_id)
+    user = User.create_from_auth0_user auth0_user
+    Rails.logger.info "Created user from auth0 user #{auth0_user}"
+  end
+
   def fetch_users
     find_user_count = @auth0.get_users({per_page: 0, page: 0, include_totals: true})
     total = find_user_count["total"]
