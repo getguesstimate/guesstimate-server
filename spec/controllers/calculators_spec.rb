@@ -1,5 +1,4 @@
 require 'rails_helper'
-require 'spec_helper'
 require 'rspec/collection_matchers'
 
 def setup_knock(user)

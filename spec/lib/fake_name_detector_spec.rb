@@ -1,5 +1,4 @@
 require 'rails_helper'
-require 'spec_helper'
 
 VALID_NAMES = ['Real Model', 'Test aaaa still real']
 INVALID_NAMES = ['test', 'test4', '4', 'aaaa', 'ha', '', 'test aaa ha']
