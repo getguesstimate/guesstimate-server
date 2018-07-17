@@ -256,10 +256,10 @@ class Space < ApplicationRecord
   end
 
   def to_text
-    return "#{name}
+    return <<~TEXT#{name}
       #{description}
       #{metrics.zip(guesstimates).map {|m, g| "Metric #{m['name']}: #{g['description']}"}.join("\n")}
-    "
+    TEXT
   end
 
   def increment_exported_facts_count!
