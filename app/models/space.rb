@@ -248,11 +248,7 @@ class Space < ApplicationRecord
   end
 
   def max_columns
-    if graph && graph['metrics']
-      return graph['metrics'].map{|e| (e['location'] && e['location']['column'] || 0)}.max
-    else
-      return 0
-    end
+    metrics.map {|metric| metric.dig('location', 'column') || 0}.max || 0
   end
 
   def to_text
