@@ -6,12 +6,7 @@ gem 'rails', '~> 5.2.0'
 # Use postgresql as the database for Active Record
 gem 'pg'
 
-# Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
-gem 'turbolinks'
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.0'
-# bundle exec rake doc:rails generates the API under doc/api.
-gem 'sdoc', '~> 0.4.0', group: :doc
+gem 'multi_json'
 
 # Use the puma server
 gem 'puma'
@@ -26,7 +21,6 @@ gem 'algoliasearch-rails'
 
 gem 'responders'
 gem 'roar-rails'
-gem 'uglifier'
 gem 'chargebee'
 
 # This is needed to load on heroku, should be fixed later.
@@ -37,10 +31,6 @@ gem 'sentry-raven'
 # Caching
 gem 'actionpack-action_caching'
 
-# Space Categorization
-gem 'rseg'
-gem 'stuff-classifier', git: 'https://github.com/alexandru/stuff-classifier'
-
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
@@ -49,7 +39,6 @@ group :development, :test do
   gem 'pry-rails'
 
   gem 'rspec-rails'
-  gem 'database_cleaner'
   gem 'factory_bot_rails'
 end
 
@@ -70,5 +59,3 @@ group :production do
   gem 'skylight'
   gem 'le'
 end
-
-gem 'rails_12factor', group: :production
