@@ -1,5 +1,4 @@
 require 'rails_helper'
-require 'spec_helper'
 
 def setup_knock(user)
   request.headers['authorization'] = 'Bearer JWTTOKEN'

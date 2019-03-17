@@ -248,18 +248,14 @@ class Space < ApplicationRecord
   end
 
   def max_columns
-    if graph && graph['metrics']
-      return graph['metrics'].map{|e| (e['location'] && e['location']['column'] || 0)}.max
-    else
-      return 0
-    end
+    metrics.map {|metric| metric.dig('location', 'column') || 0}.max || 0
   end
 
   def to_text
-    return "#{name}
+    return <<~TEXT#{name}
       #{description}
       #{metrics.zip(guesstimates).map {|m, g| "Metric #{m['name']}: #{g['description']}"}.join("\n")}
-    "
+    TEXT
   end
 
   def increment_exported_facts_count!
