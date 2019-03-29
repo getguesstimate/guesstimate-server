@@ -57,5 +57,4 @@ end
 
 group :production do
   gem 'skylight'
-  gem 'le'
 end
