@@ -86,7 +86,7 @@ GEM
     i18n (1.0.1)
       concurrent-ruby (~> 1.0)
     json (1.8.6)
-    json_pure (2.1.0)
+    json_pure (2.5.1)
     jwt (1.5.6)
     knock (2.1.1)
       bcrypt (~> 3.1)
