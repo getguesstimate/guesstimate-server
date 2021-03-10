@@ -7,7 +7,7 @@ class UsersController < ApplicationController
   end
 
   def finished_tutorial
-    @user.update_attributes needs_tutorial: false
+    @user.update(needs_tutorial: false)
     render json: user_representation(@user)
   end
 

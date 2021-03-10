@@ -174,7 +174,7 @@ class Space < ApplicationRecord
   end
 
   def clean_graph!
-    update_attributes(graph: cleaned_graph)
+    update(graph: cleaned_graph)
   end
 
   def cleaned_graph
@@ -268,16 +268,16 @@ class Space < ApplicationRecord
 
   def enable_shareable_link!
     return true if shareable_link_enabled
-    update_attributes shareable_link_token: get_secure_token, shareable_link_enabled: true
+    update(shareable_link_token: get_secure_token, shareable_link_enabled: true)
   end
 
   def disable_shareable_link!
     return true unless shareable_link_enabled
-    update_attributes shareable_link_token: nil, shareable_link_enabled: false
+    update(shareable_link_token: nil, shareable_link_enabled: false)
   end
 
   def rotate_shareable_link!
-    update_attributes shareable_link_token: get_secure_token if shareable_link_enabled
+    update(shareable_link_token: get_secure_token) if shareable_link_enabled
   end
 
   def shareable_link_url
