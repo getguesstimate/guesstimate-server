@@ -32,5 +32,7 @@ module GuesstimateApi
 
     # This is here because some dependencies were causing trouble with Heroku
     config.enable_dependency_loading  = true
+
+    config.action_mailer.delivery_job = "ActionMailer::MailDeliveryJob"
   end
 end
