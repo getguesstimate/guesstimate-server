@@ -1,3 +1,4 @@
+require "active_support/core_ext/integer/time"
 require File.expand_path('../boot', __FILE__)
 
 require "rails"
