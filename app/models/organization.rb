@@ -53,16 +53,16 @@ class Organization < ApplicationRecord
 
   def enable_api_access!
     return true if api_enabled
-    update_attributes api_token: get_secure_token, api_enabled: true
+    update(api_token: get_secure_token, api_enabled: true)
   end
 
   def disable_api_access!
     return true unless api_enabled
-    update_attributes api_token: nil, api_enabled: false
+    update(api_token: nil, api_enabled: false)
   end
 
   def rotate_api_token!
-    update_attributes api_token: get_secure_token if api_enabled
+    update(api_token: get_secure_token) if api_enabled
   end
 
   private
