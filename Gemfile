@@ -18,6 +18,7 @@ gem 'rack-cors', require: 'rack/cors'
 gem 'auth0'
 gem 'knock', '~> 2.0'
 gem 'algoliasearch-rails'
+gem 'rails-controller-testing'
 
 gem 'responders'
 gem 'roar-rails'
