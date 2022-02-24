@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :space_checkpoint do
-    graph JSON.generate({metrics: [], guesstimates: []})
+    graph {JSON.generate({metrics: [], guesstimates: []})}
     space
   end
 end

@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.7.2'
+ruby '2.7.5'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2.0'
 # Use postgresql as the database for Active Record
@@ -18,6 +18,7 @@ gem 'rack-cors', require: 'rack/cors'
 gem 'auth0'
 gem 'knock', '~> 2.0'
 gem 'algoliasearch-rails'
+gem 'rails-controller-testing'
 
 gem 'responders'
 gem 'roar-rails'

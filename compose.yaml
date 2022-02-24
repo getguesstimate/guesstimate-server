@@ -4,9 +4,13 @@ services:
   db:
     image: postgres
     restart: always
+    # This allows us to use this POSTGRES_MULTIPLE_DATABASES. I use the same image
+    # for both the test and development databases
+    volumes:
+      - ./docker/entry:/docker-entrypoint-initdb.d
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: guesstimate-api
-      POSTGRES_DB: guesstimate-api_development
+      POSTGRES_MULTIPLE_DATABASES: guesstimate-api_development,guesstimate-api_test
     ports:
       - "5432:5432"

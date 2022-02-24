@@ -36,4 +36,11 @@ RSpec.describe UsersController, type: :controller do
       end
     end
   end
+
+  describe 'Get User' do
+    it "returns 400 with an invalid id" do
+      get :index, :params => {:auth0_id => "undefined" }
+      expect(response.status).to eq 400
+    end
+  end
 end
