@@ -43,6 +43,9 @@ Rails.application.configure do
   # yet still be able to expire them through the digest params.
   config.assets.digest = true
 
+  # So we can use credentials in a production environment
+  config.require_master_key = true
+
   # `config.assets.precompile` and `config.assets.version` have moved to config/initializers/assets.rb
 
   # Specifies the header that your server uses for sending files.
@@ -63,7 +66,7 @@ Rails.application.configure do
   config.logger = Le.new('b3f94a58-f3f0-32d2-86b4-59656185a2df', :debug => true, :local => true)
 
   # Use a different cache store in production.
-  config.cache_store = :dalli_store,
+  config.cache_store = :mem_cache_store,
     (Rails.application.secrets.memcachedcloud_servers || "").split(","), {
       username: Rails.application.secrets.memcachedcloud_username,
       password: Rails.application.secrets.memcachedcloud_password,
