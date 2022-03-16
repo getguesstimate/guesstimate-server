@@ -13,6 +13,7 @@ gem 'puma'
 # Memcache
 gem 'dalli'
 
+gem 'uglifier'
 gem 'rack-cors', require: 'rack/cors'
 
 gem 'auth0'

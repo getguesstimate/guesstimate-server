@@ -24,13 +24,8 @@ class Authentor
   end
 
   def fetch_users
-    find_user_count = @auth0.get_users({per_page: 0, page: 0, include_totals: true})
-    total = find_user_count["total"]
-
-    #If total is 5400, the page should be 53, because the first page is 0.
-    go_to_page = (total - 1) / 100
-
-    @auth0_users = @auth0.get_users({per_page: 100, page: go_to_page})
+    # Get the last 100 users
+    @auth0_users = @auth0.get_users({per_page: 100, page: 0, sort: 'created_at:-1'})
 
     puts "GOING TO PAGE #{total}, found users with count #{@auth0_users.count}"
 
