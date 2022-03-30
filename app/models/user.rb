@@ -25,17 +25,17 @@ class User < ApplicationRecord
   end
 
   def self.create_from_auth0_user(auth0_user)
-    User.create(
-      name: auth0_user['name'],
-      username: auth0_user['nickname'],
-      email: auth0_user['email'],
-      company: auth0_user['company'],
-      locale: auth0_user['locale'],
-      location: auth0_user['location'],
-      gender: auth0_user['gender'],
-      picture: auth0_user['picture'],
-      auth0_id: auth0_user['user_id'],
-    )
+    user = User.find_or_initialize_by(email: auth0_user['email'])
+    user.name = auth0_user['name']
+    user.username = auth0_user['nickname']
+    user.email = auth0_user['email']
+    user.company = auth0_user['company']
+    user.locale = auth0_user['locale']
+    user.location = auth0_user['location']
+    user.gender = auth0_user['gender']
+    user.picture = auth0_user['picture']
+    user.auth0_id = auth0_user['user_id']
+    user.save
   end
 
   def plan_details
