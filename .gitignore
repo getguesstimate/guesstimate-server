@@ -23,3 +23,5 @@ tags
 
 #rake_tasks tmp
 .rake_tasks~
+
+/vendor/bundle

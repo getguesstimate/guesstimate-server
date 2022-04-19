@@ -6,8 +6,8 @@ threads threads_count, threads_count
 preload_app!
 
 rackup      DefaultRackup
-port        ENV['PORT']     || 4000
 environment ENV['RACK_ENV'] || 'development' # RACK_ENV is set to production on heroku natively.
+bind "tcp://#{ENV.fetch('IP_ADDRESS', '127.0.0.1')}:#{ENV.fetch('PORT', 4000)}"
 
 on_worker_boot do
   # Worker specific setup for Rails 4.1+

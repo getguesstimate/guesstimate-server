@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  guesstimate-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - type: bind
+        source: ..
+        target: /guesstimate-server
+    working_dir: /guesstimate-server
+    command: sleep infinity
+    ports:
+      - "4000:4000"
+    environment:
+      BUNDLE_PATH: vendor/bundle
+      IP_ADDRESS: 0.0.0.0
