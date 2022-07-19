@@ -2,14 +2,14 @@ source 'https://rubygems.org'
 
 ruby '2.7.6'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.2.0'
+gem 'rails', '~> 6.0.5'
 # Use postgresql as the database for Active Record
-gem 'pg'
+gem 'pg', '~> 1.4.1'
 
 gem 'multi_json'
 
 # Use the puma server
-gem 'puma'
+gem 'puma', '~> 5.6.4'
 # Memcache
 gem 'dalli'
 
@@ -35,10 +35,10 @@ gem 'actionpack-action_caching'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug'
-  gem 'pry'
+  gem 'byebug', '~> 11.0'
+  gem 'pry', '~> 0.13.1'
   gem 'pry-byebug'
-  gem 'pry-rails'
+  gem 'pry-rails', '~> 0.3.9'
 
   gem 'rspec-rails'
   gem 'factory_bot_rails'
