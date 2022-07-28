@@ -19,3 +19,7 @@ These instructions were tested on Ubuntu 21.10.
 6. Create the necessary databases and run migrations: `bundle exec rails db:setup`
 
 To see if things are working, try running the tests: `bundle exec rspec`
+
+## Deployment
+
+prod is pegged to branch `production` within heroku.
