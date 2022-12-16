@@ -10,7 +10,7 @@ class UserOrganizationInvitationsController < ApplicationController
   def invite_by_email
     @invitation = UserOrganizationInvitation.new email: params[:email], organization: @organization
     if @invitation.save
-      UserOrganizationInvitationMailer.new_user_invite(@invitation).deliver_later
+      UserOrganizationInvitationMailer.new_user_invite(@invitation, @user.nil?).deliver_later
       unless @user.nil?
         return unless add_existing_user
       end
