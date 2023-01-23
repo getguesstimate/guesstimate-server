@@ -71,7 +71,7 @@ GEM
     bindex (0.7.0)
     builder (3.2.4)
     byebug (11.0.1)
-    cgi (0.3.1)
+    cgi (0.3.6)
     chargebee (2.12.0)
       cgi (>= 0.1.0, < 1.0.0)
       json_pure (~> 2.1)
