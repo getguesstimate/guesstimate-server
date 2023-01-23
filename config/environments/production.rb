@@ -99,7 +99,7 @@ Rails.application.configure do
     end
 
     allow do
-      origins 'https://guesstimate-app.vercel.com'
+      origins 'https://guesstimate-app.vercel.app'
       resource '*', headers: :any, methods: [:get, :post, :options, :delete, :put, :update, :patch]
     end
 
