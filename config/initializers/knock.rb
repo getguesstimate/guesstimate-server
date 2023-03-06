@@ -49,7 +49,6 @@ Knock.setup do |config|
   ##
   ## Default:
   # config.token_public_key = nil
-  config.token_audience = -> { Rails.application.secrets.auth0_client_id }
 
   ## Exception Class
   ## ---------------
@@ -58,5 +57,16 @@ Knock.setup do |config|
   ##
   ## Default:
   # config.not_found_exception_class_name = 'ActiveRecord::RecordNotFound'
-   config.token_secret_signature_key = -> { JWT.base64url_decode Rails.application.secrets.auth0_client_secret }
+
+  if Rails.application.secrets.auth0_rsa_domain
+    config.token_signature_algorithm = 'RS256'
+    jwks_raw = Net::HTTP.get URI(Rails.application.secrets.auth0_rsa_domain)
+    jwks_keys = Array(JSON.parse(jwks_raw)['keys'])
+    config.token_public_key = OpenSSL::X509::Certificate.new(Base64.decode64(jwks_keys[0]['x5c'].first)).public_key
+  else
+    config.token_signature_algorithm = 'HS256'
+    config.token_secret_signature_key = -> { JWT.base64url_decode Rails.application.secrets.auth0_client_secret }
+  end
+
+  config.token_audience = -> { Rails.application.secrets.auth0_client_id }
 end
