@@ -227,6 +227,7 @@ class Space < ApplicationRecord
     Net::HTTP.get URI.parse(get_screenshot_url(false, true))
   end
 
+  # Unused - we don't use prerender.io anymore, token is not configured
   def recache_html
     uri = URI.parse('http://api.prerender.io')
     http = Net::HTTP.new(uri.host, uri.port)
