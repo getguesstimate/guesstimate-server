@@ -99,6 +99,11 @@ Rails.application.configure do
     end
 
     allow do
+      origins 'https://guesstimate-app.vercel.app'
+      resource '*', headers: :any, methods: [:get, :post, :options, :delete, :put, :update, :patch]
+    end
+
+    allow do
       origins 'localhost:3000'
       resource '*', headers: :any, methods: [:get, :options]
     end

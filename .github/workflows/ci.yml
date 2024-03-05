@@ -4,7 +4,6 @@ on: [push, pull_request]
 
 jobs:
   build-migrate-test:
-
     runs-on: ubuntu-latest
 
     services:
@@ -13,7 +12,7 @@ jobs:
         env:
           POSTGRES_USER: guesstimate-api
           POSTGRES_PASSWORD: password
-        ports: ['5432:5432']
+        ports: ["5432:5432"]
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -21,19 +20,19 @@ jobs:
           --health-retries 5
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Ruby 2.7
-      uses: actions/setup-ruby@v1
-      with:
-        ruby-version: 2.7
-    - name: Build, migrate, and test
-      env:
-        PGHOST: 127.0.0.1
-        PGUSER: guesstimate-api
-        RAILS_ENV: test
-      run: |
-        sudo apt-get -yqq install libpq-dev
-        gem install bundler
-        bundle install --jobs 4 --retry 3
-        bundle exec rails db:setup
-        bundle exec rspec
+      - uses: actions/checkout@v3
+      - name: Set up Ruby 2.7
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.7
+      - name: Build, migrate, and test
+        env:
+          PGHOST: 127.0.0.1
+          PGUSER: guesstimate-api
+          RAILS_ENV: test
+        run: |
+          sudo apt-get -yqq install libpq-dev
+          gem install bundler -v 2.4.22
+          bundle install --jobs 4 --retry 3
+          bundle exec rails db:setup
+          bundle exec rspec
