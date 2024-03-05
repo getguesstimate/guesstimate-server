@@ -94,12 +94,11 @@ Rails.application.configure do
 
   config.middleware.insert_before 0, Rack::Cors do
     allow do
-      origins /\Ahttps:\/\/[a-z]+\.getguesstimate.com\z/, /\Ahttp:\/\/([^w]|w[^w])[a-z]*\.getguesstimate.com\z/
-      resource '*', headers: :any, methods: [:get, :post, :options, :delete, :put, :update, :patch]
-    end
-
-    allow do
-      origins 'https://guesstimate-app.vercel.app'
+      origins /\Ahttps:\/\/[a-z]+\.getguesstimate.com\z/,
+              /\Ahttp:\/\/([^w]|w[^w])[a-z]*\.getguesstimate.com\z/,
+              # This seems relatively safe: auth cookie is stored on the real frontend, and get requests won't change anything.
+              # (By the same logic, we could just disable CORS entirely.)
+              /\Ahttps:\/\/guesstimate-app-.*-quantified-uncertainty.vercel.app\z/
       resource '*', headers: :any, methods: [:get, :post, :options, :delete, :put, :update, :patch]
     end
 
