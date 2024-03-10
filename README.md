@@ -2,26 +2,20 @@
 
 [ ![Codeship Status for getguesstimate/guesstimate-server](https://codeship.com/projects/91bb1160-c8b7-0133-8173-1ac51750ca4c/status?branch=master)](https://codeship.com/projects/139418)
 
-## Getting Started
+## Development
 
-### Ubuntu
+Development should be done with Docker, which standardizes the environment that's used to run this project.
 
-These instructions were tested on Ubuntu 21.10.
+If you can't or don't want to use Docker, you can read through `compose.yaml` and `Dockerfile` configs and adapt them for your own development environment.
 
-0. Set up a Ruby version manager, such as [Rbenv](https://github.com/rbenv/rbenv), and install the version of Ruby specified in [`.ruby-version`](https://github.com/getguesstimate/guesstimate-server/blob/master/.ruby-version).
-1. Install [`libpq`](https://www.postgresql.org/docs/9.5/libpq.html): `sudo apt install libpq-dev`
-2. [Dependency `racc` will fail without `ubuntu-dev-tools`](https://stackoverflow.com/questions/27768420/gem-installation-error-you-have-to-install-development-tools-first-windows): `sudo apt install ubuntu-dev-tools`
-3. Rails expects a JavaScript runtime, so `sudo apt install nodejs`
-4. Inside the application root directory, install gems: `bundle install`
-5. Install PostgreSQL (note that the version may not match the production version): `sudo apt install postgresql`
-6. Start PostgreSQL: `sudo service postgresql start`
-7. Start a PostgreSQL console: `sudo -upostgres psql`
-    1. Create the `guesstimate-api` user: `create user "guesstimate-api" with password 'password';`
-    2. Allow the user to create databases: `alter user "guesstimate-api" createdb;`
-8. Create the necessary databases and run migrations: `bundle exec rails db:setup`
+### Docker
 
-To see if things are working, try running the tests: `bundle exec rspec`
+1. Install `docker` its `docker compose` plugin. If you're on macOS, either Docker Desktop or Colima are good options.
+2. Run `docker compose up`. By default, it will expose the server on http://localhost:4000. If you want to use another port, update `compose.yaml` config accordingly.
+3. Run `docker compose run --rm web rails db:prepare` to prepare the database.
+
+To see if things are working, try running the tests: `docker compose run --rm web bundle exec rspec`
 
 ## Deployment
 
-prod is pegged to branch `production` within heroku.
+API for the main Guesstimate instance, https://api.getguesstimate.com, is deployed on QURI Kubernetes cluster.
