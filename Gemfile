@@ -9,10 +9,7 @@ gem 'multi_json'
 
 # Use the puma server
 gem 'puma', '~> 5.6.4'
-# Memcache
-gem 'dalli'
 
-gem 'uglifier'
 gem 'rack-cors', require: 'rack/cors'
 
 gem 'auth0'
@@ -28,9 +25,6 @@ gem 'chargebee'
 
 # Analytics & Reporting
 gem 'sentry-raven'
-
-# Caching
-gem 'actionpack-action_caching'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

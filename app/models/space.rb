@@ -227,23 +227,10 @@ class Space < ApplicationRecord
     Net::HTTP.get URI.parse(get_screenshot_url(false, true))
   end
 
-  # Unused - we don't use prerender.io anymore, token is not configured
-  def recache_html
-    uri = URI.parse('http://api.prerender.io')
-    http = Net::HTTP.new(uri.host, uri.port)
-    req = Net::HTTP::Post.new(
-      'http://api.prerender.io/recache',
-      initHeader = {'Content-Type' => 'application/json'}
-    )
-    req.body = JSON.generate prerenderToken: Rails.application.secrets.prerender_token, url: client_url
-    http.request req
-  end
-
   def take_snapshot
     update_columns screenshot: get_screenshot_url(true), big_screenshot: get_screenshot_url(false), snapshot_timestamp: DateTime.now
     Thread.new {
       take_screenshots
-      recache_html
     }
     index!
   end
