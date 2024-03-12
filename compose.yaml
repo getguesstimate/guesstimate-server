@@ -16,8 +16,8 @@ services:
   db:
     image: postgres
     restart: always
-    # This allows us to use this POSTGRES_MULTIPLE_DATABASES. I use the same image
-    # for both the test and development databases
+    # This allows us to use `POSTGRES_MULTIPLE_DATABASES`. I use the same image
+    # for both the test and development databases.
     volumes:
       - ./docker/entry:/docker-entrypoint-initdb.d
     environment:

@@ -25,8 +25,6 @@ GEM
       rack-test (>= 0.6.3)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.2.0)
-    actionpack-action_caching (1.2.2)
-      actionpack (>= 4.0.0)
     actiontext (6.0.5.1)
       actionpack (= 6.0.5.1)
       activerecord (= 6.0.5.1)
@@ -68,7 +66,6 @@ GEM
     auth0 (4.11.0)
       rest-client (~> 2.0.0)
     bcrypt (3.1.16)
-    bindex (0.7.0)
     builder (3.2.4)
     byebug (11.0.1)
     cgi (0.3.1)
@@ -80,14 +77,12 @@ GEM
     concurrent-ruby (1.1.9)
     connection_pool (2.2.5)
     crass (1.0.6)
-    dalli (3.2.1)
     declarative (0.0.20)
     diff-lcs (1.5.0)
     diffy (3.4.2)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     erubi (1.10.0)
-    execjs (2.8.1)
     factory_bot (6.2.0)
       activesupport (>= 5.0.0)
     factory_bot_rails (6.2.0)
@@ -129,7 +124,6 @@ GEM
       bcrypt (~> 3.1)
       jwt (~> 1.5)
       rails (>= 4.2)
-    le (2.7.6)
     loofah (2.18.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -246,8 +240,6 @@ GEM
       faraday (>= 1.0)
     shoulda-matchers (5.1.0)
       activesupport (>= 5.2.0)
-    skylight (5.3.0)
-      activesupport (>= 5.2.0)
     spring (4.0.0)
     sprockets (4.0.2)
       concurrent-ruby (~> 1.0)
@@ -265,16 +257,9 @@ GEM
     tzinfo (1.2.10)
       thread_safe (~> 0.1)
     uber (0.1.0)
-    uglifier (4.2.0)
-      execjs (>= 0.3.0, < 3)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8)
-    web-console (3.6.2)
-      actionview (>= 5.0)
-      activemodel (>= 5.0)
-      bindex (>= 0.4.0)
-      railties (>= 5.0)
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -285,15 +270,12 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  actionpack-action_caching
   algoliasearch-rails
   auth0
   byebug (~> 11.0)
   chargebee
-  dalli
   factory_bot_rails
   knock (~> 2.0)
-  le
   multi_json
   pg (~> 1.4.1)
   pry (~> 0.13.1)
@@ -309,13 +291,7 @@ DEPENDENCIES
   rspec-rails
   sentry-raven
   shoulda-matchers
-  skylight
   spring
-  uglifier
-  web-console (~> 3.6.2)
-
-RUBY VERSION
-   ruby 2.7.7p221
 
 BUNDLED WITH
-   2.3.9
+   2.4.22
