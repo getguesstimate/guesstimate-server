@@ -7,6 +7,7 @@ default: &default
 
 development:
   <<: *default
+  # Credentials defined in `compose.yaml`.`
   database: guesstimate-api_development
   username: guesstimate-api
   password: password
@@ -18,18 +19,13 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
+  # Credentials defined in `compose.yaml`.`
   database: guesstimate-api_test
   username: guesstimate-api
   password: password
   host: db
   port: 5432
 
-# You can also use the full URL:
-#
-#   production:
-#     url: <%= ENV['DATABASE_URL'] %>
 production:
   <<: *default
-  database: guesstimate-api_production
-  username: guesstimate-api
-  password: <%= ENV['GUESSTIMATE-API_DATABASE_PASSWORD'] %>
+  url: <%= ENV['DATABASE_URL'] %>

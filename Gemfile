@@ -6,7 +6,7 @@ gem 'pg', '~> 1.4.1'
 gem 'multi_json'
 
 # Use the puma server
-gem 'puma', '~> 5.6.4'
+gem 'puma', '< 7'
 
 gem 'rack-cors', require: 'rack/cors'
 

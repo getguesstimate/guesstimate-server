@@ -281,7 +281,7 @@ DEPENDENCIES
   pry (~> 0.13.1)
   pry-byebug
   pry-rails (~> 0.3.9)
-  puma (~> 5.6.4)
+  puma (< 7)
   rack-cors
   rails (~> 6.0.5)
   rails-controller-testing
