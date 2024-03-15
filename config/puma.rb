@@ -5,5 +5,4 @@ threads threads_count, threads_count
 
 preload_app!
 
-environment 'production'
 port        ENV['PORT']     || 4000
