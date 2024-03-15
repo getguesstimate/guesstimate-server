@@ -6,4 +6,3 @@ threads threads_count, threads_count
 preload_app!
 
 port        ENV['PORT']     || 4000
-environment ENV['RACK_ENV'] || 'development' # RACK_ENV is set to production on heroku natively.
