@@ -1,6 +1,10 @@
 name: Rails migration and rspec
 
-on: [push, pull_request]
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
 
 jobs:
   build-and-test:
@@ -9,8 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Start containers
-        run: docker-compose -d --build
+        run: docker-compose up -d --build
       - name: Prepare DB
-        run: docker compose run --rm web rails db:prepare
+        run: docker-compose run --rm web rails db:prepare
       - name: Run tests
-        run: docker compose run --rm web bundle exec rspec
+        run: docker-compose run --rm web bundle exec rspec
