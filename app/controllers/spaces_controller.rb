@@ -4,7 +4,6 @@ class SpacesController < ApplicationController
   before_action :check_authorization, only: [:update, :destroy, :enable_shareable_link, :disable_shareable_link, :rotate_shareable_link]
   before_action :check_previous_author, only: [:update]
 
-  #caches_action :show
   #GET /spaces
   #GET /spaces.json
   #TODO(matthew): params['strings'] or params[:symbols]?

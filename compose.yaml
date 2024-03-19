@@ -1,11 +1,24 @@
-version: '3.1'
+version: "3.1"
 
 services:
+  web:
+    build: .
+    command: /bin/sh -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 4000 -b '0.0.0.0'"
+    volumes:
+      - .:/docker/app
+      - bundle-volume:/usr/local/bundle
+    ports:
+      - target: 4000
+        published: 4000
+    depends_on:
+      - db
+    tty: true
+    stdin_open: true
   db:
     image: postgres
     restart: always
-    # This allows us to use this POSTGRES_MULTIPLE_DATABASES. I use the same image
-    # for both the test and development databases
+    # This allows us to use `POSTGRES_MULTIPLE_DATABASES`. I use the same image
+    # for both the test and development databases.
     volumes:
       - ./docker/entry:/docker-entrypoint-initdb.d
     environment:
@@ -14,3 +27,5 @@ services:
       POSTGRES_MULTIPLE_DATABASES: guesstimate-api_development,guesstimate-api_test
     ports:
       - "5432:5432"
+volumes:
+  bundle-volume:
