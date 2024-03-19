@@ -3,36 +3,14 @@ name: Rails migration and rspec
 on: [push, pull_request]
 
 jobs:
-  build-migrate-test:
+  build-and-test:
     runs-on: ubuntu-latest
-
-    services:
-      db:
-        image: postgres:14
-        env:
-          POSTGRES_USER: guesstimate-api
-          POSTGRES_PASSWORD: password
-        ports: ["5432:5432"]
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Ruby 2.7
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.7.7
-      - name: Build, migrate, and test
-        env:
-          PGHOST: 127.0.0.1
-          PGUSER: guesstimate-api
-          RAILS_ENV: test
-        run: |
-          sudo apt-get -yqq install libpq-dev
-          gem install bundler -v 2.4.22
-          bundle install --jobs 4 --retry 3
-          bundle exec rails db:setup
-          bundle exec rspec
+      - name: Start containers
+        run: docker-compose -d --build
+      - name: Prepare DB
+        run: docker compose run --rm web rails db:prepare
+      - name: Run tests
+        run: docker compose run --rm web bundle exec rspec
