@@ -6,7 +6,8 @@ class Authentor
   def initialize
     @auth0 = Auth0Client.new(
       :api_version => 2,
-      :token => Rails.application.secrets.auth0_api_token,
+      :client_id => Rails.application.secrets.auth0_client_id,
+      :client_secret => Rails.application.secrets.auth0_client_secret,
       :domain => Rails.application.secrets.auth0_api_domain
     )
     @api_params = {connection: Rails.application.secrets.auth0_connection}
