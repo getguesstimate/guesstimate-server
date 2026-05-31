@@ -19,9 +19,37 @@ class Authentor
   end
 
   def fetch_user(auth0_id)
-    auth0_user = @auth0.user(auth0_id)
+    begin
+      auth0_user = @auth0.user(auth0_id)
+    rescue Auth0::NotFound
+      # The Management API's user(id) endpoint only resolves *primary* user ids.
+      # When a user signs in with an identity that Auth0 has linked as a
+      # secondary (e.g. a Google login linked under a primary GitHub account),
+      # the token's `sub` is the secondary id and user(id) returns 404.
+      # Fall back to searching identities so we can still find the account.
+      auth0_user = find_user_by_identity(auth0_id)
+      raise if auth0_user.nil?
+      # Store the record under the id the frontend authenticates with, so future
+      # lookups by this `sub` match without another Auth0 round-trip.
+      auth0_user = auth0_user.merge("user_id" => auth0_id)
+    end
+
     user = User.create_from_auth0_user auth0_user
     Rails.logger.info "Created user from auth0 user #{auth0_user}"
+  end
+
+  # Looks up an Auth0 user by a (possibly secondary/linked) identity id.
+  # `auth0_id` looks like "google-oauth2|1107...", and Auth0 stores the part
+  # after the "|" as identities.user_id. Returns the user hash or nil.
+  def find_user_by_identity(auth0_id)
+    identity_user_id = auth0_id.split("|", 2).last
+    result = @auth0.users(
+      q: %Q{identities.user_id:"#{identity_user_id}"},
+      search_engine: "v3",
+      per_page: 1,
+      include_totals: true
+    )
+    (result["users"] || []).first
   end
 
   def fetch_users
