@@ -13,8 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Start containers
-        run: docker-compose up -d --build
+        run: docker compose up -d --build
       - name: Prepare DB
-        run: docker-compose run --rm web rails db:prepare
+        run: docker compose run --rm web rails db:prepare
       - name: Run tests
-        run: docker-compose run --rm web bundle exec rspec
+        run: docker compose run --rm web bundle exec rspec
