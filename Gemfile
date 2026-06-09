@@ -16,7 +16,7 @@ gem 'algoliasearch-rails'
 
 gem 'responders'
 gem 'roar-rails'
-gem 'chargebee'
+gem 'chargebee', '~> 2.72'
 
 # Analytics & Reporting
 gem 'sentry-raven'
