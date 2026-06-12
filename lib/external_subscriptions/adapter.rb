@@ -4,6 +4,15 @@ module ExternalSubscriptions
 
     class << self
       def new_subscription_iframe_url(entity_id, plan_id)
+        return new_subscription_hosted_page(entity_id, plan_id)["url"]
+      end
+
+      # Returns the full Chargebee hosted page object (id, type, url, state,
+      # embed, ...). Chargebee.js v2 needs the whole object passed to
+      # openCheckout's `hostedPage` callback so the checkout runs in-context and
+      # fires the `success` callback (which triggers our account sync). Passing
+      # only the url makes Chargebee redirect on success, and the sync is lost.
+      def new_subscription_hosted_page(entity_id, plan_id)
         params = {
           subscription: {
             plan_id: plan_id
@@ -14,7 +23,7 @@ module ExternalSubscriptions
           embed: true,
           iframe_messaging: true
         }
-        return ChargeBee::HostedPage.checkout_new(params).hosted_page.url
+        return ChargeBee::HostedPage.checkout_new(params).get_raw_response[:hosted_page]
       end
 
       def create_subscription(entity_id, plan_id)

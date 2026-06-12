@@ -1,14 +1,18 @@
 module ExternalSubscriptions
   class NewSubscriptionIframe
-    attr_accessor :href, :website_name
+    attr_accessor :hosted_page, :website_name
 
     def initialize(user_id, plan_id)
-      @href = Adapter.new_subscription_iframe_url(user_id, plan_id)
+      @hosted_page = Adapter.new_subscription_hosted_page(user_id, plan_id)
     end
 
     def attributes
       return {
-        href: @href,
+        # Full Chargebee hosted page object, passed to Chargebee.js v2
+        # openCheckout's `hostedPage` callback for in-context checkout.
+        hosted_page: @hosted_page,
+        # Kept for backwards compatibility with older clients.
+        href: @hosted_page && @hosted_page[:url],
         website_name: Rails.application.secrets[:chargebee_site]
       }
     end
