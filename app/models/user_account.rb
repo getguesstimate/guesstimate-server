@@ -2,7 +2,9 @@ class UserAccount < ApplicationRecord
   belongs_to :user
 
   def new_subscription_iframe(plan_id)
-    return false if has_payment_account
+    # Only block users who already have a live paid plan. Users with a payment
+    # account but a cancelled subscription must be able to subscribe again.
+    return false if has_payment_account && !user.personal_free?
     return ExternalSubscriptions::NewSubscriptionIframe.new(user.id, plan_id)
   end
 
@@ -25,7 +27,8 @@ class UserAccount < ApplicationRecord
   ## TODO: Add error if the external_subscription does not match something in the database
   def synchronize_subscription!
     return false unless has_payment_account
-    user.update_attribute(:plan, external_subscription)
+    # No live subscription (e.g. cancelled) means the user is back on free.
+    user.update_attribute(:plan, external_subscription || 'personal_free')
   end
 
   def external_has_account

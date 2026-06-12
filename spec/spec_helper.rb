@@ -2,6 +2,18 @@ class AdapterMock
   class << self
     def create_subscription(entity_id, plan_id)
     end
+
+    def has_account(entity_id)
+      false
+    end
+
+    def subscription(entity_id)
+      nil
+    end
+
+    def new_subscription_hosted_page(entity_id, plan_id)
+      { id: 'hp_fake', url: 'http://fake.test' }
+    end
   end
 end
 class PaymentPortalMock
