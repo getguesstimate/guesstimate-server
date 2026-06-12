@@ -12,18 +12,40 @@ module ExternalSubscriptions
       # openCheckout's `hostedPage` callback so the checkout runs in-context and
       # fires the `success` callback (which triggers our account sync). Passing
       # only the url makes Chargebee redirect on success, and the sync is lost.
+      #
+      # The site allows one subscription per customer, so checkout_new is
+      # rejected once a subscription exists in any state (even cancelled).
+      # Returning customers go through checkout_existing instead, which
+      # reactivates a cancelled subscription on completion.
       def new_subscription_hosted_page(entity_id, plan_id)
-        params = {
-          subscription: {
-            plan_id: plan_id
-          },
-          customer: {
-            id: entity_id
-          },
-          embed: true,
-          iframe_messaging: true
-        }
-        return ChargeBee::HostedPage.checkout_new(params).get_raw_response[:hosted_page]
+        existing = any_subscription(entity_id)
+        if existing
+          params = {
+            subscription: {
+              id: existing.id,
+              plan_id: plan_id
+            },
+            # Without this a checkout on a cancelled subscription only saves
+            # the changes; the subscription stays cancelled and nothing is
+            # charged.
+            reactivate: existing.status == 'cancelled',
+            embed: true,
+            iframe_messaging: true
+          }
+          return ChargeBee::HostedPage.checkout_existing(params).get_raw_response[:hosted_page]
+        else
+          params = {
+            subscription: {
+              plan_id: plan_id
+            },
+            customer: {
+              id: entity_id
+            },
+            embed: true,
+            iframe_messaging: true
+          }
+          return ChargeBee::HostedPage.checkout_new(params).get_raw_response[:hosted_page]
+        end
       end
 
       def create_subscription(entity_id, plan_id)
@@ -60,14 +82,29 @@ module ExternalSubscriptions
         return true
       end
 
+      # Statuses that entitle the customer to the plan. A cancelled or paused
+      # subscription must not count, otherwise cancelling never downgrades.
+      LIVE_SUBSCRIPTION_STATUSES = %w[future in_trial active non_renewing].freeze
+
       def subscription(entity_id)
         subscriptions = ChargeBee::Subscription.subscriptions_for_customer(entity_id, :limit => 5).to_a
-        return subscriptions[0].try(:subscription).try(:plan_id)
+        live = subscriptions.find { |s| LIVE_SUBSCRIPTION_STATUSES.include?(s.subscription.status) }
+        return live.try(:subscription).try(:plan_id)
       end
 
       private
       def exception_reveals_no_user(ex)
         ex.try(:cause).try(:http_code) === RESOURCE_NOT_FOUND_ERROR_CODE
+      end
+
+      # The customer's subscription in any state, or nil for customers
+      # Chargebee doesn't know yet.
+      def any_subscription(entity_id)
+        subscriptions = ChargeBee::Subscription.subscriptions_for_customer(entity_id, :limit => 1).to_a
+        subscriptions[0].try(:subscription)
+      rescue ChargeBee::InvalidRequestError => ex
+        raise ex unless exception_reveals_no_user(ex)
+        nil
       end
     end
   end
