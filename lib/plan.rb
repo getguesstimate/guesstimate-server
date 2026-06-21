@@ -1,3 +1,5 @@
+require "ostruct"
+
 class Plan
   def self.all
     return YAML.load_file("#{Rails.root}/config/plans.yml")['plans'].map{|plan| OpenStruct.new(plan)}

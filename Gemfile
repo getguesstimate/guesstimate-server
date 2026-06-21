@@ -1,12 +1,12 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 7.2.0'
+gem 'rails', '>= 7.2.3.1', '< 7.3'
 gem 'pg', '~> 1.5'
 
 gem 'multi_json'
 
-# Use the puma server
-gem 'puma', '< 7'
+# Use the puma server (>= 7.2.1 fixes GHSA-2vqw-3mp8-cgmx / GHSA-qpgp-93vx-g8v8)
+gem 'puma', '~> 7.2'
 
 gem 'rack-cors', require: 'rack/cors'
 
