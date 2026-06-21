@@ -1,7 +1,5 @@
 Rails.application.routes.draw do
 
-  mount Knock::Engine => '/knock'
-
   post '/chargebee/webhooks', to: 'chargebee_webhooks#create'
 
   resources :calculators, only: [:show, :update, :destroy]

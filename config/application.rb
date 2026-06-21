@@ -12,11 +12,8 @@ module GuesstimateApi
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
 
-    # Do not swallow errors in after_commit/after_rollback callbacks.
-    # config.active_record.raise_in_transactional_callbacks = true
-    config.autoload_paths << Rails.root.join('lib')
-
-    # This is here because some dependencies were causing trouble with Heroku
-    config.enable_dependency_loading  = true
+    # Autoload and eager-load lib/ (excluding rake tasks), replacing the old
+    # `autoload_paths << lib` + `enable_dependency_loading` (removed in Rails 7).
+    config.autoload_lib(ignore: %w[tasks])
   end
 end
