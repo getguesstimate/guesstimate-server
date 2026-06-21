@@ -67,14 +67,14 @@ class Fact < ApplicationRecord
     stats_present_and_valid = stats && (
       stats['length'].to_i == 1 || (stats['percentiles'] && stats['percentiles']['5'] && stats['percentiles']['95'])
     )
-    errors[:base] << 'must have stats' unless stats_present_and_valid
+    errors.add(:base, 'must have stats') unless stats_present_and_valid
   end
   def fact_has_values
     values_present = simulation && simulation['sample'] && simulation['sample']['values'] && simulation['sample']['values'].length > 0
-    errors[:base] << 'must have values' unless values_present
+    errors.add(:base, 'must have values') unless values_present
   end
   def fact_has_no_errors
     errors_present = simulation && simulation['sample'] && simulation['sample']['errors'] && simulation['sample']['errors'].length > 0
-    errors[:base] << 'can not have errors' if errors_present
+    errors.add(:base, 'can not have errors') if errors_present
   end
 end

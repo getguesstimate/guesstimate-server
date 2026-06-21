@@ -1,10 +1,10 @@
-FROM ruby:2.7.7
+FROM ruby:3.3
 
-RUN apt update && apt install -y nodejs
+RUN apt update && apt install -y nodejs libpq-dev
 
 WORKDIR /docker/app
 
-RUN gem install bundler -v 2.4.22
+RUN gem install bundler -v 2.5.23
 
 COPY Gemfile* ./
 

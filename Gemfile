@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 6.0.5'
-gem 'pg', '~> 1.4.1'
+gem 'rails', '~> 7.2.0'
+gem 'pg', '~> 1.5'
 
 gem 'multi_json'
 
@@ -11,20 +11,22 @@ gem 'puma', '< 7'
 gem 'rack-cors', require: 'rack/cors'
 
 gem 'auth0'
-gem 'knock', '~> 2.0'
+# JWT verification for Auth0 RS256 tokens (replaces the abandoned `knock` gem).
+gem 'jwt'
 gem 'algoliasearch-rails'
 
 gem 'responders'
 gem 'roar-rails'
 gem 'chargebee', '~> 2.72'
 
-# Analytics & Reporting
-gem 'sentry-raven'
+# Analytics & Reporting (sentry-raven is EOL; replaced by sentry-ruby/sentry-rails)
+gem 'sentry-ruby'
+gem 'sentry-rails'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', '~> 11.0'
-  gem 'pry', '~> 0.13.1'
+  gem 'pry', '~> 0.14'
   gem 'pry-byebug'
   gem 'pry-rails', '~> 0.3.9'
 
