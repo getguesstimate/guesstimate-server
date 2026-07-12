@@ -2,7 +2,7 @@ require 'openssl'
 require 'open-uri'
 
 def encodeURIComponent(val)
-  URI.escape(val, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+  URI::DEFAULT_PARSER.escape(val, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
 end
 
 def urlbox(url, options={}, format='png')
