@@ -1,9 +1,11 @@
 source 'https://rubygems.org'
 
-gem 'rails', '>= 7.2.3.1', '< 7.3'
+gem 'rails', '>= 7.2.3.2', '< 7.3'
 gem 'pg', '~> 1.5'
 
 gem 'multi_json'
+# Patched backport for Ruby 3.3's bundled DNS resolver (CVE-2026-80212/80213).
+gem 'resolv', '~> 0.3.2'
 
 # Use the puma server (>= 7.2.1 fixes GHSA-2vqw-3mp8-cgmx / GHSA-qpgp-93vx-g8v8)
 gem 'puma', '~> 7.2'
