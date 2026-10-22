@@ -1,4 +1,4 @@
-FROM node:22.23.4-bookworm-slim AS node-runtime
+FROM node:26.11.1-bookworm-slim AS node-runtime
 
 FROM ruby:3.3
 
