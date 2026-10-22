@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'rails', '>= 7.2.3.2', '< 7.3'
-gem 'pg', '~> 1.5'
+gem 'pg', '~> 1.7'
 
 gem 'multi_json'
 # Patched backport for Ruby 3.3's bundled DNS resolver (CVE-2026-80212/80213).
