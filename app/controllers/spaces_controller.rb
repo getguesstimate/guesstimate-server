@@ -131,7 +131,10 @@ class SpacesController < ApplicationController
   def graph_structure
     [
       metrics: [
-        :id, :readableId, :name, location:[:row, :column]
+        :id, :readableId, :name, :showNotesOnNode,
+        location: [:row, :column],
+        canvasPosition: [:x, :y],
+        titleAlignment: [:sheet, :canvas]
       ],
       guesstimates: [
         :metric, :input, :expression, :guesstimateType, :description, data: []
