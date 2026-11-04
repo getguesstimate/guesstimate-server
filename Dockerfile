@@ -1,6 +1,6 @@
 FROM node:22.23.4-bookworm-slim AS node-runtime
 
-FROM ruby:3.3
+FROM ruby:4.0
 
 RUN apt-get update && apt-get install -y --no-install-recommends libpq-dev \
     && rm -rf /var/lib/apt/lists/*
