@@ -7,6 +7,98 @@ def setup_knock(user)
 end
 
 RSpec.describe SpacesController, type: :controller do
+  describe 'graph node display settings' do
+    let (:creator) { FactoryBot.create(:user) }
+    let (:legacy_metric) {
+      {'id' => 'a', 'readableId' => 'AA', 'name' => 'Revenue', 'location' => {'row' => 0, 'column' => 1}}
+    }
+    let (:metric) {
+      legacy_metric.merge(
+        'canvasPosition' => {'x' => -120.5, 'y' => 240.25},
+        'titleAlignment' => {'sheet' => 'bottom-left', 'canvas' => 'center-center'},
+        'showNotesOnNode' => false
+      )
+    }
+    let (:graph) { {'metrics' => [metric], 'guesstimates' => []} }
+    let (:space) { FactoryBot.create(:space, user: creator, graph: graph) }
+
+    before { setup_knock(creator) }
+
+    it 'saves display settings on creation and returns them when loaded' do
+      post :create, params: {space: {name: 'Model', is_private: false, graph: graph}}, as: :json
+
+      expect(response).to have_http_status(:ok)
+      created = Space.find(JSON.parse(response.body)['id'])
+      expect(created.graph).to eq graph
+
+      get :show, params: {id: created.id}
+      expect(JSON.parse(response.body)['graph']).to eq graph
+    end
+
+    it 'saves updated settings in the model and its checkpoint' do
+      space.update!(graph: {'metrics' => [legacy_metric], 'guesstimates' => []})
+      patch :update, params: {id: space.id, space: {graph: graph}}, as: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body)['graph']).to eq graph
+      expect(space.reload.graph).to eq graph
+      expect(space.checkpoints.last.graph).to eq graph
+
+      get :show, params: {id: space.id}
+      expect(JSON.parse(response.body)['graph']).to eq graph
+    end
+
+    it 'allows notes to be shown again after being hidden' do
+      space
+      updated_graph = graph.deep_dup
+      updated_graph['metrics'].first['showNotesOnNode'] = true
+      patch :update, params: {id: space.id, space: {graph: updated_graph}}, as: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(space.reload.graph).to eq updated_graph
+    end
+
+    it 'allows manual alignment to be reset to automatic' do
+      space
+      updated_graph = graph.deep_dup
+      updated_graph['metrics'].first['titleAlignment'] = {}
+      patch :update, params: {id: space.id, space: {graph: updated_graph}}, as: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(space.reload.graph).to eq updated_graph
+    end
+
+    it 'accepts older graphs without display settings' do
+      legacy_graph = {'metrics' => [legacy_metric], 'guesstimates' => []}
+      post :create, params: {space: {name: 'Model', is_private: false, graph: legacy_graph}}, as: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(Space.find(JSON.parse(response.body)['id']).graph).to eq legacy_graph
+    end
+
+    it 'continues filtering unsupported graph and nested metric fields' do
+      submitted_graph = graph.deep_dup
+      submitted_graph['unsupported'] = 'ignored'
+      submitted_metric = submitted_graph['metrics'].first
+      submitted_metric['unsupported'] = 'ignored'
+      submitted_metric['canvasPosition']['unsupported'] = 'ignored'
+      submitted_metric['titleAlignment']['unsupported'] = 'ignored'
+      patch :update, params: {id: space.id, space: {graph: submitted_graph}}, as: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(space.reload.graph).to eq graph
+    end
+
+    it 'does not allow another user to change the display settings' do
+      space
+      setup_knock(FactoryBot.create(:user))
+      patch :update, params: {id: space.id, space: {graph: {'metrics' => [], 'guesstimates' => []}}}, as: :json
+
+      expect(response).to have_http_status(:unauthorized)
+      expect(space.reload.graph).to eq graph
+    end
+  end
+
   describe 'GET show' do
     let (:creator) { FactoryBot.create(:user, :lite_plan) }
     let (:is_private) { false } # default context public.
