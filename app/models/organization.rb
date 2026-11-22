@@ -21,7 +21,7 @@ class Organization < ApplicationRecord
   after_create :create_account
   after_create :create_trial, if: :needs_trial?
 
-  enum plan: Plan.as_enum
+  enum :plan, Plan.as_enum
 
   def plan_details
     Plan.find(plan)
