@@ -145,7 +145,7 @@ RSpec.describe Fact, type: :model do
   describe 'take_checkpoint' do
     let (:by_api) { false }
     let (:author) { FactoryBot.create(:user) }
-    let (:first_checkpoint) { FactoryBot.create(:fact_checkpoint, fact: fact, created_at: 0) }
+    let (:first_checkpoint) { FactoryBot.create(:fact_checkpoint, fact: fact, created_at: Time.at(0).utc) }
     let (:checkpoint) { fact.take_checkpoint(author, by_api) }
     let (:num_other_facts) { 0 }
     let (:checkpoint_limit) { 5 }
