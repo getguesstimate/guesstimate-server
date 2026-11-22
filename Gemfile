@@ -1,6 +1,10 @@
 source 'https://rubygems.org'
 
-gem 'rails', '>= 7.2.3.2', '< 7.3'
+# Declare Rails frameworks individually to keep unused engines out of the bundle.
+%w[actioncable actionmailer actionpack actionview activejob activerecord railties].each do |framework|
+  gem framework, '>= 7.2.3.2', '< 7.3', require: false
+end
+
 gem 'pg', '~> 1.5'
 
 gem 'multi_json'
