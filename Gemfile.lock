@@ -322,7 +322,7 @@ GEM
       logger
     shoulda-matchers (8.0.1)
       activesupport (>= 7.2)
-    spring (4.6.0)
+    spring (4.7.0)
     stringio (3.2.0)
     test_xml (0.1.8)
       diffy (~> 3.0)
