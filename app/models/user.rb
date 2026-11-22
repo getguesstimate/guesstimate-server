@@ -16,7 +16,7 @@ class User < ApplicationRecord
   validates :email, presence: true, format: /@/, uniqueness: true
   validates :auth0_id, presence: true, uniqueness: true
 
-  enum plan: Plan.as_enum
+  enum :plan, Plan.as_enum
 
   scope :uncategorized_since, -> (date) { where 'categorized IS NOT true AND DATE(created_at) >= ?', date }
 
